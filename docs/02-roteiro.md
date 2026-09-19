@@ -42,18 +42,57 @@ Aprendizados:
 
 ---
 
-## Fase 1 - Git e GitHub (próxima)
+## Fase 1 - Git e GitHub (concluída)
 
 Objetivo: atualizar o sistema e versionar este guia.
 
-- [ ] Atualizar o sistema: `sudo apt update && sudo apt full-upgrade`
-- [ ] Instalar `git` e `gh` (CLI do GitHub)
-- [ ] Configurar a identidade do git (`user.name` e `user.email`)
-- [ ] Autenticar no GitHub com `gh auth login` (chave SSH)
-- [ ] Ligar a pasta local ao repositório remoto e fazer o primeiro commit
+- [x] Atualizar o sistema
+- [x] Instalar `git` e `gh` (CLI do GitHub)
+- [x] Configurar a identidade do git
+- [x] Autenticar no GitHub com chave SSH
+- [x] Ligar a pasta local ao repositório remoto e publicar o primeiro commit
 
-A pasta local já tem conteúdo, e o `git clone` exige pasta vazia. Por isso o caminho é
-`git init` + `git remote add origin`, em vez de clonar.
+```bash
+sudo apt update && sudo apt full-upgrade -y && sudo apt install -y git gh
+
+git config --global user.name "Seu Nome"
+git config --global user.email "ID+usuario@users.noreply.github.com"
+git config --global init.defaultBranch main
+
+gh auth login --hostname github.com --git-protocol ssh --web
+gh api meta --jq '.ssh_keys[] | "github.com " + .' >> ~/.ssh/known_hosts
+ssh -T git@github.com
+
+git init
+git remote add origin git@github.com:USUARIO/REPOSITORIO.git
+git add -A && git commit
+git push -u origin main
+```
+
+| Comando | O que faz |
+|---|---|
+| `apt full-upgrade` | Atualiza todos os pacotes, instalando ou removendo dependências quando preciso. |
+| `git config --global` | Grava a configuração do git para o usuário, em `~/.gitconfig`. |
+| `gh auth login` | Faz login no GitHub e cria a chave SSH. O `--web` autoriza pelo navegador. |
+| `gh api meta` | Lista as chaves oficiais do servidor do GitHub. Gravadas em `known_hosts`, evitam confirmar a chave "às cegas" na primeira conexão. |
+| `ssh -T git@github.com` | Testa a autenticação. A resposta esperada é `Hi USUARIO! You've successfully authenticated`. |
+| `git init` e `git remote add origin` | Iniciam o repositório local e apontam para o remoto. Usados no lugar de `git clone` porque a pasta já tinha conteúdo. |
+
+Como conferir:
+
+```bash
+apt list --upgradable      # sem pacotes pendentes
+git config --global -l     # nome, e-mail e branch padrão
+gh auth status             # logado, protocolo ssh
+git status -sb             # main acompanhando origin/main
+```
+
+Aprendizados:
+
+- **Repositório público:** o e-mail de cada commit fica visível. Use o endereço `noreply` do GitHub
+  (`ID+usuario@users.noreply.github.com`). O ID sai de `gh api user --jq .id`.
+- **Chave SSH:** proteja com senha (passphrase).
+- **Trabalho direto na `main`:** neste repositório de uso individual não há branches nem PRs.
 
 ---
 

@@ -68,7 +68,8 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Firefox ESR, LibreOffice Writer | instalados |
 | `curl`, `wget` | instalados |
 | Claude Code | instalado em `~/.local/bin` |
-| `git`, `gh`, `ufw`, `timeshift` | ausentes |
+| `git`, `gh` | instalados |
+| `ufw`, `timeshift` | ausentes |
 | Flatpak, extensões do GNOME | ausentes |
 
 ## Decisões a tomar

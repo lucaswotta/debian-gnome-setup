@@ -30,3 +30,7 @@ conforme aparecem novos conceitos.
 | **SSH** | Protocolo de acesso seguro; aqui, usado com chaves para autenticar no GitHub sem senha. |
 | **Git / GitHub** | Git: controle de versão. GitHub: serviço online que hospeda repositórios Git. |
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. O Claude Code vive em `~/.local/bin`, que foi adicionada ao `PATH`. |
+| **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |
+| **`main`** | Branch principal de um repositório Git. Neste projeto, todo o trabalho vai direto nela. |
+| **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. `git push` envia os commits para ele. |
+| **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
