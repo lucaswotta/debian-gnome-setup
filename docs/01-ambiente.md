@@ -67,6 +67,8 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | GNOME (`gnome-core`), Ajustes (`gnome-tweaks`), NetworkManager | instalados |
 | Firefox ESR, LibreOffice Writer | instalados |
 | `curl`, `wget` | instalados |
+| Google Chrome | instalado, com o repositório oficial do Google (atualiza pelo `apt`) |
+| `openfortivpn` | instalado (cliente de VPN Fortinet, por linha de comando) |
 | Claude Code | instalado em `~/.local/bin` |
 | `git`, `gh` | instalados |
 | `ufw`, `timeshift` | ausentes |

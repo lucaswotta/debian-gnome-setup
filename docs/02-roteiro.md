@@ -96,11 +96,45 @@ Aprendizados:
 
 ---
 
+## Fase 2 - Base do sistema (em andamento)
+
+- [x] **TRIM do SSD:** já vem ativo, com o `fstrim.timer` rodando toda semana.
+- [x] **Catálogo de firmware:** atualizado com `fwupd`. Nenhum componente tem atualização no LVFS.
+- [ ] **BIOS:** comparar a versão instalada com a mais recente no site de suporte da Lenovo.
+- [~] **`contrib` e `non-free`:** adiados. Só entram quando um pacote exigir (fontes da Microsoft, alguns codecs).
+- [ ] **Disco SATA extra:** ver detalhes abaixo.
+
+```bash
+sudo fwupdmgr refresh --force
+fwupdmgr get-updates
+```
+
+| Comando | O que faz |
+|---|---|
+| `fwupdmgr refresh --force` | Baixa do LVFS a lista atualizada de firmwares. Só atualiza o cache e não instala nada. |
+| `fwupdmgr get-updates` | Mostra, por dispositivo, se há atualização de firmware disponível. |
+
+Como conferir:
+
+```bash
+systemctl is-enabled fstrim.timer      # enabled
+lsblk -D -o NAME,DISC-GRAN,DISC-MAX    # discos com suporte a TRIM
+cat /sys/class/dmi/id/bios_version     # versão da BIOS instalada
+```
+
+Aprendizados:
+
+- **Firmware:** o LVFS não tem todos os modelos. "Sem atualização" no `fwupd` não garante que a BIOS seja a última.
+- **Atualização de BIOS:** só com o notebook na tomada e sem desligar durante o processo.
+- **Escada:** um repositório novo só entra quando há um pacote que precise dele.
+
+---
+
 ## Fases seguintes (proposta)
 
 | Fase | Tema | Itens |
 |---|---|---|
-| 2 | Base do sistema | `contrib` e `non-free` no APT, TRIM do SSD, firmware (`fwupd`), disco extra |
+| 2 | Base do sistema | Em andamento (ver acima) |
 | 3 | Segurança | Firewall (`ufw`), atualizações automáticas de segurança, criptografia, Secure Boot |
 | 4 | Backup | Snapshots do sistema (Timeshift) e backup dos dados |
 | 5 | Notebook | Bateria e temperatura, GPU AMD, leitor de digital, teclas Fn |
