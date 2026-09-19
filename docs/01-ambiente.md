@@ -68,7 +68,8 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Firefox ESR, LibreOffice Writer | instalados |
 | `curl`, `wget` | instalados |
 | Google Chrome | instalado, com o repositório oficial do Google (atualiza pelo `apt`) |
-| `openfortivpn` | instalado (cliente de VPN Fortinet, por linha de comando) |
+| `openfortivpn` | instalado (cliente de VPN Fortinet por linha de comando, usado como reserva) |
+| `network-manager-openconnect-gnome` | instalado (VPN Fortinet pela interface gráfica) |
 | Claude Code | instalado em `~/.local/bin` |
 | `git`, `gh` | instalados |
 | `ufw`, `timeshift` | ausentes |

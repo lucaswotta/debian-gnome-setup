@@ -130,6 +130,45 @@ Aprendizados:
 
 ---
 
+## VPN Fortinet com interface gráfica (adiantada da fase 6)
+
+Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
+
+- [x] Instalar o plugin do NetworkManager para OpenConnect
+- [x] Cadastrar a conexão pela tela de Rede, com o protocolo Fortinet
+- [x] Conectar e validar
+
+```bash
+sudo apt install -y network-manager-openconnect-gnome
+```
+
+Cadastro, pela interface:
+
+1. *Configurações > Rede*, botão **+** ao lado de *VPN*, *Multiprotocol VPN Client (openconnect)*.
+2. **Protocolo:** Fortinet SSL VPN.
+3. **Gateway:** `ENDERECO:PORTA`.
+4. Salvar e conectar. Usuário e senha são pedidos na conexão.
+
+Como conferir:
+
+```bash
+nmcli connection show --active     # a VPN aparece com o tipo "vpn"
+ip route | grep vpn0               # rotas das redes internas pelo túnel
+ip route show default              # a internet segue pela rota normal
+```
+
+Aprendizados:
+
+- **Plugin:** o Debian 13 não tem plugin do NetworkManager para o `openfortivpn`. O OpenConnect fala o
+  protocolo Fortinet e resolve. O `openfortivpn` continua instalado como reserva.
+- **Onde ficam os dados:** endereço e credenciais ficam no NetworkManager, fora do repositório.
+- **Túnel dividido:** só as redes internas passam pela VPN. A internet segue pela rota normal.
+- **DNS:** sem `systemd-resolved`, o NetworkManager grava os DNS da VPN em `/etc/resolv.conf`.
+  Se um nome interno não resolver, comece por esse arquivo.
+- **Certificado:** aceite o certificado do servidor só se reconhecer o servidor.
+
+---
+
 ## Fases seguintes (proposta)
 
 | Fase | Tema | Itens |
@@ -138,7 +177,7 @@ Aprendizados:
 | 3 | Segurança | Firewall (`ufw`), atualizações automáticas de segurança, criptografia, Secure Boot |
 | 4 | Backup | Snapshots do sistema (Timeshift) e backup dos dados |
 | 5 | Notebook | Bateria e temperatura, GPU AMD, leitor de digital, teclas Fn |
-| 6 | Aplicativos | Navegador, Flatpak e Flathub, comunicação, VPN, ferramentas de trabalho |
+| 6 | Aplicativos | Flatpak e Flathub, comunicação, ferramentas de trabalho (navegador e VPN já feitos) |
 | 7 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
 | 8 | Automação | Transformar o que foi validado em `scripts/` |
 

@@ -34,3 +34,7 @@ conforme aparecem novos conceitos.
 | **`main`** | Branch principal de um repositório Git. Neste projeto, todo o trabalho vai direto nela. |
 | **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. `git push` envia os commits para ele. |
 | **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
+| **VPN** | Rede privada virtual: um túnel criptografado até a rede da empresa, para acessar recursos internos. |
+| **Túnel dividido (*split tunnel*)** | Modo em que só o tráfego das redes internas passa pela VPN. O restante segue direto pela internet. |
+| **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |
+| **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
