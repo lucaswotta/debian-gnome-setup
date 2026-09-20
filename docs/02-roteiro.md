@@ -306,10 +306,14 @@ Aprendizados:
   no ícone do aplicativo. No terminal e no Steam, use `DRI_PRIME=1`. A AMD é uma placa de entrada (2 GB) e não serve
   para jogos recentes em qualidade alta.
 - **Limite de carga:** o firmware vem com início em 95% e fim em 100%. Depois de ligar o limite, o UPower informa 75% e 80%,
-  mas o kernel mostra `start=80 end=75`, invertido. Nos dois casos o teto fica entre 75% e 80%. Não afeta o desempenho.
+  mas a leitura em `sysfs` mostra `start=80 end=75`, invertida. No boot, o kernel registra `start 75, stop 80`
+  (`journalctl -k -b | grep "battery 1 registered"`). Os valores gravados estão certos e persistem depois de reiniciar.
+  Não afeta o desempenho.
   A autonomia por carga cai cerca de 20%.
 - **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
   responde `No devices available`. Não há o que configurar.
+- **Chaveiro no login:** os avisos `gkr-pam: unable to locate daemon control file` e `Failed to start ...keyring...scope`
+  aparecem em todo login e são inofensivos. O serviço já sobe pelo systemd e o chaveiro funciona (o `gh` lê o token dele).
 - **Logs:** sem estar no grupo `systemd-journal`, o `journalctl` mostra "sem entradas". Isso **não** significa "sem erros".
 - **Avisos comuns no boot que não indicam problema:** erro ACPI da GPU (`ATRM`, o `amdgpu` funciona normalmente),
   uma regra `udev` do ALSA sem rótulo, e o erro do `iwlwifi` em cada suspensão. O Wi-Fi recarrega o firmware ao retomar
@@ -337,7 +341,7 @@ Decisões: manter o btrfs (o disco veio vazio, então nada foi apagado) e montar
 - [x] Conferir a saúde (SMART). Aprovado.
 - [x] Montar de forma permanente pelo `/etc/fstab`, identificando o disco por **UUID**.
 - [x] Criar a estrutura de pastas e ajustar dono e permissões.
-- [ ] Confirmar que o disco monta sozinho depois de reiniciar.
+- [x] Confirmar que o disco monta sozinho depois de reiniciar.
 - [ ] Apontar para ele o que ocupa espaço, como a biblioteca de jogos (fase 5).
 - [ ] Incluí-lo no backup (fase 7). Um disco só não é backup.
 
@@ -396,6 +400,9 @@ Aprendizados:
 - **Saúde do SSD:** olhe o resultado geral (`PASSED`), as horas ligado, a vida útil restante e os contadores de
   setores realocados e erros de CRC. Acompanhe também o contador de desligamentos abruptos.
 - **`findmnt --verify` sem `sudo`:** mostra avisos de permissão negada. Não são erros do `fstab`.
+- **Contadores do SMART depois de reiniciar:** o de desligamentos abruptos (`Unsafe_Shutdown_Count`) não muda num
+  reinício limpo. O de ciclos de energia (`Power_Cycle_Count`) também não muda, porque num reinício o SSD continua
+  alimentado. Ele só sobe quando o notebook é desligado por completo.
 - **Programas:** o APT instala em `/usr` e não permite escolher outro disco. Neste disco vão jogos, arquivos,
   Flatpaks e ferramentas portáteis. Os pacotes do sistema ficam no NVMe.
 
