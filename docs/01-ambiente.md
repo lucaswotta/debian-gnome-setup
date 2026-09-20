@@ -57,7 +57,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 
 - **Energia:** `power-profiles-daemon` (perfil `balanced`), usado pelo menu do GNOME. O `TLP` não é usado, porque conflita com ele. O `thermald` não roda em ThinkPads com controle térmico pelo firmware.
 - **Suspensão:** a tela apaga após 30 minutos de inatividade e o sistema suspende após 60 minutos. Fechar a tampa suspende na hora.
-- **Bateria:** limite de carga entre 75% e 80%, pelo UPower.
+- **Bateria:** sem limite de carga. O recurso foi testado e desativado (ver a fase 4).
 - **GPU:** a Intel atende o uso comum. A AMD fica suspensa e é acionada sob demanda.
 - **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek`, `firmware-sof-signed`.
 - **Microcódigo:** `intel-microcode`.

@@ -293,10 +293,10 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Energia e temperatura:** o `power-profiles-daemon` (perfil `balanced`) basta. Temperaturas de 38 a 50 °C, ventoinha desligada.
 - [x] **GPU AMD sob demanda:** testada com OpenGL e Vulkan. Dorme sozinha depois do uso.
 - [x] **Suspensão:** tela apaga em 30 min, suspende em 60 min. Fechar a tampa suspende na hora.
-- [x] **Limite de carga da bateria:** ativado entre 75% e 80%.
+- [x] **Limite de carga da bateria:** testado e depois desativado. O procedimento fica documentado como opcional.
 - [x] **Teclas Fn:** funcionam.
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
-- [x] **Limite de carga confirmado na prática:** partindo de 64%, a carga parou em 79%, que é 80% da capacidade atual da bateria.
+- [x] **Teste do limite:** partindo de 64%, a carga parou em 79%, que é 80% da capacidade atual da bateria.
 
 ```bash
 # GPU: ferramentas de teste
@@ -310,7 +310,7 @@ gsettings set org.gnome.desktop.session idle-delay 1800
 gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 3600
 gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 3600
 
-# Limite de carga da bateria
+# Limite de carga da bateria (opcional)
 BAT=$(upower -e | grep -i BAT | head -1)
 busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b true
 
@@ -323,7 +323,7 @@ sudo usermod -aG systemd-journal "$USER"
 | `DRI_PRIME=1` | Executa o comando na GPU dedicada. Sem ela, a Intel é usada. |
 | `idle-delay` | Segundos de inatividade até a tela apagar (1800 = 30 min). |
 | `sleep-inactive-*-timeout` | Segundos de inatividade até suspender, na tomada e na bateria (3600 = 60 min). |
-| `EnableChargeThreshold` | Liga o limite de carga do UPower, que vale de 75% a 80%. |
+| `EnableChargeThreshold` | Liga (`b true`) ou desliga (`b false`) o limite de carga do UPower, que vale de 75% a 80%. |
 | `usermod -aG systemd-journal` | Permite ao usuário ler o log do sistema (`journalctl`) sem `sudo`. |
 
 Como conferir:
@@ -361,6 +361,8 @@ Observações:
   persistem depois de reiniciar. O limite não afeta o desempenho e reduz a autonomia por carga em cerca de 20%.
   No teste, a carga parou em 79%, com o estado `Not charging` e potência de 0 W. A porcentagem é calculada sobre a capacidade
   atual da bateria (38,66 Wh), então 30,75 Wh equivalem a 79,5%, e o painel arredonda para baixo.
+- **Equipamento cedido ou gerenciado por terceiros:** prefira deixar a bateria no comportamento de fábrica. O limite de carga é
+  opcional e reversível. Depois de desligá-lo, a carga volta a passar de 80% e o firmware retoma os valores de fábrica.
 - **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
   responde `No devices available`. Não há o que configurar.
 - **Chaveiro no login:** os avisos `gkr-pam: unable to locate daemon control file` e `Failed to start ...keyring...scope`
