@@ -1064,6 +1064,56 @@ Observações:
 - **`nmap`:** escaneie só equipamentos próprios ou com autorização. Uma varredura na rede corporativa pode disparar alertas da TI.
 - **VLC como `root`:** o VLC se recusa a rodar com `sudo`. Confira a versão como usuário comum.
 
+#### Acesso a servidores por SFTP (no lugar do WinSCP)
+
+O aplicativo **Arquivos** abre servidores por SFTP, sem programa extra. As chaves do PuTTY e do WinSCP (`.ppk`) precisam ser convertidas para o formato do OpenSSH,
+e o `puttygen`, do pacote `putty-tools`, faz isso.
+
+```bash
+sudo apt-get install -y putty-tools
+mv ~/Downloads/<chave>.ppk ~/.ssh/chave-trabalho.ppk && chmod 600 ~/.ssh/chave-trabalho.ppk
+puttygen ~/.ssh/chave-trabalho.ppk -O private-openssh-new -o ~/.ssh/chave-trabalho -P     # pede a senha atual e a nova
+puttygen ~/.ssh/chave-trabalho.ppk -O public-openssh -o ~/.ssh/chave-trabalho.pub         # parte pública, sem senha
+chmod 600 ~/.ssh/chave-trabalho
+```
+
+Regra padrão para os servidores da rede interna, em `~/.ssh/config` (permissão `600`):
+
+```
+Host 10.* 172.* 192.168.*
+    IdentityFile ~/.ssh/chave-trabalho
+    IdentitiesOnly yes
+    AddKeysToAgent yes
+    ServerAliveInterval 30
+```
+
+Uso:
+
+- **Arquivos:** `Ctrl+L`, digite `sftp://<usuario>@<ip-do-servidor>/` e confirme. Com `Ctrl+D`, o servidor vai para a barra lateral e abre com um clique.
+  O aplicativo também guarda os servidores recentes em *Outros locais > Conectar ao servidor*.
+- **Terminal:** `ssh <usuario>@<ip-do-servidor>`.
+
+Como conferir:
+
+```bash
+ssh -G <ip-do-servidor> | grep -E '^(identityfile|identitiesonly) '     # a chave de trabalho, e só ela
+ssh -G github.com | grep '^identityfile '                                # não inclui a chave de trabalho
+ssh-keygen -y -P '' -f ~/.ssh/chave-trabalho > /dev/null; echo $?        # diferente de 0: a chave está protegida por senha
+```
+
+Como desfazer: apague o bloco `Host` do `~/.ssh/config`, os arquivos `chave-trabalho*` e, se quiser, `sudo apt remove putty-tools`.
+
+Observações:
+
+- **Um usuário por servidor:** o usuário vai no endereço, então cada servidor pode ter o seu (`opc`, `ubuntu` e outros), com a mesma chave.
+- **Alcance da regra:** só as faixas internas (`10.*`, `172.*` e `192.168.*`) usam a chave de trabalho. O GitHub segue com a chave própria, e a chave de trabalho não é oferecida a servidores externos.
+  Para servidores acessados por nome, acrescente o padrão à linha `Host` (por exemplo, `*.empresa.interno`).
+- **Senha da chave:** o GNOME pergunta a senha na primeira conexão e oferece guardá-la no chaveiro. Com `AddKeysToAgent`, a chave fica no agente até o fim da sessão.
+- **Primeira conexão a cada servidor:** o programa mostra a impressão digital do servidor. Confirme com quem o administra e aceite. Ela fica em `~/.ssh/known_hosts`.
+- **VPN:** os servidores internos só respondem com a VPN conectada.
+- **Chaves fora do repositório:** nunca versione `~/.ssh`. Mantenha o `.ppk` original como cópia.
+- **Editar direto no servidor:** um arquivo aberto pelo Arquivos, no Editor de Texto, é salvo no próprio servidor. Para projetos, a extensão *Remote - SSH* do VS Code usa a mesma configuração *(proposta)*.
+
 ### VPN Fortinet com interface gráfica
 
 Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
