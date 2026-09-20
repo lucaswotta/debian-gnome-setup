@@ -24,7 +24,6 @@ conforme aparecem novos conceitos.
 | **Secure Boot** | Recurso do UEFI que só deixa iniciar sistemas assinados. |
 | **ext4 / btrfs** | Sistemas de arquivos. O ext4 é o clássico e estável; o btrfs suporta *snapshots* (fotografias do disco). |
 | **Swap** | Área do disco usada como memória extra quando a RAM enche. |
-| **LUKS** | Criptografia de disco padrão no Linux. |
 | **TRIM** | Comando que avisa ao SSD quais blocos estão livres, mantendo o desempenho e a vida útil. |
 | **TLP / power-profiles-daemon** | Ferramentas de economia de energia em notebooks. |
 | **SSH** | Protocolo de acesso seguro; aqui, usado com chaves para autenticar no GitHub sem senha. |

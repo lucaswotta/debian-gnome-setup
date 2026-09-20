@@ -96,7 +96,7 @@ Aprendizados:
 
 ---
 
-## Fase 2 - Base do sistema (em andamento)
+## Fase 2 - Base do sistema (concluída)
 
 - [x] **TRIM do SSD:** já vem ativo, com o `fstrim.timer` rodando toda semana.
 - [x] **Catálogo de firmware:** atualizado com `fwupd`. Nenhum componente tem atualização no LVFS.
@@ -171,12 +171,76 @@ Aprendizados:
 
 ---
 
+## Fase 3 - Atualizações (concluída)
+
+Objetivo: manter o sistema atualizado com pouco esforço.
+
+- [x] Instalar o `unattended-upgrades` (atualizações automáticas)
+- [x] Ativar a execução diária
+- [x] Incluir o Google Chrome nas atualizações automáticas
+- [x] Validar com uma simulação
+
+```bash
+sudo apt install -y unattended-upgrades
+
+printf 'APT::Periodic::Update-Package-Lists "1";\nAPT::Periodic::Unattended-Upgrade "1";\n' \
+  | sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null
+
+printf '// Inclui as atualizações do Google Chrome (repositório do Google)\nUnattended-Upgrade::Origins-Pattern:: "origin=Google LLC,codename=stable";\n' \
+  | sudo tee /etc/apt/apt.conf.d/52unattended-upgrades-local > /dev/null
+
+sudo unattended-upgrade --dry-run --debug
+```
+
+| Parte | O que faz |
+|---|---|
+| `20auto-upgrades` | Liga a rotina diária: `Update-Package-Lists` atualiza a lista de pacotes e `Unattended-Upgrade` instala as atualizações permitidas. |
+| `52unattended-upgrades-local` | Arquivo próprio, que acrescenta uma origem à lista (o `::` adiciona sem apagar as do Debian). |
+| `origin=Google LLC,codename=stable` | Origem do repositório do Chrome. Sem ela, o Chrome não é atualizado automaticamente. |
+| `--dry-run --debug` | Simula e explica o que faria, sem instalar nada. |
+
+Atualização manual, para o que não é automático:
+
+| Comando | O que faz |
+|---|---|
+| `sudo apt update` | Só baixa a lista atualizada de pacotes. Não instala nada. |
+| `sudo apt upgrade` | Instala as atualizações, sem remover nem instalar pacotes novos. |
+| `sudo apt full-upgrade` | Igual ao anterior, mas também resolve dependências, instalando ou removendo o que for preciso. **Recomendado.** |
+| `sudo apt autoremove` | Remove dependências que ninguém mais usa. |
+
+Como conferir:
+
+```bash
+systemctl list-timers apt-daily.timer apt-daily-upgrade.timer   # próximas execuções
+apt-config dump | grep -E "APT::Periodic|Origins-Pattern"       # valores efetivos
+sudo unattended-upgrade --dry-run --debug                       # "origens permitidas"
+ls /var/log/unattended-upgrades/                                # histórico das execuções
+```
+
+Como desfazer:
+
+```bash
+sudo rm /etc/apt/apt.conf.d/20auto-upgrades              # desliga tudo
+sudo rm /etc/apt/apt.conf.d/52unattended-upgrades-local  # tira só o Chrome
+```
+
+Aprendizados:
+
+- **Instalar não ativa:** o pacote sozinho não cria o `20auto-upgrades`. Sem ele, nada roda.
+- **Arquivo separado:** o `50unattended-upgrades` pertence ao pacote e pode ser sobrescrito. Personalize num arquivo próprio.
+- **Padrão do Debian:** atualiza o arquivo principal da versão e as correções de segurança, sem reiniciar sozinho.
+- **Kernel novo:** só passa a valer depois de reiniciar. Se o arquivo `/var/run/reboot-required` existir, há reinício pendente.
+- **Repositórios externos:** ficam de fora por padrão. Cada um precisa de uma origem na lista.
+- **Hábito semanal:** o `sudo apt update && sudo apt full-upgrade` cobre o que o automático não pega.
+
+---
+
 ## Fases seguintes (proposta)
 
 | Fase | Tema | Itens |
 |---|---|---|
-| 2 | Base do sistema | Em andamento (ver acima) |
-| 3 | Segurança | Firewall (`ufw`), atualizações automáticas de segurança, criptografia, Secure Boot |
+| 2 | Base do sistema | Concluída (ver acima) |
+| 3 | Atualizações | Concluída (ver acima) |
 | 4 | Backup | Snapshots do sistema (Timeshift) e backup dos dados |
 | 5 | Notebook | Bateria e temperatura, GPU AMD, leitor de digital, teclas Fn |
 | 6 | Aplicativos | Flatpak e Flathub, comunicação, ferramentas de trabalho (navegador e VPN já feitos) |
@@ -191,6 +255,7 @@ Decisões: manter o btrfs (o disco veio vazio, então nada foi apagado) e montar
 - [x] Conferir a saúde (SMART). Aprovado.
 - [x] Montar de forma permanente pelo `/etc/fstab`, identificando o disco por **UUID**.
 - [x] Criar a estrutura de pastas e ajustar dono e permissões.
+- [ ] Confirmar que o disco monta sozinho depois de reiniciar.
 - [ ] Apontar para ele o que ocupa espaço, como a biblioteca de jogos (fase 6).
 - [ ] Incluí-lo no backup (fase 4). Um disco só não é backup.
 
@@ -256,7 +321,7 @@ Aprendizados:
 
 ## Decisões em aberto
 
-1. Há política de TI que exija criptografia de disco, antivírus, VPN ou software específico?
+1. Há política de TI que exija antivírus, VPN ou software específico?
 2. Quais ferramentas de trabalho são necessárias (banco de dados, modelagem, Office, videoconferência, acesso remoto)?
    Alguma só existe para Windows?
 3. Será preciso rodar Windows em máquina virtual para algum sistema legado?

@@ -48,7 +48,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 
 | Disco | Uso |
 |---|---|
-| SSD NVMe de 238 GB | Sistema: EFI (976 MB, vfat), raiz `/` (225 GB, ext4, sem criptografia) e swap (12 GB) |
+| SSD NVMe de 238 GB | Sistema: EFI (976 MB, vfat), raiz `/` (225 GB, ext4) e swap (12 GB) |
 | SSD SATA de 240 GB | Armazenamento extra (jogos, programas e arquivos). btrfs, montado em `/mnt/ssd` pelo `fstab` |
 
 `/home` fica dentro da raiz, sem partição separada.
@@ -73,15 +73,14 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Claude Code | instalado em `~/.local/bin` |
 | `git`, `gh` | instalados |
 | `btrfs-progs`, `smartmontools` | instalados |
-| `ufw`, `timeshift` | ausentes |
+| `unattended-upgrades` | instalado e ativo (Debian e Google Chrome) |
+| `timeshift` | ausente |
 | Flatpak, extensões do GNOME | ausentes |
 
 ## Decisões a tomar
 
-1. **Criptografia de disco (LUKS).** Em notebook, protege os dados em caso de perda ou furto.
-   Ativar depois da instalação exige reinstalar. Decidir antes de guardar dados importantes.
-2. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
-3. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
-4. **GPU AMD.** Conferir qual GPU o sistema usa e o efeito na bateria e na temperatura.
-5. **Leitor de digital.** Confirmar se é suportado pelo `fprintd` antes de depender dele.
-6. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.
+1. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
+2. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
+3. **GPU AMD.** Conferir qual GPU o sistema usa e o efeito na bateria e na temperatura.
+4. **Leitor de digital.** Confirmar se é suportado pelo `fprintd` antes de depender dele.
+5. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.
