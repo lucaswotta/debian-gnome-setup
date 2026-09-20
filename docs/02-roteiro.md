@@ -100,7 +100,8 @@ Aprendizados:
 
 - [x] **TRIM do SSD:** já vem ativo, com o `fstrim.timer` rodando toda semana.
 - [x] **Catálogo de firmware:** atualizado com `fwupd`. Nenhum componente tem atualização no LVFS.
-- [ ] **BIOS:** comparar a versão instalada com a mais recente no site de suporte da Lenovo.
+- [x] **BIOS:** é da época do lançamento (2020) e o notebook funciona muito bem com ela.
+  A atualização é opcional e não é necessária agora.
 - [~] **`contrib` e `non-free`:** adiados. Só entram quando um pacote exigir (fontes da Microsoft, alguns codecs).
 - [x] **Disco SATA extra:** verificado, mantido em btrfs e montado em `/mnt/ssd` (ver abaixo).
 
@@ -125,7 +126,8 @@ cat /sys/class/dmi/id/bios_version     # versão da BIOS instalada
 Aprendizados:
 
 - **Firmware:** o LVFS não tem todos os modelos. "Sem atualização" no `fwupd` não garante que a BIOS seja a última.
-- **Atualização de BIOS:** só com o notebook na tomada e sem desligar durante o processo.
+- **BIOS:** atualizar é opcional quando o equipamento funciona bem. Se decidir atualizar, siga o procedimento
+  oficial do fabricante, com o notebook na tomada e sem interromper o processo.
 - **Escada:** um repositório novo só entra quando há um pacote que precise dele.
 
 ---

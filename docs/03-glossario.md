@@ -5,7 +5,7 @@ conforme aparecem novos conceitos.
 
 | Termo | Explicação |
 |---|---|
-| **Distribuição (distro)** | Um "sabor" de Linux: kernel + programas + gerenciador de pacotes. O Debian é uma das mais antigas e é a base de outras, como Ubuntu e Mint. |
+| **Distribuição (distro)** | Um "sabor" de Linux: kernel + programas + gerenciador de pacotes. O Debian é uma das mais antigas e serve de base para outras. |
 | **Kernel** | O núcleo do sistema: conversa com o hardware. O Debian 13 usa o Linux 6.12. |
 | **Stable / testing / unstable** | Ramos do Debian. *Stable* (13 "trixie") é o que este guia usa: estável e conservador. |
 | **Nome-código (trixie)** | Nome de cada versão do Debian. Aparece nos repositórios. |

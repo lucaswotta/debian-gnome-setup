@@ -80,8 +80,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 
 1. **Criptografia de disco (LUKS).** Em notebook, protege os dados em caso de perda ou furto.
    Ativar depois da instalação exige reinstalar. Decidir antes de guardar dados importantes.
-2. **BIOS.** A do ThinkPad E14 Gen 1 é da época do lançamento (2020). Verificar atualizações
-   pelo `fwupd` ou pelo site de suporte da Lenovo.
+2. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
 3. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
 4. **GPU AMD.** Conferir qual GPU o sistema usa e o efeito na bateria e na temperatura.
 5. **Leitor de digital.** Confirmar se é suportado pelo `fprintd` antes de depender dele.
