@@ -12,6 +12,7 @@ Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas ex
 - [x] **Atalhos:** `Super+E` abre o Arquivos, `Super+D` mostra a área de trabalho e `Ctrl+Alt+T` abre o terminal.
 - [x] **Arquivos:** visualização em lista. Nas janelas de abrir e salvar, pastas antes dos arquivos.
 - [x] **Visual:** tema escuro e destaque verde, com a fonte Inter na interface e nos títulos das janelas e o cursor Bibata.
+- [x] **Ícones:** Papirus, pelo Debian, na variante escura, com as pastas em verde.
 - [x] **Extensões extras:** GPaste (histórico da área de transferência), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque).
 - [x] **Atalho do histórico:** `Super+V` abre o GPaste. A lista de notificações fica no `Super+M`.
 - [x] **Extensões carregadas:** as três ficam com o estado `ACTIVE` em uma sessão nova.
@@ -62,6 +63,10 @@ gsettings set org.gnome.GPaste show-history '<Super>v'
 gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
 gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+
+# 9. Ícones, pelo Debian
+sudo apt-get install -y papirus-icon-theme
+gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 ```
 
 Como conferir:
@@ -86,6 +91,7 @@ Observações:
 - **Atalho do GPaste:** a chave `show-history` é do tipo texto (`'<Super>v'`), e não lista. O GNOME já usa `Super+V` na lista de notificações (`toggle-message-tray`),
   então esse atalho é reduzido a `Super+M`. O `Super+N` fica de fora porque já foca a notificação ativa.
 - **Cursor nos Flatpaks:** aplicativos Flatpak não enxergam os cursores do sistema e mantêm o padrão, a menos que se libere a pasta de ícones para eles.
+- **Pastas verdes:** no Papirus as pastas são azuis por padrão. Uma variante de terceiros com pastas verdes (`papirus-icon-theme-green-folders-dark`, em `~/.local/share/icons/`) herda os ícones do pacote, então o `papirus-icon-theme` precisa continuar instalado.
 - **Terminal:** o `gnome-terminal` é o instalado. O `kgx` (Console) e o `ptyxis` não estão presentes.
 - **Visualização do Arquivos:** o Arquivos regrava `default-folder-viewer` ao ser usado. Se a lista voltar a ícones, repita o comando com o Arquivos fechado.
 - **Pastas primeiro:** o Nautilus 48 não tem chave para isso. A opção existe só nas janelas de abrir e salvar arquivos (GTK).

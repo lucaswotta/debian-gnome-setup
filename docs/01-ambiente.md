@@ -65,6 +65,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | GNOME (`gnome-core`), Ajustes (`gnome-tweaks`) e NetworkManager | Instalados | 0 |
 | Extensões do GNOME | AppIndicator, Dash to Dock, Caffeine, GPaste, Tiling Assistant e Blur my Shell, pelo Debian, e o Gerenciador de extensões para instalar outras | [6](fases/06-gnome.md) |
 | Fonte e cursor da interface | Inter e Bibata Modern Classic, pelo Debian | [6](fases/06-gnome.md) |
+| Ícones | Papirus, pelo Debian, com uma variante de pastas verdes na pasta do usuário | [6](fases/06-gnome.md) |
 | Terminal e shell | zsh (aberto pelo perfil do `gnome-terminal`), Starship, `eza`, `bat`, `fzf` e `fastfetch`, pelo Debian, e a FiraCode Nerd Font na pasta do usuário. Configuração em `dotfiles/` | [8](fases/08-terminal.md) |
 | `curl`, `wget`, `git` e `gh` | Instalados | [0](fases/00-base-minima.md) e [1](fases/01-git-e-github.md) |
 | `btrfs-progs` e `smartmontools` | Instalados | [2](fases/02-base-do-sistema.md) |
