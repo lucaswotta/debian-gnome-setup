@@ -90,7 +90,7 @@ git push -u origin main
 | `gh auth login` | Faz login no GitHub e cria a chave SSH. O `--web` autoriza pelo navegador. |
 | `gh api meta` | Lista as chaves oficiais do servidor do GitHub. Gravadas em `known_hosts`, evitam confirmar a chave "às cegas" na primeira conexão. |
 | `ssh -T git@github.com` | Testa a autenticação. A resposta esperada é `Hi USUARIO! You've successfully authenticated`. |
-| `git init` e `git remote add origin` | Iniciam o repositório local e apontam para o remoto. Usados no lugar de `git clone` porque a pasta já tinha conteúdo. |
+| `git init` e `git remote add origin` | Iniciam o repositório local e apontam para o remoto. Usados no lugar de `git clone` porque a pasta já tem conteúdo. |
 
 Como conferir:
 
@@ -113,9 +113,9 @@ Observações:
 ## Fase 2 - Base do sistema (concluída)
 
 - [x] **TRIM do SSD:** já vem ativo, com o `fstrim.timer` rodando toda semana.
-- [x] **Catálogo de firmware:** atualizado com `fwupd`. Nenhum componente tem atualização no LVFS.
-- [x] **BIOS:** é da época do lançamento (2020) e o notebook funciona muito bem com ela.
-  A atualização é opcional e não é necessária agora.
+- [x] **Catálogo de firmware:** atualizado com `fwupd`. `fwupdmgr get-updates` lista as atualizações disponíveis.
+- [x] **BIOS:** é a da época do lançamento do modelo, e o notebook funciona bem com ela.
+  A atualização é opcional.
 - [x] **`contrib`:** habilitado na fase 5, para as fontes da Microsoft. O `non-free` segue desativado até um pacote exigir.
 - [x] **Disco SATA extra:** verificado, mantido em btrfs e montado em `/mnt/ssd` (ver abaixo).
 
@@ -146,10 +146,10 @@ Observações:
 
 ### Disco SATA extra
 
-Decisões: manter o btrfs (o disco veio vazio, então nada foi apagado) e montar em `/mnt/ssd`.
+Decisões: manter o btrfs de origem, sem formatar, e montar em `/mnt/ssd`.
 
-- [x] Conferir o conteúdo. O disco estava vazio.
-- [x] Conferir a saúde (SMART). Aprovado.
+- [x] Conferir o conteúdo antes de reaproveitar o disco.
+- [x] Conferir a saúde (SMART).
 - [x] Montar de forma permanente pelo `/etc/fstab`, identificando o disco por **UUID**.
 - [x] Criar a estrutura de pastas e ajustar dono e permissões.
 - [x] Confirmar que o disco monta sozinho depois de reiniciar.
@@ -293,13 +293,12 @@ Observações:
 
 Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 
-- [x] **Energia e temperatura:** o `power-profiles-daemon` (perfil `balanced`) basta. Temperaturas de 38 a 50 °C, ventoinha desligada.
+- [x] **Energia e temperatura:** o `power-profiles-daemon` (perfil `balanced`) basta. Em uso leve, a temperatura fica baixa e a ventoinha desligada.
 - [x] **GPU AMD sob demanda:** testada com OpenGL e Vulkan. Dorme sozinha depois do uso.
 - [x] **Suspensão:** tela apaga em 30 min, suspende em 60 min. Fechar a tampa suspende na hora.
-- [x] **Limite de carga da bateria:** testado e depois desativado. O procedimento fica documentado como opcional.
+- [x] **Limite de carga da bateria:** opcional e desativado. O procedimento está documentado.
 - [x] **Teclas Fn:** funcionam.
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
-- [x] **Teste do limite:** partindo de 64%, a carga parou em 79%, que é 80% da capacidade atual da bateria.
 
 ```bash
 # GPU: ferramentas de teste
@@ -362,8 +361,8 @@ Observações:
   75% e 80%. A leitura em `sysfs` mostra `start=80 end=75`, invertida, mas no boot o kernel registra
   `start 75, stop 80` (`journalctl -k -b | grep "battery 1 registered"`). Os valores gravados estão certos e
   persistem depois de reiniciar. O limite não afeta o desempenho e reduz a autonomia por carga em cerca de 20%.
-  No teste, a carga parou em 79%, com o estado `Not charging` e potência de 0 W. A porcentagem é calculada sobre a capacidade
-  atual da bateria (38,66 Wh), então 30,75 Wh equivalem a 79,5%, e o painel arredonda para baixo.
+  Com o limite ligado, a carga para em cerca de 80% da capacidade atual da bateria, com o estado `Not charging` e potência de 0 W.
+  O painel calcula a porcentagem sobre a capacidade atual, e não sobre a de projeto, e arredonda para baixo, então mostra 79%.
 - **Equipamento cedido ou gerenciado por terceiros:** prefira deixar a bateria no comportamento de fábrica. O limite de carga é
   opcional e reversível. Depois de desligá-lo, a carga volta a passar de 80% e o firmware retoma os valores de fábrica.
 - **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
@@ -373,7 +372,7 @@ Observações:
 
 ### Erros do boot
 
-`journalctl -b -p err` lista os erros do boot atual. Neste notebook eram 11 linhas, de quatro causas, mais o relatório do Wi-Fi
+`journalctl -b -p err` lista os erros do boot atual. As linhas de erro deste notebook vêm de quatro causas, mais o relatório do Wi-Fi
 depois de cada suspensão.
 
 | Causa | Linhas | Situação |
@@ -384,7 +383,7 @@ depois de cada suspensão.
 | Mensagem do PAM no login (`gkr-pam: unable to locate daemon control file`) | 1 | Esperada, por desenho |
 | Relatório de falha do `iwlwifi` ao acordar da suspensão | cerca de 75 por suspensão | Bug conhecido do kernel 6.12. O firmware recarrega e a rede volta sozinha |
 
-Depois das correções, o esperado são 5 linhas fixas (4 do firmware e 1 do PAM), mais o relatório do Wi-Fi a cada suspensão.
+Com as correções, restam 5 linhas fixas (4 do firmware e 1 do PAM), mais o relatório do Wi-Fi a cada suspensão.
 
 ```bash
 # 1. Inicializações que terminam antes de o systemd criar o escopo (só para o usuário)
@@ -540,7 +539,7 @@ Observações:
   que exige aceitar o EULA delas.
 - **Docker e VPN:** uma VPN corporativa costuma rotear as faixas privadas inteiras (`10.0.0.0/8`, `172.16.0.0/12` e
   `192.168.0.0/16`), e o Docker usa `172.17.0.0/16` até `172.31.0.0/16` e `192.168.0.0/16`. Com a VPN ativa, um pacote para
-  `172.17.x.x` ia para o `docker0`, e não para a VPN. Confira com `ip route get 172.17.5.5`. A correção é fixar a rede do
+  `172.17.x.x` vai para o `docker0`, e não para a VPN. Confira com `ip route get 172.17.5.5`. A correção é fixar a rede do
   Docker numa faixa livre (`bip` e `default-address-pools`). Escolha a faixa comparando com as rotas reais da VPN.
 - **Grupo `docker`:** equivale a ser administrador, porque quem controla o Docker pode montar o disco inteiro num contêiner.
   O modo *rootless* é mais seguro, mas limita a rede dos contêineres.
@@ -622,7 +621,7 @@ Observações:
   sem `UV_NO_MODIFY_PATH=1`, e o do SDKMAN sempre acrescenta um bloco ao `~/.bashrc`. O do fnm não confere checksum.
 - **TypeScript global:** fica dentro da versão do Node. Ao instalar outro Node, reinstale com `npm install -g typescript@7`,
   ou use o TypeScript de cada projeto.
-- **Node 24 LTS:** o Node 26 passa a ser LTS em 28/10/2026. Depois disso, `fnm install 26` e `fnm default 26`.
+- **Node 24 LTS:** quando o Node 26 virar LTS, instale-o com `fnm install 26` e `fnm default 26`.
 - **Go:** o `GOTOOLCHAIN=auto` baixa sozinho o toolchain que o `go.mod` de um projeto pedir.
 - **Python:** não use `pip install` no Python do sistema, que é protegido (PEP 668). Use `uv venv`, `uv run` ou `pipx`.
 - **SDKMAN:** o instalador sempre acrescenta um bloco ao `~/.bashrc`, que deve ficar no **fim** do arquivo. Só confere a integridade do zip,
@@ -716,7 +715,7 @@ Observações:
 - **AnyDesk:** o pacote instala e habilita um serviço que escuta portas de entrada. Ver "AnyDesk sob demanda" abaixo.
 - **DBeaver:** instala em `/usr/share/dbeaver-ce`, com um Java embutido (OpenJDK 25), e independe do SDKMAN.
 - **Flatpak:** cada aplicativo pede uma versão diferente da base (24.08, 25.08 e 26.08), e cada uma ocupa cerca de 700 MB, além do Mesa.
-  O total do Flatpak ficou em 5,2 GB. O Postman baixa o binário do fabricante na instalação (*extra-data*).
+  Os três aplicativos, com as bases, ocupam cerca de 5 GB. O Postman baixa o binário do fabricante na instalação (*extra-data*).
 - **Permissões dos Flatpak:** o SoapUI só acessa Documentos. O Postman acessa a pasta pessoal inteira. O Discord acessa Downloads e
   **todos os dispositivos** (câmera e microfone). Dá para restringir com `flatpak override`.
 - **Docker fora das atualizações automáticas:** os quatro repositórios externos restantes (Chrome, VS Code, AnyDesk e DBeaver) entram;
@@ -753,7 +752,7 @@ Como desfazer: `sudo systemctl enable --now anydesk` e `rm ~/.config/autostart/a
 Observações:
 
 - O registro do aplicativo mostra que ele se registra na rede do AnyDesk e se encerra sozinho ao fechar. A conexão de saída depende de uma
-  máquina de destino e não foi exercitada neste guia.
+  máquina de destino e não foi validada neste guia.
 - Se algo exigir o serviço do sistema (acesso sem supervisão, por exemplo), reative-o com o `enable --now` acima.
 
 #### Serviços e portas em escuta
@@ -830,7 +829,7 @@ Observações:
 | Escritório | LibreOffice, configurado para se parecer com o Office | Debian |
 | Captura de tela | Recurso nativo do GNOME | GNOME |
 
-O Debian 13 traz versões antigas de algumas linguagens (Node 20 e Go 1.24 já saíram de suporte), por isso o lote 2 usa
+O Debian 13 traz versões antigas de algumas linguagens (o Node 20 e o Go 1.24, por exemplo, deixam de receber suporte do projeto de origem), por isso o lote 2 usa
 gerenciadores de versão na pasta pessoal: `fnm` para Node, SDKMAN para Java, `uv` para Python e o pacote oficial do Go.
 O Python do sistema fica intocado.
 

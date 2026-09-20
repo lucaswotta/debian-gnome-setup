@@ -57,7 +57,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 
 - **Energia:** `power-profiles-daemon` (perfil `balanced`), usado pelo menu do GNOME. O `TLP` não é usado, porque conflita com ele. O `thermald` não roda em ThinkPads com controle térmico pelo firmware.
 - **Suspensão:** a tela apaga após 30 minutos de inatividade e o sistema suspende após 60 minutos. Fechar a tampa suspende na hora.
-- **Bateria:** sem limite de carga. O recurso foi testado e desativado (ver a fase 4).
+- **Bateria:** sem limite de carga. O recurso é opcional (ver a fase 4).
 - **GPU:** a Intel atende o uso comum. A AMD fica suspensa e é acionada sob demanda.
 - **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek`, `firmware-sof-signed`.
 - **Microcódigo:** `intel-microcode`.
@@ -92,6 +92,6 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 
 ## Pontos em aberto
 
-1. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
+1. **BIOS.** É a da época do lançamento do modelo. O notebook funciona bem, então a atualização é opcional.
 2. **Repositório `non-free`.** Desativado. Habilite só se um pacote exigir.
 3. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.
