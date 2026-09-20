@@ -1092,6 +1092,7 @@ Uso:
 
 - **Arquivos:** `Ctrl+L`, digite `sftp://<usuario>@<ip-do-servidor>/` e confirme. Com `Ctrl+D`, o servidor vai para a barra lateral e abre com um clique.
   O aplicativo também guarda os servidores recentes em *Outros locais > Conectar ao servidor*.
+- **Favoritos:** o Chrome usa `google-chrome.desktop`. A entrada `com.google.Chrome.desktop` é oculta (`NoDisplay=true`) e aponta para o mesmo programa.
 - **Terminal:** `ssh <usuario>@<ip-do-servidor>`.
 
 Como conferir:
@@ -1192,8 +1193,8 @@ Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas ex
 - [x] **Atalhos:** `Super+E` abre o Arquivos, `Super+D` mostra a área de trabalho e `Ctrl+Alt+T` abre o terminal.
 - [x] **Arquivos:** visualização em lista. Nas janelas de abrir e salvar, pastas antes dos arquivos.
 - [x] **Visual:** mantido o tema escuro, o destaque verde e a fonte Cantarell.
-- [ ] Conferir as extensões carregadas, os ícones da bandeja e a barra de aplicativos (exige uma sessão nova).
-- [ ] Favoritos da barra de aplicativos.
+- [x] **Extensões carregadas:** as três ficam com o estado `ACTIVE` em uma sessão nova.
+- [x] **Favoritos da barra de aplicativos:** Chrome, Arquivos, Terminal, VS Code, DBeaver, Postman e Discord.
 
 ```bash
 # 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
@@ -1218,7 +1219,11 @@ gsettings set $S name 'Terminal'
 gsettings set $S command 'gnome-terminal'
 gsettings set $S binding '<Primary><Alt>t'
 
-# 5. Arquivos
+# 5. Favoritos da barra de aplicativos
+gsettings set org.gnome.shell favorite-apps \
+  "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'code.desktop', 'dbeaver-ce.desktop', 'com.getpostman.Postman.desktop', 'com.discordapp.Discord.desktop']"
+
+# 6. Arquivos
 gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
 gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
@@ -1229,6 +1234,7 @@ Como conferir:
 ```bash
 gsettings get org.gnome.shell enabled-extensions
 gnome-extensions list --enabled                    # depois de uma sessão nova
+gsettings get org.gnome.shell favorite-apps
 gsettings get org.gnome.desktop.wm.preferences button-layout
 gsettings list-recursively | grep -i '<Super>e'    # o atalho não pode aparecer em outra ação
 ```
