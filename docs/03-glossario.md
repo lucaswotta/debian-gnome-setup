@@ -30,6 +30,7 @@ Termos usados na documentação, em ordem alfabética.
 | **GNOME** | Ambiente de área de trabalho: janelas, menus e painel. |
 | **GPU híbrida (PRIME)** | Notebook com duas placas de vídeo: uma integrada, econômica, e uma dedicada, mais potente, usada sob demanda. |
 | **Grupo (`docker`, `wireshark`)** | Conjunto de usuários com uma permissão. Entrar num grupo só vale a partir do próximo login. O grupo `docker` equivale a ser administrador. |
+| **`gsettings`** | Comando que lê e altera as configurações do GNOME, as mesmas dos aplicativos de Ajustes. `gsettings reset` volta ao padrão. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
 | **Limites do texto** | Linhas que o Writer desenha nos cantos da folha para mostrar a área das margens. Não são impressas. |
@@ -62,6 +63,7 @@ Termos usados na documentação, em ordem alfabética.
 | **SSH** | Protocolo de acesso seguro. Aqui, usado com chaves para autenticar no GitHub sem senha. |
 | **Stable / testing / unstable** | Ramos do Debian. O *stable* (13 "trixie") é o que este guia usa: estável e conservador. |
 | **`sudo`** | Executa um comando como administrador (root). |
+| **Super (tecla)** | Nome da tecla Windows no GNOME. `Super+E`, por exemplo, é a tecla Windows com a letra E. |
 | **Suspensão** | Estado de baixo consumo que guarda o trabalho na memória e desliga o restante. |
 | **Swap** | Área do disco usada como memória extra quando a RAM enche. |
 | **TRIM** | Comando que informa ao SSD quais blocos estão livres, mantendo o desempenho e a vida útil. |

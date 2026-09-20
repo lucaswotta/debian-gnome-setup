@@ -18,8 +18,8 @@ Regras:
 | 2 | Base do sistema, com disco SATA extra | Concluída |
 | 3 | Atualizações | Concluída |
 | 4 | Notebook | Concluída |
-| 5 | Aplicativos, com VPN | Em andamento |
-| 6 | GNOME | Planejada |
+| 5 | Aplicativos, com VPN | Concluída |
+| 6 | GNOME | Em andamento |
 | 7 | Backup | Planejada |
 | 8 | Automação | Planejada |
 
@@ -444,7 +444,7 @@ Observações:
 
 ---
 
-## Fase 5 - Aplicativos (em andamento)
+## Fase 5 - Aplicativos (concluída)
 
 Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote do Debian, recurso nativo do GNOME, Flatpak.
 
@@ -456,7 +456,7 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **Lote 3:** VS Code, DBeaver e AnyDesk (repositórios dos fabricantes), Postman, SoapUI e Discord (Flatpak).
 - [x] **LibreOffice:** configurado para se parecer com o Office.
 - [x] **Lote 4:** VLC, utilitários de diagnóstico e de rede (Debian) e Steam (Flatpak).
-- [ ] Outros aplicativos de multimídia (GIMP, OBS Studio, Inkscape), sob demanda.
+- Aplicativos adicionais, como GIMP, OBS Studio e Inkscape, entram sob demanda, pelo Debian ou pelo Flatpak.
 
 ### Lote 1: base de desenvolvimento, fontes e Docker
 
@@ -1181,10 +1181,75 @@ O Python do sistema fica intocado.
 
 ---
 
-## Fases 6 a 8 (planejadas)
+## Fase 6 - GNOME (em andamento)
+
+Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas extensões e sem trocar o visual padrão.
+
+- [x] **Extensões:** AppIndicator (ícones de bandeja), Dash to Dock (barra de aplicativos) e Caffeine (impede a suspensão), pelos pacotes do Debian.
+- [x] **Janelas:** botões de minimizar e maximizar ao lado do fechar.
+- [x] **Relógio:** bateria em porcentagem e dia da semana.
+- [x] **Atalhos:** `Super+E` abre o Arquivos, `Super+D` mostra a área de trabalho e `Ctrl+Alt+T` abre o terminal.
+- [x] **Arquivos:** visualização em lista. Nas janelas de abrir e salvar, pastas antes dos arquivos.
+- [x] **Visual:** mantido o tema escuro, o destaque verde e a fonte Cantarell.
+- [ ] Conferir as extensões carregadas, os ícones da bandeja e a barra de aplicativos (exige uma sessão nova).
+- [ ] Favoritos da barra de aplicativos.
+
+```bash
+# 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
+sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine
+
+# 2. Ligar as três (vale a partir da próxima sessão)
+gsettings set org.gnome.shell enabled-extensions \
+  "['ubuntu-appindicators@ubuntu.com', 'dash-to-dock@micxgx.gmail.com', 'caffeine@patapon.info']"
+
+# 3. Janelas e relógio
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+gsettings set org.gnome.desktop.interface clock-show-weekday true
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+
+# 4. Atalhos (o GNOME 48 não traz atalho de terminal: é um atalho personalizado)
+gsettings set org.gnome.settings-daemon.plugins.media-keys home "['<Super>e']"
+gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>d']"
+K=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/
+gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['$K']"
+S="org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$K"
+gsettings set $S name 'Terminal'
+gsettings set $S command 'gnome-terminal'
+gsettings set $S binding '<Primary><Alt>t'
+
+# 5. Arquivos
+gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
+gsettings set org.gtk.Settings.FileChooser sort-directories-first true
+gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+```
+
+Como conferir:
+
+```bash
+gsettings get org.gnome.shell enabled-extensions
+gnome-extensions list --enabled                    # depois de uma sessão nova
+gsettings get org.gnome.desktop.wm.preferences button-layout
+gsettings list-recursively | grep -i '<Super>e'    # o atalho não pode aparecer em outra ação
+```
+
+Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar as extensões e
+`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine` para removê-las.
+
+Observações:
+
+- **Extensões no Wayland:** o GNOME só carrega extensões novas em uma sessão nova. Saia e entre de novo.
+- **Pacotes do Debian:** as três declaram suporte ao GNOME 48. No Debian, o AppIndicator se chama `ubuntu-appindicators@ubuntu.com`.
+- **Dash to Dock:** os padrões já lembram a barra do Windows (embaixo, clique alterna as janelas do aplicativo, ícone da lixeira e dos discos).
+  A barra se esconde quando uma janela a cobre (`intellihide`). Para deixá-la sempre visível: `gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true`.
+- **Terminal:** o `gnome-terminal` é o instalado. O `kgx` (Console) e o `ptyxis` não estão presentes.
+- **Pastas primeiro:** o Nautilus 48 não tem chave para isso. A opção existe só nas janelas de abrir e salvar arquivos (GTK).
+- **Touchpad:** toque para clicar, rolagem natural e rolagem com dois dedos já vêm ligados, e o clique é por número de dedos.
+
+---
+
+## Fases 7 e 8 (planejadas)
 
 | Fase | Tema | Escopo |
 |---|---|---|
-| 6 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
 | 7 | Backup | Snapshot do sistema (Timeshift), feito ao terminar a configuração base |
 | 8 | Automação | Transformar o que foi validado em `scripts/` |
