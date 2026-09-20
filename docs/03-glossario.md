@@ -5,6 +5,7 @@ Termos usados na documentação, em ordem alfabética.
 | Termo | Explicação |
 |---|---|
 | **`.sources` (deb822)** | Formato moderno dos arquivos de repositório do APT, com um campo por linha e `Signed-By` para limitar cada chave ao seu repositório. |
+| **Alias** | Apelido para um comando ou uma sequência de comandos, definido no arquivo de configuração do shell. Exemplo: `gs` para `git status -sb`. |
 | **APT** | Gerenciador de pacotes do Debian. Instala, atualiza e remove programas a partir dos repositórios. |
 | **Branch `main`** | Ramo principal de um repositório Git. Neste projeto, todo o trabalho vai direto nele. |
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
@@ -15,6 +16,7 @@ Termos usados na documentação, em ordem alfabética.
 | **`cron`** | Agendador de tarefas do sistema. O Timeshift usa um trabalho do `cron` para conferir, de hora em hora, se um snapshot está na hora. |
 | **Distribuição (distro)** | Um "sabor" de Linux: kernel, programas e gerenciador de pacotes. O Debian é uma das mais antigas e serve de base para outras. |
 | **Docker (Engine, Compose, Buildx)** | Motor de contêineres. O Compose descreve vários contêineres num arquivo, e o Buildx constrói imagens. |
+| **Dotfiles** | Arquivos de configuração pessoais, geralmente com nome iniciado por ponto, como `~/.zshrc`. Neste projeto, ficam copiados em `dotfiles/`. |
 | **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
 | **ext4 / btrfs** | Sistemas de arquivos. O ext4 é o clássico e estável. O btrfs oferece *snapshots*, compressão e verificação de dados. |
 | **Extensão do GNOME** | Complemento que altera ou acrescenta funções ao GNOME. |
@@ -40,17 +42,20 @@ Termos usados na documentação, em ordem alfabética.
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
 | **Modelo (*template*) padrão** | Documento-base que o LibreOffice usa em *Arquivo > Novo*. Define fonte, espaçamento e página dos documentos novos. |
 | **Montagem (*mount*)** | Ligar um disco ou partição a uma pasta do sistema. Enquanto não é montado, o disco não é acessível. |
+| **Nerd Font** | Fonte com milhares de ícones extras (git, pastas, linguagens) que os prompts usam. Sem ela, os ícones aparecem como quadrados. |
 | **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |
 | **Nome-código (trixie)** | Nome de cada versão do Debian. Aparece nos arquivos de repositório. |
 | **OOXML** | Formato dos arquivos do Office (`.docx`, `.xlsx` e `.pptx`). O LibreOffice lê e grava esses formatos. |
 | **Pacote / `.deb`** | Programa empacotado para o Debian. O instalador do Chrome para Debian, por exemplo, é um `.deb`. |
 | **Pacote de transição** | Pacote vazio que existe só para levar ao pacote com o novo nome. O `dnsutils`, por exemplo, instala o `bind9-dnsutils`. |
+| **Paleta ANSI** | As 16 cores que o terminal define, 8 normais e 8 brilhantes. Os programas pedem a cor pelo número, e o tema do terminal decide o tom exato. |
 | **Paleta de cores (`.soc`)** | Arquivo com as cores oferecidas nos seletores do LibreOffice. Paletas próprias ficam em `~/.config/libreoffice/4/user/config/`. |
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. Programas instalados só para o usuário costumam ficar em `~/.local/bin`, que precisa estar no `PATH`. |
 | **Perfil do LibreOffice** | Pasta `~/.config/libreoffice/4/user` com as preferências do usuário. O `registrymodifications.xcu` guarda as mudanças em relação ao padrão. |
 | **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **PPK** | Formato de chave privada do PuTTY e do WinSCP. O Linux usa o formato do OpenSSH, e o `puttygen` converte de um para o outro. |
+| **Prompt** | Linha em que o shell espera um comando. Pode mostrar a pasta, a branch do git e outras informações. |
 | **Proton** | Camada de compatibilidade da Steam que roda jogos de Windows no Linux. |
 | **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. O `git push` envia os commits para ele. |
 | **Repositório (APT)** | Servidor com pacotes, definido em `/etc/apt/sources.list` e `/etc/apt/sources.list.d/`. Não confundir com o repositório Git. |
@@ -60,11 +65,13 @@ Termos usados na documentação, em ordem alfabética.
 | **Sandbox (Flatpak)** | Isolamento que limita o que um aplicativo pode acessar (arquivos, dispositivos, rede). As permissões de cada Flatpak são visíveis e ajustáveis. |
 | **Secure Boot** | Recurso do UEFI que só permite iniciar sistemas assinados. |
 | **SFTP** | Transferência de arquivos por SSH. O aplicativo Arquivos do GNOME abre servidores com `sftp://usuario@endereco/`. |
+| **Shell (bash e zsh)** | Programa que lê os comandos digitados no terminal. O bash é o padrão do Debian. O zsh oferece sugestões e um completar mais completo. |
 | **Slide mestre** | Slide-modelo do Impress que define posição, fonte e cor do título, do texto e do rodapé de todos os slides. |
 | **SMART** | Autodiagnóstico de discos. Mostra saúde, horas de uso, desgaste e erros. Lido com `smartctl`. |
 | **Snapshot (Timeshift)** | Cópia do sistema em um momento. Serve para voltar a um estado anterior. Os arquivos iguais entre cópias são compartilhados, então cada nova cópia ocupa pouco. |
 | **SSH** | Protocolo de acesso remoto seguro. Neste guia, autentica no GitHub e nos servidores com chaves, no lugar de senhas. |
 | **Stable / testing / unstable** | Ramos do Debian. O *stable* (13 "trixie") é o que este guia usa: estável e conservador. |
+| **Starship** | Programa que desenha o prompt, em qualquer shell, a partir de um arquivo de configuração (`~/.config/starship.toml`). |
 | **`sudo`** | Executa um comando como administrador (root). |
 | **Super (tecla)** | Nome da tecla Windows no GNOME. `Super+E`, por exemplo, é a tecla Windows com a letra E. |
 | **Suspensão** | Estado de baixo consumo que guarda o trabalho na memória e desliga o restante. |

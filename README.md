@@ -20,6 +20,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 | Escritório | LibreOffice com a aparência e os padrões do Microsoft Office |
 | Rede | VPN pelo menu do GNOME e acesso a servidores pelo aplicativo Arquivos |
 | GNOME | Extensões, atalhos e barra de aplicativos no estilo do Windows |
+| Terminal | zsh com sugestões, prompt em duas linhas, fonte com ícones e paleta própria |
 | Segurança dos dados | Snapshots do sistema com o Timeshift |
 
 ## Como usar
@@ -32,7 +33,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 
 ## Estado atual
 
-Fases 0 a 7 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME e backup.
+Fases 0 a 8 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME, backup e terminal.
 
 ## Documentos
 
@@ -41,6 +42,7 @@ Fases 0 a 7 concluídas: base, git e GitHub, sistema, atualizações, notebook, 
 | [docs/01-ambiente.md](docs/01-ambiente.md) | A distribuição, o notebook de referência e o que está instalado |
 | [docs/02-roteiro.md](docs/02-roteiro.md) | O passo a passo em fases, com o status e o escopo de cada uma |
 | [docs/03-glossario.md](docs/03-glossario.md) | Termos de Debian e Linux explicados de forma simples |
+| [dotfiles/](dotfiles/) | Arquivos de configuração do zsh e do Starship |
 
 ## Estrutura
 
@@ -50,6 +52,7 @@ debian-gnome-setup/
 ├── CLAUDE.md          instruções para o Claude Code ao trabalhar neste repositório
 ├── LICENSE            licença dos comandos e trechos de código (MIT)
 ├── LICENSE-DOCS.txt   licença dos textos (CC BY 4.0)
+├── dotfiles/          configuração do terminal: zshrc e starship.toml
 └── docs/
     ├── 01-ambiente.md
     ├── 02-roteiro.md
@@ -59,7 +62,7 @@ debian-gnome-setup/
 
 ## Como replicar em outra máquina
 
-O repositório não traz scripts, de propósito: é o registro do que foi feito e do motivo. Para repetir o processo em outro equipamento, peça a um assistente de IA, como o Claude Code, que leia os arquivos de `docs/`, adapte os passos ao seu hardware e execute as fases em ordem. Confirme cada comando com `sudo` antes de ele rodar.
+O repositório não traz scripts, de propósito: é o registro do que foi feito e do motivo. Os arquivos de configuração do terminal estão em `dotfiles/`. Para repetir o processo em outro equipamento, peça a um assistente de IA, como o Claude Code, que leia os arquivos de `docs/`, adapte os passos ao seu hardware e execute as fases em ordem. Confirme cada comando com `sudo` antes de ele rodar.
 
 ## Convenções
 

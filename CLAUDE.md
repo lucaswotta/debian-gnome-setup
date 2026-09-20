@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Este repositório documenta a instalação e a configuração do Debian 13 (GNOME) em um
-ThinkPad E14 Gen 1. Contém **documentação** (`docs/`). Não há scripts: o repositório registra o que foi feito e o motivo.
+ThinkPad E14 Gen 1. Contém **documentação** (`docs/`) e arquivos de configuração (`dotfiles/`). Não há scripts: o repositório registra o que foi feito e o motivo.
 O repositório é **público**.
 
 ## Estrutura
@@ -11,6 +11,7 @@ O repositório é **público**.
 - `docs/02-roteiro.md`: índice das fases, com status e escopo.
 - `docs/fases/`: um arquivo por fase (`NN-nome.md`), com os comandos e as verificações.
 - `docs/03-glossario.md`: termos em ordem alfabética.
+- `dotfiles/`: cópias dos arquivos de configuração do terminal (`zshrc` e `starship.toml`). Sem dado pessoal, e iguais aos que estão em uso.
 - `LICENSE` (MIT, para os comandos) e `LICENSE-DOCS.txt` (CC BY 4.0, para os textos).
 
 ## Princípios
