@@ -45,13 +45,13 @@ Termos usados na documentação, em ordem alfabética.
 | **OOXML** | Formato dos arquivos do Office (`.docx`, `.xlsx` e `.pptx`). O LibreOffice lê e grava esses formatos. |
 | **Pacote / `.deb`** | Programa empacotado para o Debian. O instalador do Chrome para Debian, por exemplo, é um `.deb`. |
 | **Pacote de transição** | Pacote vazio que existe só para levar ao pacote com o novo nome. O `dnsutils`, por exemplo, instala o `bind9-dnsutils`. |
-| **`PATH`** | Lista de pastas onde o terminal procura comandos. O Claude Code fica em `~/.local/bin`, que foi adicionada ao `PATH`. |
 | **Paleta de cores (`.soc`)** | Arquivo com as cores oferecidas nos seletores do LibreOffice. Paletas próprias ficam em `~/.config/libreoffice/4/user/config/`. |
+| **`PATH`** | Lista de pastas onde o terminal procura comandos. Programas instalados só para o usuário costumam ficar em `~/.local/bin`, que precisa estar no `PATH`. |
 | **Perfil do LibreOffice** | Pasta `~/.config/libreoffice/4/user` com as preferências do usuário. O `registrymodifications.xcu` guarda as mudanças em relação ao padrão. |
 | **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
+| **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **PPK** | Formato de chave privada do PuTTY e do WinSCP. O Linux usa o formato do OpenSSH, e o `puttygen` converte de um para o outro. |
 | **Proton** | Camada de compatibilidade da Steam que roda jogos de Windows no Linux. |
-| **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. O `git push` envia os commits para ele. |
 | **Repositório (APT)** | Servidor com pacotes, definido em `/etc/apt/sources.list` e `/etc/apt/sources.list.d/`. Não confundir com o repositório Git. |
 | **Repositório do fabricante** | Repositório APT mantido pelo próprio autor do programa, fora do Debian. Exige adicionar a chave do fabricante com `Signed-By`. |
@@ -63,7 +63,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Slide mestre** | Slide-modelo do Impress que define posição, fonte e cor do título, do texto e do rodapé de todos os slides. |
 | **SMART** | Autodiagnóstico de discos. Mostra saúde, horas de uso, desgaste e erros. Lido com `smartctl`. |
 | **Snapshot (Timeshift)** | Cópia do sistema em um momento. Serve para voltar a um estado anterior. Os arquivos iguais entre cópias são compartilhados, então cada nova cópia ocupa pouco. |
-| **SSH** | Protocolo de acesso seguro. Aqui, usado com chaves para autenticar no GitHub sem senha. |
+| **SSH** | Protocolo de acesso remoto seguro. Neste guia, autentica no GitHub e nos servidores com chaves, no lugar de senhas. |
 | **Stable / testing / unstable** | Ramos do Debian. O *stable* (13 "trixie") é o que este guia usa: estável e conservador. |
 | **`sudo`** | Executa um comando como administrador (root). |
 | **Super (tecla)** | Nome da tecla Windows no GNOME. `Super+E`, por exemplo, é a tecla Windows com a letra E. |

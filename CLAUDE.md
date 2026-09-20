@@ -1,8 +1,17 @@
 # CLAUDE.md
 
 Este repositório documenta a instalação e a configuração do Debian 13 (GNOME) em um
-ThinkPad E14 Gen 1. Contém **documentação** (`docs/`) e, no futuro, **scripts de shell** (`scripts/`).
+ThinkPad E14 Gen 1. Contém **documentação** (`docs/`) e **scripts de shell** (`scripts/`).
 O repositório é **público**.
+
+## Estrutura
+
+- `README.md`: apresentação, público, como usar e estado das fases.
+- `docs/01-ambiente.md`: sistema, hardware de referência e software instalado.
+- `docs/02-roteiro.md`: índice das fases, com status e escopo.
+- `docs/fases/`: um arquivo por fase (`NN-nome.md`), com os comandos e as verificações.
+- `docs/03-glossario.md`: termos em ordem alfabética.
+- `scripts/`: um script por fase, numerado.
 
 ## Princípios
 
@@ -26,10 +35,13 @@ O repositório é **público**.
 ## Documentação (`docs/`)
 
 - Português do Brasil, frases curtas e diretas, sem primeira pessoa.
-- Cada passo traz: o comando, o que ele faz e como conferir o resultado.
+- Cada passo traz: o comando, o que ele faz, como conferir o resultado e como desfazer.
+- Cada fase abre com o cabeçalho padrão: título, **Status**, **Escopo** (geral, modelo de referência, perfil de uso ou ambiente), navegação e objetivo.
 - Só registre como executado o que foi de fato executado. O restante leva a marca *(proposta)*.
-- Atualize o status em `docs/02-roteiro.md` na mesma mudança que altera o sistema.
-- Termo novo entra em `docs/03-glossario.md`.
+- Texto atemporal: sem datas, sem horas, sem medidas de um momento e sem relato de tentativa ou de erro. Registre só o que serve de referência permanente.
+- Atualize o status no arquivo da fase e em `docs/02-roteiro.md` na mesma mudança que altera o sistema.
+- Termo novo entra em `docs/03-glossario.md`, em ordem alfabética.
+- Ao mudar a estrutura, confira os links internos entre os arquivos.
 
 ## Scripts (`scripts/`)
 
@@ -37,12 +49,13 @@ O repositório é **público**.
 - Um script por fase, numerado (`01-git.sh`), com `#!/usr/bin/env bash` e `set -euo pipefail`.
 - Idempotente (rodar duas vezes dá o mesmo resultado) e sem perguntas interativas.
 - Sem usuário ou caminho fixo: use `$HOME` e `$USER`.
+- Dados do usuário (identidade, chaves, servidores, UUIDs) entram como parâmetro ou variável de ambiente, nunca no arquivo.
 - `shellcheck` sem avisos.
 
 ## Privacidade (repositório público)
 
 - Nunca versione: senhas, tokens, chaves, números de série, UUIDs, MACs, e-mails pessoais,
-  nome de empresa ou cargo, nome de usuário local.
+  nome de empresa ou cargo, nome de usuário local, nome da máquina e endereços de servidores.
 - Antes de cada commit, revise `git diff --staged`.
 - Commits usam o e-mail `noreply` do GitHub, já configurado.
 
@@ -56,7 +69,7 @@ O repositório é **público**.
 ## Definition of Done
 
 - O comando ou a verificação rodou e a saída foi conferida.
-- Docs e roteiro estão atualizados.
+- Docs, roteiro e fase estão atualizados.
 - Há como desfazer, e está documentado.
 - `shellcheck` passa, se houver script.
 - `git diff --staged` não tem segredo nem dado pessoal.
@@ -64,4 +77,4 @@ O repositório é **público**.
 
 ## Pendências
 
-Marque o que ficou para depois, com o motivo: `# TODO(fase 6): revisar depois de configurar as extensões`.
+Marque o que ficou para depois, com o motivo: `# TODO(fase 8): parametrizar o disco de destino`.

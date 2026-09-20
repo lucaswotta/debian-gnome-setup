@@ -1,6 +1,6 @@
 # 01 - Ambiente
 
-Descrição do sistema e do notebook usados como referência neste guia, no estado atual.
+Sistema e notebook usados como referência neste guia. Se o seu hardware ou a sua versão forem diferentes, adapte os passos das fases com escopo **Modelo de referência** (ver o [roteiro](02-roteiro.md)).
 
 ## Sistema
 
@@ -15,19 +15,11 @@ Descrição do sistema e do notebook usados como referência neste guia, no esta
 | Idioma e fuso | pt_BR.UTF-8, America/Sao_Paulo (hora sincronizada por NTP) |
 | Teclado | ABNT2 |
 
-**Debian *stable*:** os pacotes são testados por muito tempo e quase não mudam durante a vida
-da versão, exceto correções de segurança. Os programas não são os mais novos, mas o sistema
-é estável. Para uma máquina de trabalho, é uma boa troca.
-
-**trixie:** nome-código da versão 13. Aparece nos arquivos de repositório do APT.
-
-**13.7:** *point release*, um conjunto acumulado de correções dentro da mesma versão.
-
-**Wayland:** sistema de exibição moderno, padrão no GNOME. Alguns programas antigos, como
-compartilhamento de tela e acesso remoto, podem se comportar de forma diferente do X11.
-
-**Repositórios APT** (`/etc/apt/sources.list.d/`, formato `.sources`): `trixie`, `trixie-updates` e `trixie-security`,
-com os componentes `main contrib non-free-firmware`. O `non-free` está desativado. Também há os repositórios do Google Chrome, do Docker e dos fabricantes do VS Code, do AnyDesk e do DBeaver.
+- **Debian *stable*:** os pacotes são testados por muito tempo e quase não mudam durante a vida da versão, exceto por correções de segurança. Os programas não são os mais novos, mas o sistema é estável, o que favorece uma máquina de trabalho.
+- **trixie:** nome-código da versão 13. Aparece nos arquivos de repositório do APT.
+- **13.7:** *point release*, um conjunto acumulado de correções dentro da mesma versão.
+- **Wayland:** sistema de exibição moderno, padrão no GNOME. Alguns programas antigos, como compartilhamento de tela e acesso remoto, podem se comportar de forma diferente do X11.
+- **Repositórios APT** (`/etc/apt/sources.list.d/`, formato `.sources`): `trixie`, `trixie-updates` e `trixie-security`, com os componentes `main contrib non-free-firmware`. O `non-free` fica desativado. Há também os repositórios do Google Chrome, do Docker e dos fabricantes do VS Code, do AnyDesk e do DBeaver.
 
 ## Notebook
 
@@ -48,8 +40,8 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 
 | Disco | Uso |
 |---|---|
-| SSD NVMe de 238 GB | Sistema: EFI (976 MB, vfat), raiz `/` (225 GB, ext4) e swap (12 GB) |
-| SSD SATA de 240 GB | Armazenamento extra (jogos, programas e arquivos). btrfs, montado em `/mnt/ssd` pelo `fstab` |
+| SSD NVMe de 238 GB | Sistema: EFI (976 MB, `vfat`), raiz `/` (225 GB, `ext4`) e swap (12 GB) |
+| SSD SATA de 240 GB | Armazenamento extra: jogos, arquivos e os snapshots do backup. `btrfs`, montado em `/mnt/ssd` pelo `fstab` |
 
 `/home` fica dentro da raiz, sem partição separada.
 
@@ -57,45 +49,60 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 
 - **Energia:** `power-profiles-daemon` (perfil `balanced`), usado pelo menu do GNOME. O `TLP` não é usado, porque conflita com ele. O `thermald` não roda em ThinkPads com controle térmico pelo firmware.
 - **Suspensão:** a tela apaga após 30 minutos de inatividade e o sistema suspende após 60 minutos. Fechar a tampa suspende na hora.
-- **Bateria:** sem limite de carga. O recurso é opcional (ver a fase 4).
+- **Bateria:** sem limite de carga. O recurso é opcional ([fase 4](fases/04-notebook.md)).
 - **GPU:** a Intel atende o uso comum. A AMD fica suspensa e é acionada sob demanda.
-- **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek`, `firmware-sof-signed`.
+- **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek` e `firmware-sof-signed`.
 - **Microcódigo:** `intel-microcode`.
 - **Atualização de firmware:** `fwupd` disponível.
+- **Boot:** o GRUB não mostra o menu e inicia o sistema direto.
 
-## Software base
+## Software instalado
 
-| Item | Estado |
-|---|---|
-| GNOME (`gnome-core`), Ajustes (`gnome-tweaks`), NetworkManager | instalados |
-| Firefox ESR e LibreOffice (Writer, Calc, Impress e Draw) | instalados. O LibreOffice usa a faixa em abas, os ícones Colibre, a folha branca no modo escuro, o idioma pt-BR, modelos do Writer, do Calc e do Impress no estilo do Microsoft 365 e grava em `.docx`, `.xlsx` e `.pptx` |
-| `curl`, `wget` | instalados |
-| Google Chrome | instalado, com o repositório oficial do Google (atualiza pelo `apt`) |
-| `openfortivpn` | instalado (cliente de VPN Fortinet por linha de comando, usado como reserva) |
-| `network-manager-openconnect-gnome` | instalado (VPN Fortinet pela interface gráfica) |
-| Claude Code | instalado em `~/.local/bin` |
-| `git`, `gh` | instalados |
-| `btrfs-progs`, `smartmontools` | instalados |
-| `mesa-utils`, `vulkan-tools` | instalados (testes de vídeo) |
-| `flatpak` | instalado, com o Flathub |
-| `build-essential`, `meld`, `wireshark` | instalados |
-| Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN. O serviço inicia sob demanda, pelo `docker.socket` |
-| Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS | instalados na pasta pessoal, com gerenciadores de versão (`fnm`, `uv` e SDKMAN) |
-| Visual Studio Code, DBeaver e AnyDesk | instalados pelos repositórios dos fabricantes, com atualização pelo `apt` |
-| AnyDesk (uso) | sem serviço ativo, abre sob demanda pelo aplicativo |
-| `openssh-server` | instalado e desativado, para ligar sob demanda |
-| Postman, SoapUI e Discord | instalados pelo Flatpak |
-| VLC, `htop`, `ncdu`, `tree`, `dnsutils` e `nmap` | instalados pelo Debian |
-| `putty-tools` | instalado (converte chaves `.ppk` para o formato do OpenSSH) |
-| Steam | instalada pelo Flatpak, com acesso à pasta `/mnt/ssd/Jogos` |
-| Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
-| Fonte Aptos | indisponível para Linux. Uma regra do `fontconfig` a substitui pela Liberation Sans |
-| `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian, Chrome, VS Code, AnyDesk e DBeaver) |
-| `timeshift` | instalado, em modo `rsync`, com destino no SSD extra e agenda mensal |
-| Extensões do GNOME | AppIndicator, Dash to Dock e Caffeine, pelo Debian |
+### Base do sistema
 
-## Pontos em aberto
+| Item | Estado | Fase |
+|---|---|---|
+| GNOME (`gnome-core`), Ajustes (`gnome-tweaks`) e NetworkManager | Instalados | 0 |
+| Extensões do GNOME | AppIndicator, Dash to Dock e Caffeine, pelo Debian | [6](fases/06-gnome.md) |
+| `curl`, `wget`, `git` e `gh` | Instalados | [0](fases/00-base-minima.md) e [1](fases/01-git-e-github.md) |
+| `btrfs-progs` e `smartmontools` | Instalados | [2](fases/02-base-do-sistema.md) |
+| `mesa-utils` e `vulkan-tools` | Instalados, para testar o vídeo | [4](fases/04-notebook.md) |
+| `unattended-upgrades` e `powermgmt-base` | Atualizações automáticas ativas para o Debian, Chrome, VS Code, AnyDesk e DBeaver | [3](fases/03-atualizacoes.md) |
+| `timeshift` | Modo `rsync`, destino no SSD extra, agenda mensal | [7](fases/07-backup.md) |
+| `flatpak` | Instalado, com o Flathub | [5](fases/05-aplicativos.md) |
+| Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) | [5](fases/05-aplicativos.md) |
+| Fonte Aptos | Indisponível para Linux. Uma regra do `fontconfig` a substitui pela Liberation Sans | [5](fases/05a-libreoffice.md) |
 
-1. **BIOS.** É a da época do lançamento do modelo. O notebook funciona bem, então a atualização é opcional.
-2. **Repositório `non-free`.** Desativado. Habilite só se um pacote exigir.
-3. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.
+### Desenvolvimento
+
+| Item | Estado | Fase |
+|---|---|---|
+| `build-essential` e Meld | Instalados | [5](fases/05-aplicativos.md) |
+| Docker Engine, Compose e Buildx | Repositório oficial, com a rede fora das faixas da VPN. O serviço inicia sob demanda, pelo `docker.socket` | [5](fases/05-aplicativos.md) |
+| Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS | Na pasta pessoal, com `fnm`, `uv` e SDKMAN. O Python do sistema fica intocado | [5](fases/05-aplicativos.md) |
+| Visual Studio Code e DBeaver | Repositórios dos fabricantes, com atualização pelo `apt` | [5](fases/05-aplicativos.md) |
+| Postman e SoapUI | Flatpak | [5](fases/05-aplicativos.md) |
+| Claude Code | Em `~/.local/bin` | [0](fases/00-base-minima.md) |
+
+### Rede e acesso remoto
+
+| Item | Estado | Fase |
+|---|---|---|
+| Google Chrome | Repositório oficial do Google, atualizado pelo `apt` | [5](fases/05-aplicativos.md) |
+| `network-manager-openconnect-gnome` | VPN Fortinet pela interface gráfica | [5](fases/05b-vpn-e-servidores.md) |
+| `openfortivpn` | VPN Fortinet por linha de comando, como reserva | [5](fases/05b-vpn-e-servidores.md) |
+| `putty-tools` | Converte chaves `.ppk` para o formato do OpenSSH | [5](fases/05b-vpn-e-servidores.md) |
+| `openssh-server` | Instalado e desativado, para ligar sob demanda | [5](fases/05-aplicativos.md) |
+| AnyDesk | Repositório do fabricante, sem serviço ativo: abre sob demanda pelo aplicativo | [5](fases/05-aplicativos.md) |
+| Wireshark, `nmap` e `dnsutils` | Instalados | [5](fases/05-aplicativos.md) |
+
+### Escritório, mídia e utilitários
+
+| Item | Estado | Fase |
+|---|---|---|
+| Firefox ESR | Instalado com o sistema | 0 |
+| LibreOffice (Writer, Calc, Impress e Draw) | Faixa em abas, ícones Colibre, folha branca no modo escuro, pt-BR, modelos no estilo do Microsoft 365, gravação em `.docx`, `.xlsx` e `.pptx` | [5](fases/05a-libreoffice.md) |
+| VLC | Instalado pelo Debian | [5](fases/05-aplicativos.md) |
+| Discord | Flatpak | [5](fases/05-aplicativos.md) |
+| Steam | Flatpak, com acesso à pasta `/mnt/ssd/Jogos` | [5](fases/05-aplicativos.md) |
+| `htop`, `ncdu` e `tree` | Instalados | [5](fases/05-aplicativos.md) |

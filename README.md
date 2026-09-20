@@ -1,22 +1,45 @@
 # debian-gnome-setup
 
-Guia para instalar e configurar o **Debian 13 (GNOME)** em um **Lenovo ThinkPad E14 Gen 1 (20RB)**,
-do sistema recém-instalado até o ambiente pronto para trabalho.
+Guia prático para instalar e configurar o **Debian 13 (GNOME)** como estação de trabalho, do sistema recém-instalado ao ambiente pronto, com atualizações automáticas, aplicativos, backup e, em seguida, scripts.
 
-Cada passo traz o comando, o que ele faz e como conferir o resultado. Pensado para quem usa
-Debian pela primeira vez.
+Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfazer. Todo comando foi executado e verificado num **Lenovo ThinkPad E14 Gen 1 (20RB)**, o modelo de referência do guia.
+
+## Para quem é
+
+- Quem usa o Debian pela primeira vez e quer entender cada passo, e não só copiar comandos.
+- Quem monta uma estação de desenvolvimento ou de trabalho de escritório com Debian e GNOME.
+- Quem vem do Windows e do Microsoft Office e quer um ambiente familiar.
+
+## O que o guia entrega
+
+| Área | Resultado |
+|---|---|
+| Sistema | Debian 13 atualizado, com atualizações de segurança automáticas e firmware em dia |
+| Notebook | Energia, suspensão, vídeo híbrido e boot direto ajustados |
+| Desenvolvimento | Docker, Go, Node, Python, Java, VS Code, DBeaver e ferramentas de API |
+| Escritório | LibreOffice com a aparência e os padrões do Microsoft Office |
+| Rede | VPN pelo menu do GNOME e acesso a servidores pelo aplicativo Arquivos |
+| GNOME | Extensões, atalhos e barra de aplicativos no estilo do Windows |
+| Segurança dos dados | Snapshots do sistema com o Timeshift |
+
+## Como usar
+
+1. Leia o [ambiente](docs/01-ambiente.md) e compare com a sua máquina.
+2. Siga o [roteiro](docs/02-roteiro.md) na ordem das fases. Cada fase é um arquivo em [`docs/fases/`](docs/fases/).
+3. Confira o **escopo** de cada fase. Fases *gerais* servem a qualquer instalação. As de *modelo de referência*, *perfil de uso* e *ambiente* pedem adaptação.
+4. Antes de qualquer comando com `sudo`, leia o que ele faz. Cada fase traz a seção **Como desfazer**.
+5. Consulte o [glossário](docs/03-glossario.md) para os termos que não conhecer.
 
 ## Estado atual
 
-Fases 0 a 6 concluídas (base, git e GitHub, sistema, atualizações, notebook, aplicativos e GNOME). Em andamento: fase 7, backup.
-O detalhe de cada fase está em [docs/02-roteiro.md](docs/02-roteiro.md).
+Fases 0 a 7 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME e backup. Em preparação: a fase 8, com os scripts que refazem o que foi feito à mão.
 
 ## Documentos
 
 | Documento | Conteúdo |
 |---|---|
-| [docs/01-ambiente.md](docs/01-ambiente.md) | A distro, o notebook e o estado atual do sistema |
-| [docs/02-roteiro.md](docs/02-roteiro.md) | Passo a passo em fases, com o que está feito e o que falta |
+| [docs/01-ambiente.md](docs/01-ambiente.md) | A distribuição, o notebook de referência e o que está instalado |
+| [docs/02-roteiro.md](docs/02-roteiro.md) | O passo a passo em fases, com o status e o escopo de cada uma |
 | [docs/03-glossario.md](docs/03-glossario.md) | Termos de Debian e Linux explicados de forma simples |
 
 ## Estrutura
@@ -24,17 +47,24 @@ O detalhe de cada fase está em [docs/02-roteiro.md](docs/02-roteiro.md).
 ```
 debian-gnome-setup/
 ├── README.md
-├── CLAUDE.md    instruções para o Claude Code ao trabalhar neste repositório
-├── docs/        documentação
-└── scripts/     (futuro) automação de cada fase
+├── CLAUDE.md      instruções para o Claude Code ao trabalhar neste repositório
+├── docs/
+│   ├── 01-ambiente.md
+│   ├── 02-roteiro.md
+│   ├── 03-glossario.md
+│   └── fases/     um arquivo por fase
+└── scripts/       automação das fases (fase 8)
 ```
 
-`scripts/` só será criada depois que uma fase for feita à mão, testada e documentada.
+Os scripts só existem para o que foi feito à mão, testado e documentado.
 
 ## Convenções
 
 - Idioma: português do Brasil.
-- Todo comando foi executado nesta máquina, exceto os marcados como *(proposta)*.
-- Status das fases: `[x]` feito, `[ ]` pendente, `[~]` em discussão.
-- Nunca versionar: senhas, tokens, chaves, números de série, UUIDs, endereços MAC ou e-mails.
+- Todo comando foi executado na máquina de referência, exceto os marcados como *(proposta)*.
+- Status das tarefas: `[x]` feito, `[ ]` pendente, `[~]` em discussão.
 - Foco em máquina de trabalho: estabilidade antes de novidade, e backup antes de tudo.
+
+## Privacidade
+
+O repositório é público. Nunca entram nele senhas, tokens, chaves, números de série, UUIDs, endereços MAC, e-mails pessoais, nomes de empresa, endereços de servidores ou nomes de usuário. Nos exemplos, esses dados aparecem como `<usuario>`, `<ip-do-servidor>` e semelhantes.
