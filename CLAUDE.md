@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Este repositório documenta a instalação e a configuração do Debian 13 (GNOME) em um
-ThinkPad E14 Gen 1. Contém **documentação** (`docs/`) e **scripts de shell** (`scripts/`).
+ThinkPad E14 Gen 1. Contém **documentação** (`docs/`). Não há scripts: o repositório registra o que foi feito e o motivo.
 O repositório é **público**.
 
 ## Estrutura
@@ -11,7 +11,7 @@ O repositório é **público**.
 - `docs/02-roteiro.md`: índice das fases, com status e escopo.
 - `docs/fases/`: um arquivo por fase (`NN-nome.md`), com os comandos e as verificações.
 - `docs/03-glossario.md`: termos em ordem alfabética.
-- `scripts/`: um script por fase, numerado.
+- `LICENSE` (MIT, para os comandos) e `LICENSE-DOCS.txt` (CC BY 4.0, para os textos).
 
 ## Princípios
 
@@ -20,7 +20,7 @@ O repositório é **público**.
   4. Flatpak. 5. Repositório externo. 6. Script próprio.
 - Faça o mínimo que funciona. Não instale o que não será usado. Não refatore sem pedido.
   Não deixe placeholder sem avisar.
-- **Entender antes de automatizar:** faça à mão, documente, e só então vire script.
+- **Entender antes de executar:** explique, faça à mão, confira e documente.
 
 ## Ao executar comandos no sistema
 
@@ -43,15 +43,6 @@ O repositório é **público**.
 - Termo novo entra em `docs/03-glossario.md`, em ordem alfabética.
 - Ao mudar a estrutura, confira os links internos entre os arquivos.
 
-## Scripts (`scripts/`)
-
-- Só depois de a fase ter sido feita à mão, testada e documentada.
-- Um script por fase, numerado (`01-git.sh`), com `#!/usr/bin/env bash` e `set -euo pipefail`.
-- Idempotente (rodar duas vezes dá o mesmo resultado) e sem perguntas interativas.
-- Sem usuário ou caminho fixo: use `$HOME` e `$USER`.
-- Dados do usuário (identidade, chaves, servidores, UUIDs) entram como parâmetro ou variável de ambiente, nunca no arquivo.
-- `shellcheck` sem avisos.
-
 ## Privacidade (repositório público)
 
 - Nunca versione: senhas, tokens, chaves, números de série, UUIDs, MACs, e-mails pessoais,
@@ -63,7 +54,7 @@ O repositório é **público**.
 
 - Trabalhe direto na `main`, sem branch nem PR (repositório de uso individual).
 - Commits atômicos, em Conventional Commits, em português e no imperativo:
-  `docs: descrever o disco extra`, `feat: adicionar script do git`.
+  `docs: descrever o disco extra`, `docs: registrar o backup`.
 - Faça `git push` só quando o usuário pedir, porque o repositório é público.
 
 ## Definition of Done
@@ -71,10 +62,9 @@ O repositório é **público**.
 - O comando ou a verificação rodou e a saída foi conferida.
 - Docs, roteiro e fase estão atualizados.
 - Há como desfazer, e está documentado.
-- `shellcheck` passa, se houver script.
 - `git diff --staged` não tem segredo nem dado pessoal.
 - A mudança é mínima e intencional.
 
 ## Pendências
 
-Marque o que ficou para depois, com o motivo: `# TODO(fase 8): parametrizar o disco de destino`.
+Marque o que ficou para depois, com o motivo: `<!-- TODO: confirmar no próximo modelo de notebook -->`.

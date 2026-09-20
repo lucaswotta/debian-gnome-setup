@@ -1,6 +1,6 @@
 # debian-gnome-setup
 
-Guia prático para instalar e configurar o **Debian 13 (GNOME)** como estação de trabalho, do sistema recém-instalado ao ambiente pronto, com atualizações automáticas, aplicativos, backup e, em seguida, scripts.
+Guia prático para instalar e configurar o **Debian 13 (GNOME)** como estação de trabalho, do sistema recém-instalado ao ambiente pronto, com atualizações automáticas, aplicativos e backup.
 
 Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfazer. Todo comando foi executado e verificado num **Lenovo ThinkPad E14 Gen 1 (20RB)**, o modelo de referência do guia.
 
@@ -32,7 +32,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 
 ## Estado atual
 
-Fases 0 a 7 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME e backup. Em preparação: a fase 8, com os scripts que refazem o que foi feito à mão.
+Fases 0 a 7 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME e backup.
 
 ## Documentos
 
@@ -47,16 +47,19 @@ Fases 0 a 7 concluídas: base, git e GitHub, sistema, atualizações, notebook, 
 ```
 debian-gnome-setup/
 ├── README.md
-├── CLAUDE.md      instruções para o Claude Code ao trabalhar neste repositório
-├── docs/
-│   ├── 01-ambiente.md
-│   ├── 02-roteiro.md
-│   ├── 03-glossario.md
-│   └── fases/     um arquivo por fase
-└── scripts/       automação das fases (fase 8)
+├── CLAUDE.md          instruções para o Claude Code ao trabalhar neste repositório
+├── LICENSE            licença dos comandos e trechos de código (MIT)
+├── LICENSE-DOCS.txt   licença dos textos (CC BY 4.0)
+└── docs/
+    ├── 01-ambiente.md
+    ├── 02-roteiro.md
+    ├── 03-glossario.md
+    └── fases/         um arquivo por fase
 ```
 
-Os scripts só existem para o que foi feito à mão, testado e documentado.
+## Como replicar em outra máquina
+
+O repositório não traz scripts, de propósito: é o registro do que foi feito e do motivo. Para repetir o processo em outro equipamento, peça a um assistente de IA, como o Claude Code, que leia os arquivos de `docs/`, adapte os passos ao seu hardware e execute as fases em ordem. Confirme cada comando com `sudo` antes de ele rodar.
 
 ## Convenções
 
@@ -68,3 +71,8 @@ Os scripts só existem para o que foi feito à mão, testado e documentado.
 ## Privacidade
 
 O repositório é público. Nunca entram nele senhas, tokens, chaves, números de série, UUIDs, endereços MAC, e-mails pessoais, nomes de empresa, endereços de servidores ou nomes de usuário. Nos exemplos, esses dados aparecem como `<usuario>`, `<ip-do-servidor>` e semelhantes.
+
+## Licença
+
+- Comandos, trechos de código e configurações: [MIT](LICENSE).
+- Textos da documentação: [CC BY 4.0](LICENSE-DOCS.txt). Você pode copiar e adaptar, dando o crédito.

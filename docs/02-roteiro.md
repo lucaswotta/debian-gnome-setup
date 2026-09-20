@@ -6,7 +6,7 @@ Este roteiro leva um Debian 13 recém-instalado até um ambiente de trabalho com
 
 - Uma fase por vez, explicada antes de executar.
 - Comando com `sudo` só roda depois de confirmação.
-- Só vira script (`scripts/`) o que já foi feito à mão e entendido.
+- Só se registra como feito o que foi executado e conferido.
 - Cada fase termina com uma verificação e um registro.
 
 ## Fases
@@ -23,7 +23,10 @@ Este roteiro leva um Debian 13 recém-instalado até um ambiente de trabalho com
 | 5 | [VPN e acesso a servidores](fases/05b-vpn-e-servidores.md) | Ambiente | Concluída |
 | 6 | [GNOME](fases/06-gnome.md) | Perfil de uso | Concluída |
 | 7 | [Backup](fases/07-backup.md) | Geral | Concluída |
-| 8 | Automação | Geral | Planejada |
+
+## Replicar em outra máquina
+
+O roteiro é um registro, e não um instalador. Para repetir o processo, peça a um assistente de IA que leia as fases, adapte-as ao seu hardware e as execute em ordem, com a sua confirmação nos comandos com `sudo`. As seções **Como conferir** e **Como desfazer** de cada fase servem de checagem.
 
 ## Escopo: o que adaptar
 
