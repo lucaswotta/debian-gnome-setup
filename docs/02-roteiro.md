@@ -237,13 +237,93 @@ Aprendizados:
 
 ---
 
+## Fase 4 - Notebook (concluída)
+
+Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
+
+- [x] **Energia e temperatura:** o `power-profiles-daemon` (perfil `balanced`) basta. Temperaturas de 38 a 50 °C, ventoinha desligada.
+- [x] **GPU AMD sob demanda:** testada com OpenGL e Vulkan. Dorme sozinha depois do uso.
+- [x] **Suspensão:** tela apaga em 30 min, suspende em 60 min. Fechar a tampa suspende na hora.
+- [x] **Limite de carga da bateria:** ativado entre 75% e 80%.
+- [x] **Teclas Fn:** funcionam.
+- [x] **Leitor de digital:** sem suporte no Linux (ver aprendizados).
+- [ ] Confirmar o limite de carga na prática, observando onde a carga para.
+
+```bash
+# GPU: ferramentas de teste
+sudo apt install -y mesa-utils vulkan-tools
+glxinfo -B | grep "OpenGL renderer"                 # Intel (padrão)
+DRI_PRIME=1 glxinfo -B | grep "OpenGL renderer"     # AMD
+vulkaninfo --summary
+
+# Suspensão
+gsettings set org.gnome.desktop.session idle-delay 1800
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 3600
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 3600
+
+# Limite de carga da bateria
+BAT=$(upower -e | grep -i BAT | head -1)
+busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b true
+
+# Ler os logs do sistema sem sudo (vale a partir do próximo login)
+sudo usermod -aG systemd-journal "$USER"
+```
+
+| Parte | O que faz |
+|---|---|
+| `DRI_PRIME=1` | Executa o comando na GPU dedicada. Sem ela, a Intel é usada. |
+| `idle-delay` | Segundos de inatividade até a tela apagar (1800 = 30 min). |
+| `sleep-inactive-*-timeout` | Segundos de inatividade até suspender, na tomada e na bateria (3600 = 60 min). |
+| `EnableChargeThreshold` | Liga o limite de carga do UPower, que vale de 75% a 80%. |
+| `usermod -aG systemd-journal` | Permite ao usuário ler o log do sistema (`journalctl`) sem `sudo`. |
+
+Como conferir:
+
+```bash
+upower -i "$(upower -e | grep -i BAT)"           # charge-threshold-supported: yes
+cat /sys/class/drm/card1/device/power/runtime_status   # suspended = AMD dormindo
+gsettings get org.gnome.desktop.session idle-delay
+journalctl -k -b -p err                          # erros do kernel neste boot
+```
+
+Como desfazer:
+
+```bash
+gsettings reset org.gnome.desktop.session idle-delay
+gsettings reset org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout
+gsettings reset org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout
+busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b false
+sudo gpasswd -d "$USER" systemd-journal
+```
+
+Aprendizados:
+
+- **TLP:** conflita com o `power-profiles-daemon`, porque os dois querem gerenciar a energia. Use só um.
+- **`thermald`:** não roda em ThinkPads que têm controle térmico pelo firmware (DYTC). O log diz
+  `Thermald can't run on this platform`. Não é preciso instalar. Se já estiver instalado, remova com
+  `sudo apt remove thermald`. Não use `--ignore-cpuid-check`, que ignora o aviso e briga com o firmware.
+- **GPU híbrida:** o `switcheroo-control` mostra a opção de iniciar com a placa dedicada ao clicar com o botão direito
+  no ícone do aplicativo. No terminal e no Steam, use `DRI_PRIME=1`. A AMD é uma placa de entrada (2 GB) e não serve
+  para jogos recentes em qualidade alta.
+- **Limite de carga:** o firmware vem com início em 95% e fim em 100%. Depois de ligar o limite, o UPower informa 75% e 80%,
+  mas o kernel mostra `start=80 end=75`, invertido. Nos dois casos o teto fica entre 75% e 80%. Não afeta o desempenho.
+  A autonomia por carga cai cerca de 20%.
+- **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
+  responde `No devices available`. Não há o que configurar.
+- **Logs:** sem estar no grupo `systemd-journal`, o `journalctl` mostra "sem entradas". Isso **não** significa "sem erros".
+- **Avisos comuns no boot que não indicam problema:** erro ACPI da GPU (`ATRM`, o `amdgpu` funciona normalmente),
+  uma regra `udev` do ALSA sem rótulo, e o erro do `iwlwifi` em cada suspensão. O Wi-Fi recarrega o firmware ao retomar
+  e reconecta sozinho.
+
+---
+
 ## Fases seguintes (proposta)
 
 | Fase | Tema | Itens |
 |---|---|---|
 | 2 | Base do sistema | Concluída (ver acima) |
 | 3 | Atualizações | Concluída (ver acima) |
-| 4 | Notebook | Bateria e temperatura, GPU AMD, leitor de digital, teclas Fn |
+| 4 | Notebook | Concluída (ver acima) |
 | 5 | Aplicativos | Flatpak e Flathub, comunicação, ferramentas de trabalho (navegador e VPN já feitos) |
 | 6 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
 | 7 | Backup | Snapshot do sistema (Timeshift), feito ao terminar a configuração base |

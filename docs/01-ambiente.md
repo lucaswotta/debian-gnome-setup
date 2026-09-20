@@ -37,10 +37,10 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Processador | Intel Core i7-10510U (4 núcleos, 8 threads) |
 | Memória | 16 GB |
 | Tela | 14", 1920x1080 |
-| Vídeo | Intel UHD Graphics (`i915`) e AMD Radeon 530 (`amdgpu`) |
+| Vídeo | Intel UHD Graphics (`i915`) e AMD Radeon 530 (`amdgpu`), esta última sob demanda |
 | Wi-Fi e Bluetooth | Intel AX201 |
 | Ethernet | Realtek RTL8111/8168 Gigabit |
-| Outros | Webcam integrada e leitor de digital Goodix |
+| Outros | Webcam integrada e leitor de digital Goodix (sem suporte no Linux) |
 | Boot | UEFI, Secure Boot desativado |
 | Bateria | Li-poly, 45,7 Wh (capacidade de projeto) |
 
@@ -55,7 +55,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 
 ## Energia, firmware e drivers
 
-- **Energia:** `power-profiles-daemon` ativo (é o que o menu do GNOME usa). `TLP` e `thermald` não estão configurados.
+- **Energia:** `power-profiles-daemon` ativo (é o que o menu do GNOME usa). `TLP` e `thermald` não são usados (o `thermald` não roda em ThinkPads com controle térmico pelo firmware).
 - **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek`, `firmware-sof-signed`.
 - **Microcódigo:** `intel-microcode`.
 - **Atualização de firmware:** `fwupd` disponível.
@@ -73,6 +73,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Claude Code | instalado em `~/.local/bin` |
 | `git`, `gh` | instalados |
 | `btrfs-progs`, `smartmontools` | instalados |
+| `mesa-utils`, `vulkan-tools` | instalados (testes de vídeo) |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian e Google Chrome) |
 | `timeshift` | ausente |
 | Flatpak, extensões do GNOME | ausentes |
@@ -81,6 +82,4 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 
 1. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
 2. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
-3. **GPU AMD.** Conferir qual GPU o sistema usa e o efeito na bateria e na temperatura.
-4. **Leitor de digital.** Confirmar se é suportado pelo `fprintd` antes de depender dele.
-5. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.
+3. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.

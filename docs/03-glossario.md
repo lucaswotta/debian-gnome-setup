@@ -37,3 +37,7 @@ conforme aparecem novos conceitos.
 | **Túnel dividido (*split tunnel*)** | Modo em que só o tráfego das redes internas passa pela VPN. O restante segue direto pela internet. |
 | **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
+| **GPU híbrida (PRIME)** | Notebook com duas placas de vídeo: uma integrada, econômica, e uma dedicada, mais potente. A dedicada é usada sob demanda. |
+| **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa do grupo `systemd-journal`. |
+| **SMART** | Autodiagnóstico de discos. Mostra saúde, horas de uso, desgaste e erros. Lido com `smartctl`. |
+| **Suspensão** | Estado de baixo consumo que guarda o trabalho na memória e desliga o resto. |
