@@ -23,6 +23,7 @@ Este roteiro leva um Debian 13 recém-instalado até um ambiente de trabalho com
 | 5 | [VPN e acesso a servidores](fases/05b-vpn-e-servidores.md) | Ambiente | Concluída |
 | 6 | [GNOME](fases/06-gnome.md) | Perfil de uso | Concluída |
 | 7 | [Backup](fases/07-backup.md) | Geral | Concluída |
+| 8 | [Terminal e shell](fases/08-terminal.md) | Perfil de uso | Concluída |
 
 ## Replicar em outra máquina
 

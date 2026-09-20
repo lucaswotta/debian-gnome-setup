@@ -2,7 +2,7 @@
 
 **Status:** concluída · **Escopo:** geral. Adapte o disco de destino e as pastas excluídas
 
-[← Fase 6](06-gnome.md) · [Roteiro](../02-roteiro.md)
+[← Fase 6](06-gnome.md) · [Roteiro](../02-roteiro.md) · [Fase 8 →](08-terminal.md)
 
 Objetivo: poder voltar o sistema a um estado conhecido depois de uma atualização ou de uma configuração que quebre algo.
 
