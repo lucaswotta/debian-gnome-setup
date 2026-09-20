@@ -376,7 +376,8 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 
 - [x] **Navegador:** Google Chrome, instalado pelo pacote `.deb` oficial. O pacote configura o repositório do Google, e as atualizações chegam pelo `apt`.
 - [x] **VPN corporativa:** ver abaixo.
-- [ ] Definir o perfil de uso e as ferramentas de trabalho
+- [x] **Perfil de uso:** desenvolvimento como foco, com uso geral.
+- [ ] Listar as ferramentas de trabalho e o equivalente de cada uma no Linux
 - [ ] Configurar o Flatpak e o Flathub
 - [ ] Instalar os aplicativos definidos
 - [ ] Apontar a biblioteca de jogos para o SSD extra, se for usada
@@ -418,13 +419,32 @@ Observações:
   Se um nome interno não resolver, comece por esse arquivo.
 - **Certificado:** aceite o certificado do servidor só se reconhecer o servidor.
 
-### Perguntas em aberto
+### Organização
 
-1. Para que o notebook é mais usado: desenvolvimento, escritório, multimídia ou jogos?
+| Bloco | Conteúdo | Origem preferida |
+|---|---|---|
+| Base de desenvolvimento | Compilador, utilitários de terminal, Python | Debian |
+| Editor de código ou IDE | A definir | Fora do Debian (Flatpak ou repositório do fabricante) |
+| Bancos de dados | Cliente gráfico e servidores de desenvolvimento | Cliente: Flatpak ou fabricante. Servidores: contêineres ou Debian |
+| Linguagens e runtimes | Conforme os projetos | Debian. Gerenciador de versões quando a versão do Debian não servir |
+| Contêineres e máquinas virtuais | Podman ou Docker. QEMU/KVM para sistemas legados | Debian |
+| Comunicação | Videoconferência e mensageria | Navegador ou Flatpak |
+| Escritório | LibreOffice (já instalado) e leitor de PDF | Debian |
+
+O Flatpak e o Flathub entram porque alguns aplicativos não estão no repositório do Debian.
+O processador tem suporte a virtualização, o que permite máquinas virtuais se necessário.
+
+Fora do repositório oficial do Debian 13: Visual Studio Code, VSCodium, DBeaver e o SDK do .NET 8.
+Disponíveis no repositório: Python, Java (OpenJDK), Node.js, Go, Rust, PHP, Ruby, Maven, PostgreSQL, MariaDB,
+SQLite, Docker e Podman.
+
+### Pontos em aberto
+
+1. Quais ferramentas de trabalho são necessárias (bancos de dados, editor de código, modelagem, videoconferência, acesso remoto)? Alguma só existe para Windows?
 2. Há política de TI que exija antivírus ou software específico?
-3. Quais ferramentas de trabalho são necessárias (banco de dados, modelagem, Office, videoconferência, acesso remoto)? Alguma só existe para Windows?
-4. Será preciso rodar Windows em máquina virtual para algum sistema legado?
-5. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
+3. Será preciso rodar Windows em máquina virtual para algum sistema legado?
+4. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
+5. Onde instalar os aplicativos Flatpak: no disco do sistema (padrão) ou no SSD extra?
 
 ---
 
