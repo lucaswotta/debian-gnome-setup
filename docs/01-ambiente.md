@@ -79,7 +79,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | `mesa-utils`, `vulkan-tools` | instalados (testes de vídeo) |
 | `flatpak` | instalado, com o Flathub |
 | `build-essential`, `meld`, `wireshark` | instalados |
-| Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN |
+| Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN. O serviço inicia sob demanda, pelo `docker.socket` |
 | Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS | instalados na pasta pessoal, com gerenciadores de versão (`fnm`, `uv` e SDKMAN) |
 | Visual Studio Code, DBeaver e AnyDesk | instalados pelos repositórios dos fabricantes, com atualização pelo `apt` |
 | AnyDesk (uso) | sem serviço ativo, abre sob demanda pelo aplicativo |

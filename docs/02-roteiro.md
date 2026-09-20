@@ -572,6 +572,9 @@ Observações:
 - **Docker e atualizações automáticas:** o Docker não entra no `unattended-upgrades`, porque atualizar o serviço o reinicia e para os contêineres.
   Atualize com o `sudo apt full-upgrade` semanal.
 - **`deb-src`:** removido de `debian.sources` (`Types: deb`). Sem necessidade de código-fonte, o `apt update` baixa menos índices.
+- **Docker sob demanda:** o serviço não sobe no boot, o que poupa memória e tempo de inicialização. O `docker.socket` fica ativo e acorda o serviço no primeiro comando `docker`,
+  com uma pequena espera. Contêineres com política de reinício automático só voltam depois desse primeiro comando.
+  `sudo systemctl disable --now docker.service containerd.service` liga o modo sob demanda, e `sudo systemctl enable --now docker.service containerd.service` o desfaz.
 - **Repositórios externos:** o `debian.sources` e o `docker.sources` usam `Signed-By`, que limita cada chave ao seu repositório.
 
 ### Lote 2: linguagens
