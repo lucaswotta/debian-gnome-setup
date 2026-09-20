@@ -69,6 +69,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Super (tecla)** | Nome da tecla Windows no GNOME. `Super+E`, por exemplo, é a tecla Windows com a letra E. |
 | **Suspensão** | Estado de baixo consumo que guarda o trabalho na memória e desliga o restante. |
 | **Swap** | Área do disco usada como memória extra quando a RAM enche. |
+| **Tema de ícones e de cursor** | Conjunto de imagens usadas pelo sistema para os ícones dos aplicativos e para o ponteiro do mouse. Pacotes do Debian ficam em `/usr/share/icons/`, e os do usuário, em `~/.local/share/icons/`. |
 | **TRIM** | Comando que informa ao SSD quais blocos estão livres, mantendo o desempenho e a vida útil. |
 | **Túnel dividido (*split tunnel*)** | Modo em que só o tráfego das redes internas passa pela VPN. O restante segue direto pela internet. |
 | **UEFI / BIOS** | Programa que liga o computador antes do sistema. O UEFI é a versão moderna. |
@@ -76,5 +77,6 @@ Termos usados na documentação, em ordem alfabética.
 | **UNO** | Interface de programação do LibreOffice, usada por scripts para criar documentos, ler estilos e alterar configurações. |
 | **UPower** | Serviço que informa o estado da bateria e controla o limite de carga. |
 | **UUID** | Identificador único de um disco ou partição. Não muda, ao contrário do nome `sda`. |
+| **UUID de extensão** | Nome único de uma extensão do GNOME, como `caffeine@patapon.info`. Aparece em `gnome-extensions list`. |
 | **VPN** | Rede privada virtual: um túnel criptografado até a rede da empresa, para acessar recursos internos. |
 | **Wayland / X11** | Sistemas de exibição gráfica. O Wayland é o mais novo e é o padrão do GNOME atual. |
