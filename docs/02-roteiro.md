@@ -382,7 +382,7 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **VPN corporativa:** ver abaixo.
 - [x] **Perfil de uso:** desenvolvimento como foco, com uso geral.
 - [x] **Lote 1:** Flatpak, base de desenvolvimento, fontes, Wireshark, Meld e Docker.
-- [~] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7 e Python 3.14 instalados. Falta o Java 25 (SDKMAN).
+- [x] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS.
 - [ ] **Lote 3:** aplicativos (VS Code, DBeaver, Postman, SoapUI, Discord e AnyDesk).
 - [ ] **LibreOffice:** configurar para se parecer com o Office.
 - [ ] Multimídia e jogos, em fase posterior.
@@ -500,6 +500,13 @@ curl -LsSf https://astral.sh/uv/install.sh -o uv-install.sh
 UV_NO_MODIFY_PATH=1 sh uv-install.sh
 uv python install 3.14
 
+# SDKMAN e Java 25 LTS (Temurin). O SDKMAN exige zip e unzip
+sudo apt install -y zip
+curl -fsSL https://get.sdkman.io -o sdkman-install.sh
+bash sdkman-install.sh
+source ~/.sdkman/bin/sdkman-init.sh
+sdk install java 25.0.4-tem
+
 # PATH e integração do fnm no shell
 cp -a ~/.bashrc ~/.bashrc.bak-$(date +%F)
 cat >> ~/.bashrc <<'EOF'
@@ -516,12 +523,14 @@ EOF
 | `UV_NO_MODIFY_PATH=1` | Impede que o uv altere o `PATH`. O `~/.local/bin` já está nele. |
 | `uv python install 3.14` | Instala o Python 3.14 na pasta pessoal, sem tocar no Python do sistema. |
 | `fnm env --use-on-cd` | Troca a versão do Node ao entrar numa pasta com `.node-version` ou `.nvmrc`. |
+| `sdk install java 25.0.4-tem` | Instala o Temurin 25 LTS e o define como padrão, com `JAVA_HOME` apontando para ele. |
 
 Como conferir:
 
 ```bash
 go version && node --version && npm --version && tsc --version
 uv --version && python3.14 --version
+java -version && javac -version
 python3 --version        # continua sendo o Python do sistema
 ```
 
@@ -531,6 +540,7 @@ Como desfazer:
 rm -rf ~/.local/go ~/go
 rm -rf ~/.local/share/fnm ~/.local/state/fnm
 rm -f ~/.local/bin/uv ~/.local/bin/uvx ~/.local/bin/python3.14 && rm -rf ~/.local/share/uv
+rm -rf ~/.sdkman
 cp -a ~/.bashrc.bak-AAAA-MM-DD ~/.bashrc
 ```
 
@@ -544,7 +554,10 @@ Observações:
 - **Node 24 LTS:** o Node 26 passa a ser LTS em 28/10/2026. Depois disso, `fnm install 26` e `fnm default 26`.
 - **Go:** o `GOTOOLCHAIN=auto` baixa sozinho o toolchain que o `go.mod` de um projeto pedir.
 - **Python:** não use `pip install` no Python do sistema, que é protegido (PEP 668). Use `uv venv`, `uv run` ou `pipx`.
-- **Java 25:** depende do SDKMAN, que exige o pacote `zip`. Ver o item pendente da fase.
+- **SDKMAN:** o instalador sempre acrescenta um bloco ao `~/.bashrc`, que deve ficar no **fim** do arquivo. Só confere a integridade do zip,
+  e não a autenticidade. Exige `zip` e `unzip`.
+- **Java:** outras versões se instalam com `sdk install java <identificador>` e se alternam com `sdk use` ou `sdk default`.
+  `sdk list java` mostra os identificadores. Maven e Gradle também vêm pelo SDKMAN (`sdk install maven`).
 
 ### VPN Fortinet com interface gráfica
 
