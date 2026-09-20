@@ -710,9 +710,7 @@ Observações:
   O `debconf-set-selections` acima impede isso. Confira com `apt update`, que avisa de destinos configurados duas vezes.
 - **Erro `Unit anydesk.service not loaded`:** aparece na instalação, porque o pacote tenta parar um serviço que ainda não existe.
   É inofensivo.
-- **AnyDesk:** o pacote instala e habilita um serviço (`anydesk --service`, como `root`) que escuta em `0.0.0.0:7070` (TCP) e
-  `50001` (UDP), para conexões diretas de entrada. Se o uso for só de saída, desative com `sudo systemctl disable --now anydesk`.
-  Para conferir as portas em escuta, use `ss -ltn` e `ss -lun`. O `ss -p` sem `sudo` só mostra processos do seu usuário.
+- **AnyDesk:** o pacote instala e habilita um serviço que escuta portas de entrada. Ver "AnyDesk sob demanda" abaixo.
 - **DBeaver:** instala em `/usr/share/dbeaver-ce`, com um Java embutido (OpenJDK 25), e independe do SDKMAN.
 - **Flatpak:** cada aplicativo pede uma versão diferente da base (24.08, 25.08 e 26.08), e cada uma ocupa cerca de 700 MB, além do Mesa.
   O total do Flatpak ficou em 5,2 GB. O Postman baixa o binário do fabricante na instalação (*extra-data*).
@@ -722,6 +720,60 @@ Observações:
   o Docker não, porque atualizar o serviço reinicia os contêineres.
 - **VS Code e a Fira Code:** em `~/.config/Code/User/settings.json`, use `editor.fontFamily`, `editor.fontLigatures: true` e
   `terminal.integrated.fontFamily`.
+
+#### AnyDesk sob demanda
+
+O pacote instala e habilita um serviço (`anydesk --service`, como `root`) que escuta em `0.0.0.0:7070` (TCP) e `50001` (UDP), para
+conexões diretas de entrada, e um autostart que abre o ícone da bandeja em todo login. Para usar o AnyDesk só de saída e só com o
+aplicativo aberto:
+
+```bash
+sudo systemctl disable --now anydesk       # desliga o serviço e impede que suba no boot
+mkdir -p ~/.config/autostart
+printf '[Desktop Entry]\nType=Application\nName=AnyDesk Tray\nHidden=true\nX-GNOME-Autostart-enabled=false\n' \
+  > ~/.config/autostart/anydesk_global_tray.desktop     # a bandeja deixa de abrir no login
+```
+
+Sem o serviço do sistema, o aplicativo abre um serviço local do próprio usuário (`--local-service`, sem `root`), registra-se na rede
+do AnyDesk e o encerra sozinho ao fechar (`Initiating auto-shutdown` no registro `~/.anydesk/anydesk.trace`).
+
+Como conferir:
+
+```bash
+systemctl is-active anydesk               # inactive
+pgrep -c -x anydesk                       # 0 com o aplicativo fechado
+ss -ltn | grep -c ':7070 '                # 0 com o aplicativo fechado
+```
+
+Como desfazer: `sudo systemctl enable --now anydesk` e `rm ~/.config/autostart/anydesk_global_tray.desktop`.
+
+Observações:
+
+- O registro do aplicativo mostra que ele se registra na rede do AnyDesk e se encerra sozinho ao fechar. A conexão de saída depende de uma
+  máquina de destino e não foi exercitada neste guia.
+- Se algo exigir o serviço do sistema (acesso sem supervisão, por exemplo), reative-o com o `enable --now` acima.
+
+#### Serviços e portas em escuta
+
+Um serviço instalado junto com o sistema ou com um aplicativo pode abrir portas sem que isso fique evidente. Para listar o que está em escuta:
+
+```bash
+ss -ltn      # portas TCP em escuta
+ss -lun      # portas UDP em escuta
+```
+
+`0.0.0.0` e `[::]` aceitam conexões de qualquer interface. `127.0.0.1` e `[::1]` aceitam só da própria máquina. O `ss -p`, sem `sudo`,
+só mostra os processos do próprio usuário, então serviços do `root` aparecem sem nome.
+
+O instalador do Debian pode ativar um servidor SSH. Para mantê-lo instalado, mas desligado, e ligá-lo só quando precisar:
+
+```bash
+sudo systemctl disable --now ssh ssh.socket     # desliga agora e impede que suba no boot
+sudo systemctl start ssh                        # liga sob demanda (não sobrevive ao reinício)
+sudo systemctl stop ssh                         # desliga ao terminar
+```
+
+Com isso, a única porta em escuta fica sendo a do serviço de impressão, restrita à própria máquina.
 
 ### VPN Fortinet com interface gráfica
 

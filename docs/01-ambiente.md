@@ -82,6 +82,8 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN |
 | Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS | instalados na pasta pessoal, com gerenciadores de versão (`fnm`, `uv` e SDKMAN) |
 | Visual Studio Code, DBeaver e AnyDesk | instalados pelos repositórios dos fabricantes, com atualização pelo `apt` |
+| AnyDesk (uso) | sem serviço ativo, abre sob demanda pelo aplicativo |
+| `openssh-server` | instalado e desativado, para ligar sob demanda |
 | Postman, SoapUI e Discord | instalados pelo Flatpak |
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian, Chrome, VS Code, AnyDesk e DBeaver) |

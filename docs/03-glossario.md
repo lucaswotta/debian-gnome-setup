@@ -38,6 +38,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Nome-código (trixie)** | Nome de cada versão do Debian. Aparece nos arquivos de repositório. |
 | **Pacote / `.deb`** | Programa empacotado para o Debian. O instalador do Chrome para Debian, por exemplo, é um `.deb`. |
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. O Claude Code fica em `~/.local/bin`, que foi adicionada ao `PATH`. |
+| **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. O `git push` envia os commits para ele. |
 | **Repositório (APT)** | Servidor com pacotes, definido em `/etc/apt/sources.list` e `/etc/apt/sources.list.d/`. Não confundir com o repositório Git. |
