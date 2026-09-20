@@ -91,7 +91,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
 | Fonte Aptos | indisponível para Linux. Uma regra do `fontconfig` a substitui pela Liberation Sans |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian, Chrome, VS Code, AnyDesk e DBeaver) |
-| `timeshift` | ausente |
+| `timeshift` | instalado, em modo `rsync`, com destino no SSD extra e agenda mensal |
 | Extensões do GNOME | AppIndicator, Dash to Dock e Caffeine, pelo Debian |
 
 ## Pontos em aberto

@@ -8,7 +8,7 @@ Debian pela primeira vez.
 
 ## Estado atual
 
-Fases 0 a 5 concluídas (base, git e GitHub, sistema, atualizações, notebook e aplicativos). Em andamento: fase 6, GNOME.
+Fases 0 a 6 concluídas (base, git e GitHub, sistema, atualizações, notebook, aplicativos e GNOME). Em andamento: fase 7, backup.
 O detalhe de cada fase está em [docs/02-roteiro.md](docs/02-roteiro.md).
 
 ## Documentos

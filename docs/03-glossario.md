@@ -12,6 +12,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Componentes do APT (`main`, `contrib`, `non-free`, `non-free-firmware`)** | Categorias de pacotes. `main` é software livre; `non-free` tem licença restritiva; `non-free-firmware` traz firmwares de hardware. |
 | **Condição de corrida (*race condition*)** | Falha que depende de qual de dois processos termina primeiro. Aparece de forma intermitente, e o que falha muda de uma vez para outra. |
 | **Contêiner** | Ambiente isolado que executa um programa com tudo o que ele precisa. Comum para rodar bancos de dados e serviços de desenvolvimento. |
+| **`cron`** | Agendador de tarefas do sistema. O Timeshift usa um trabalho do `cron` para conferir, de hora em hora, se um snapshot está na hora. |
 | **Distribuição (distro)** | Um "sabor" de Linux: kernel, programas e gerenciador de pacotes. O Debian é uma das mais antigas e serve de base para outras. |
 | **Docker (Engine, Compose, Buildx)** | Motor de contêineres. O Compose descreve vários contêineres num arquivo, e o Buildx constrói imagens. |
 | **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
@@ -55,11 +56,13 @@ Termos usados na documentação, em ordem alfabética.
 | **Repositório (APT)** | Servidor com pacotes, definido em `/etc/apt/sources.list` e `/etc/apt/sources.list.d/`. Não confundir com o repositório Git. |
 | **Repositório do fabricante** | Repositório APT mantido pelo próprio autor do programa, fora do Debian. Exige adicionar a chave do fabricante com `Signed-By`. |
 | **root** | Superusuário, com poder total sobre o sistema. |
+| **`rsync`** | Programa que copia só o que mudou entre duas pastas. O Timeshift o usa para criar os snapshots. |
 | **Sandbox (Flatpak)** | Isolamento que limita o que um aplicativo pode acessar (arquivos, dispositivos, rede). As permissões de cada Flatpak são visíveis e ajustáveis. |
 | **Secure Boot** | Recurso do UEFI que só permite iniciar sistemas assinados. |
 | **SFTP** | Transferência de arquivos por SSH. O aplicativo Arquivos do GNOME abre servidores com `sftp://usuario@endereco/`. |
 | **Slide mestre** | Slide-modelo do Impress que define posição, fonte e cor do título, do texto e do rodapé de todos os slides. |
 | **SMART** | Autodiagnóstico de discos. Mostra saúde, horas de uso, desgaste e erros. Lido com `smartctl`. |
+| **Snapshot (Timeshift)** | Cópia do sistema em um momento. Serve para voltar a um estado anterior. Os arquivos iguais entre cópias são compartilhados, então cada nova cópia ocupa pouco. |
 | **SSH** | Protocolo de acesso seguro. Aqui, usado com chaves para autenticar no GitHub sem senha. |
 | **Stable / testing / unstable** | Ramos do Debian. O *stable* (13 "trixie") é o que este guia usa: estável e conservador. |
 | **`sudo`** | Executa um comando como administrador (root). |
