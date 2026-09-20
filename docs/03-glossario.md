@@ -34,6 +34,7 @@ Termos usados na documentação, em ordem alfabética.
 | **GPU híbrida (PRIME)** | Notebook com duas placas de vídeo: uma integrada, econômica, e uma dedicada, mais potente, usada sob demanda. |
 | **Grupo (`docker`, `wireshark`)** | Conjunto de usuários com uma permissão. Entrar num grupo só vale a partir do próximo login. O grupo `docker` equivale a ser administrador. |
 | **`gsettings`** | Comando que lê e altera as configurações do GNOME, as mesmas dos aplicativos de Ajustes. `gsettings reset` volta ao padrão. |
+| **GTK (3 e 4) e libadwaita** | Bibliotecas de interface do GNOME. A cor de destaque escolhida nas Configurações só vale para aplicativos GTK 4 com libadwaita. Os GTK 3, como o `gnome-terminal` do Debian 13, usam um tema fixo. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
 | **Limites do texto** | Linhas que o Writer desenha nos cantos da folha para mostrar a área das margens. Não são impressas. |
@@ -53,6 +54,7 @@ Termos usados na documentação, em ordem alfabética.
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. Programas instalados só para o usuário costumam ficar em `~/.local/bin`, que precisa estar no `PATH`. |
 | **Perfil do LibreOffice** | Pasta `~/.config/libreoffice/4/user` com as preferências do usuário. O `registrymodifications.xcu` guarda as mudanças em relação ao padrão. |
 | **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
+| **Powerline** | Estilo de prompt em blocos coloridos ligados por setas. Precisa de uma fonte com esses símbolos, como as Nerd Fonts. |
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **PPK** | Formato de chave privada do PuTTY e do WinSCP. O Linux usa o formato do OpenSSH, e o `puttygen` converte de um para o outro. |
 | **Prompt** | Linha em que o shell espera um comando. Pode mostrar a pasta, a branch do git e outras informações. |

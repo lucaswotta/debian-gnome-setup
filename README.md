@@ -20,7 +20,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 | Escritório | LibreOffice com a aparência e os padrões do Microsoft Office |
 | Rede | VPN pelo menu do GNOME e acesso a servidores pelo aplicativo Arquivos |
 | GNOME | Extensões, atalhos e barra de aplicativos no estilo do Windows |
-| Terminal | zsh com sugestões, prompt em duas linhas, fonte com ícones e paleta própria |
+| Terminal | zsh com sugestões, prompt em blocos Powerline, fonte com ícones e paleta própria |
 | Segurança dos dados | Snapshots do sistema com o Timeshift |
 
 ## Como usar
