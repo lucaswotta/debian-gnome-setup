@@ -17,7 +17,7 @@ Regras:
 | 1 | Git e GitHub | Concluída |
 | 2 | Base do sistema, com disco SATA extra | Concluída |
 | 3 | Atualizações | Concluída, com uma confirmação pendente |
-| 4 | Notebook | Concluída, com uma confirmação pendente |
+| 4 | Notebook | Concluída |
 | 5 | Aplicativos, com VPN | Em andamento |
 | 6 | GNOME | Planejada |
 | 7 | Backup | Planejada |
@@ -296,7 +296,7 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Limite de carga da bateria:** ativado entre 75% e 80%.
 - [x] **Teclas Fn:** funcionam.
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
-- [ ] Confirmar o limite de carga na prática: descarregar abaixo de 75%, carregar e observar onde a carga para.
+- [x] **Limite de carga confirmado na prática:** partindo de 64%, a carga parou em 79%, que é 80% da capacidade atual da bateria.
 
 ```bash
 # GPU: ferramentas de teste
@@ -359,6 +359,8 @@ Observações:
   75% e 80%. A leitura em `sysfs` mostra `start=80 end=75`, invertida, mas no boot o kernel registra
   `start 75, stop 80` (`journalctl -k -b | grep "battery 1 registered"`). Os valores gravados estão certos e
   persistem depois de reiniciar. O limite não afeta o desempenho e reduz a autonomia por carga em cerca de 20%.
+  No teste, a carga parou em 79%, com o estado `Not charging` e potência de 0 W. A porcentagem é calculada sobre a capacidade
+  atual da bateria (38,66 Wh), então 30,75 Wh equivalem a 79,5%, e o painel arredonda para baixo.
 - **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
   responde `No devices available`. Não há o que configurar.
 - **Chaveiro no login:** os avisos `gkr-pam: unable to locate daemon control file` e `Failed to start ...keyring...scope`
