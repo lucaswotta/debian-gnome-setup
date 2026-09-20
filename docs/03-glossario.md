@@ -17,6 +17,7 @@ Termos usados na documentação, em ordem alfabética.
 | **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
 | **ext4 / btrfs** | Sistemas de arquivos. O ext4 é o clássico e estável. O btrfs oferece *snapshots*, compressão e verificação de dados. |
 | **Extensão do GNOME** | Complemento que altera ou acrescenta funções ao GNOME. |
+| **Faixa em abas (*Tabbed*)** | Modo de interface do LibreOffice com a barra de ferramentas organizada em abas, como a faixa de opções do Office. |
 | **Fingerprint (impressão digital da chave)** | Resumo curto e único de uma chave GPG. Serve para conferir que a chave baixada é a que o fabricante publicou. |
 | **Firmware** | Software embutido em um componente (Wi-Fi, vídeo, BIOS). Tem atualização própria. |
 | **Flatpak / Flathub** | Formato alternativo de aplicativos, isolados do sistema, e sua loja principal. |
@@ -36,8 +37,10 @@ Termos usados na documentação, em ordem alfabética.
 | **Montagem (*mount*)** | Ligar um disco ou partição a uma pasta do sistema. Enquanto não é montado, o disco não é acessível. |
 | **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |
 | **Nome-código (trixie)** | Nome de cada versão do Debian. Aparece nos arquivos de repositório. |
+| **OOXML** | Formato dos arquivos do Office (`.docx`, `.xlsx` e `.pptx`). O LibreOffice lê e grava esses formatos. |
 | **Pacote / `.deb`** | Programa empacotado para o Debian. O instalador do Chrome para Debian, por exemplo, é um `.deb`. |
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. O Claude Code fica em `~/.local/bin`, que foi adicionada ao `PATH`. |
+| **Perfil do LibreOffice** | Pasta `~/.config/libreoffice/4/user` com as preferências do usuário. O `registrymodifications.xcu` guarda as mudanças em relação ao padrão. |
 | **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. O `git push` envia os commits para ele. |

@@ -454,7 +454,7 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **Lote 1:** Flatpak, base de desenvolvimento, fontes, Wireshark, Meld e Docker.
 - [x] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS.
 - [x] **Lote 3:** VS Code, DBeaver e AnyDesk (repositórios dos fabricantes), Postman, SoapUI e Discord (Flatpak).
-- [ ] **LibreOffice:** configurar para se parecer com o Office.
+- [x] **LibreOffice:** configurado para se parecer com o Office.
 - [ ] Multimídia e jogos, em fase posterior.
 
 ### Lote 1: base de desenvolvimento, fontes e Docker
@@ -776,6 +776,74 @@ sudo systemctl stop ssh                         # desliga ao terminar
 ```
 
 Com isso, a única porta em escuta fica sendo a do serviço de impressão, restrita à própria máquina.
+
+#### LibreOffice parecido com o Office
+
+Objetivo: faixa de opções em abas, ícones no estilo do Office e gravação em `.docx`, `.xlsx` e `.pptx`, mantendo o layout dos documentos.
+Os pacotes de idioma, ajuda, dicionário e as fontes compatíveis já vêm do lote 1.
+
+Pela interface:
+
+- *Exibir > Interface do usuário...*, escolher *Em abas* e clicar em *Aplicar a todos*.
+- *Ferramentas > Opções > LibreOffice > Exibir > Estilo dos ícones*: Colibre (SVG).
+- *Ferramentas > Opções > Carregar/Salvar > Geral*: em "Sempre salvar como", o formato do Office para cada tipo de documento, e
+  desmarcar o aviso ao gravar fora do formato ODF.
+
+Pelo perfil, com o LibreOffice **fechado** (ele reescreve o arquivo ao sair):
+
+```bash
+pgrep -cx soffice.bin                                # 0: LibreOffice fechado
+soffice --headless --norestore --terminate_after_init   # cria o perfil, se ainda não existir
+cp -a ~/.config/libreoffice/4/user/registrymodifications.xcu{,.bak}
+```
+
+Itens acrescentados ao `registrymodifications.xcu` (uma linha `<item>` para cada um, antes do `</oor:items>`):
+
+| Ajuste | Caminho e propriedade | Valor |
+|---|---|---|
+| Faixa em abas | `/org.openoffice.Office.UI.ToolbarMode/Applications/Writer`, `Calc`, `Impress` e `Draw`, propriedade `Active` | `notebookbar.ui` |
+| Layout da faixa | `/org.openoffice.Office.UI.ToolbarMode`, propriedades `ActiveWriter`, `ActiveCalc`, `ActiveImpress` e `ActiveDraw` | `notebookbar.ui` |
+| Ícones | `/org.openoffice.Office.Common/Misc`, propriedade `SymbolStyle` | `colibre_svg` |
+| Formato do Word | `/org.openoffice.Setup/Office/Factories/com.sun.star.text.TextDocument`, propriedade `ooSetupFactoryDefaultFilter` | `MS Word 2007 XML` |
+| Formato do Excel | `.../com.sun.star.sheet.SpreadsheetDocument`, mesma propriedade | `Calc MS Excel 2007 XML` |
+| Formato do PowerPoint | `.../com.sun.star.presentation.PresentationDocument`, mesma propriedade | `Impress MS PowerPoint 2007 XML` |
+| Sem aviso de formato | `/org.openoffice.Office.Common/Save/Document`, propriedade `WarnAlienFormat` | `false` |
+
+Cada item segue este formato:
+
+```xml
+<item oor:path="/org.openoffice.Office.UI.ToolbarMode/Applications/Writer"><prop oor:name="Active" oor:op="fuse"><value>notebookbar.ui</value></prop></item>
+```
+
+Como conferir:
+
+```bash
+# Fidelidade de fontes: gera um documento com Calibri, Cambria e Arial e confere o resultado
+soffice --headless --convert-to docx teste.fodt && soffice --headless --convert-to pdf teste.fodt
+unzip -p teste.docx word/document.xml | grep -o 'w:ascii="[^"]*"' | sort -u   # nomes da Microsoft
+pdffonts teste.pdf                                                             # Carlito, Caladea e Arial
+```
+
+Ao abrir o Writer, a faixa deve mostrar abas (Arquivo, Página Inicial, Inserir, Layout...), e o *Salvar como* deve sugerir `.docx`.
+
+Como desfazer: com o LibreOffice fechado, `cp -a ~/.config/libreoffice/4/user/registrymodifications.xcu.bak ~/.config/libreoffice/4/user/registrymodifications.xcu`.
+
+Observações:
+
+- **Nomes de fonte no arquivo:** o `.docx` grava `Calibri` e `Cambria`, e o LibreOffice as exibe com o Carlito e o Caladea, de mesmas métricas.
+  O Word de quem receber usa as originais, e o layout se mantém.
+- **Valor da chave `Active`:** é o valor do modo (`notebookbar.ui`), e não o nome exibido no menu (`Tabbed`). Um texto que não seja o
+  valor de um modo é aceito pela API, mas ignorado, e o LibreOffice abre no modo clássico.
+- **Valores dos modos:** `Default` (menus clássicos), `Single`, `Sidebar`, `notebookbar.ui` (em abas), `notebookbar_compact.ui` (em abas,
+  mais baixa), `notebookbar_groupedbar_compact.ui`, `notebookbar_groupedbar_full.ui`, `notebookbar_single.ui` e `notebookbar_groups.ui`.
+- **Descobrir a chave certa:** faça a escolha pela interface e compare o `registrymodifications.xcu` antes e depois. O LibreOffice grava
+  exatamente o que ele lê. Ler a chave de volta pela API (UNO) confirma que o valor existe, mas não que o programa o reconhece.
+- **Ícones:** o Colibre é o tema do LibreOffice no Windows e o mais próximo do Office. A variante escura é a `colibre_dark_svg`.
+- **Fonte padrão de documentos novos:** continua a do LibreOffice (Liberation). Para Calibri em 11 pt, salve um modelo (*Arquivo > Modelos >
+  Salvar como modelo*) e defina-o como padrão.
+- **Processo aberto:** `pgrep -f soffice.bin` casa com a própria linha de comando do `pgrep`. Use `pgrep -x soffice.bin`.
+- **Documentos complexos:** se a fidelidade em documentos muito formatados não bastar, o ONLYOFFICE (Flatpak) reproduz melhor o Office, com a
+  interface em faixa de opções.
 
 ### VPN Fortinet com interface gráfica
 

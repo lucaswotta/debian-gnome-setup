@@ -68,7 +68,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | Item | Estado |
 |---|---|
 | GNOME (`gnome-core`), Ajustes (`gnome-tweaks`), NetworkManager | instalados |
-| Firefox ESR, LibreOffice Writer | instalados |
+| Firefox ESR e LibreOffice (Writer, Calc, Impress e Draw) | instalados. O LibreOffice usa a faixa em abas, os ícones Colibre e grava em `.docx`, `.xlsx` e `.pptx` |
 | `curl`, `wget` | instalados |
 | Google Chrome | instalado, com o repositório oficial do Google (atualiza pelo `apt`) |
 | `openfortivpn` | instalado (cliente de VPN Fortinet por linha de comando, usado como reserva) |
