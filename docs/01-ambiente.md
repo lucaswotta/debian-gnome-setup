@@ -37,7 +37,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Processador | Intel Core i7-10510U (4 núcleos, 8 threads) |
 | Memória | 16 GB |
 | Tela | 14", 1920x1080 |
-| Vídeo | Intel UHD Graphics (`i915`) e AMD Radeon série R7 M / 500 (`amdgpu`) |
+| Vídeo | Intel UHD Graphics (`i915`) e AMD Radeon 530 (`amdgpu`) |
 | Wi-Fi e Bluetooth | Intel AX201 |
 | Ethernet | Realtek RTL8111/8168 Gigabit |
 | Outros | Webcam integrada e leitor de digital Goodix |
@@ -49,7 +49,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Disco | Uso |
 |---|---|
 | SSD NVMe de 238 GB | Sistema: EFI (976 MB, vfat), raiz `/` (225 GB, ext4, sem criptografia) e swap (12 GB) |
-| SSD SATA de 240 GB | Armazenamento extra (programas, jogos e arquivos). Vem em btrfs e ainda não está montado |
+| SSD SATA de 240 GB | Armazenamento extra (jogos, programas e arquivos). btrfs, montado em `/mnt/ssd` pelo `fstab` |
 
 `/home` fica dentro da raiz, sem partição separada.
 
@@ -72,6 +72,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | `network-manager-openconnect-gnome` | instalado (VPN Fortinet pela interface gráfica) |
 | Claude Code | instalado em `~/.local/bin` |
 | `git`, `gh` | instalados |
+| `btrfs-progs`, `smartmontools` | instalados |
 | `ufw`, `timeshift` | ausentes |
 | Flatpak, extensões do GNOME | ausentes |
 
@@ -81,9 +82,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
    Ativar depois da instalação exige reinstalar. Decidir antes de guardar dados importantes.
 2. **BIOS.** A do ThinkPad E14 Gen 1 é da época do lançamento (2020). Verificar atualizações
    pelo `fwupd` ou pelo site de suporte da Lenovo.
-3. **Disco SATA extra.** Vem formatado em btrfs. Antes de montar, conferir o conteúdo em modo
-   somente leitura. Só reformatar com certeza de que não há nada a preservar.
-4. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
-5. **GPU AMD.** Conferir qual GPU o sistema usa e o efeito na bateria e na temperatura.
-6. **Leitor de digital.** Confirmar se é suportado pelo `fprintd` antes de depender dele.
-7. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.
+3. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
+4. **GPU AMD.** Conferir qual GPU o sistema usa e o efeito na bateria e na temperatura.
+5. **Leitor de digital.** Confirmar se é suportado pelo `fprintd` antes de depender dele.
+6. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.

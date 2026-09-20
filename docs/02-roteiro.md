@@ -102,7 +102,7 @@ Aprendizados:
 - [x] **Catálogo de firmware:** atualizado com `fwupd`. Nenhum componente tem atualização no LVFS.
 - [ ] **BIOS:** comparar a versão instalada com a mais recente no site de suporte da Lenovo.
 - [~] **`contrib` e `non-free`:** adiados. Só entram quando um pacote exigir (fontes da Microsoft, alguns codecs).
-- [ ] **Disco SATA extra:** ver detalhes abaixo.
+- [x] **Disco SATA extra:** verificado, mantido em btrfs e montado em `/mnt/ssd` (ver abaixo).
 
 ```bash
 sudo fwupdmgr refresh --force
@@ -181,25 +181,74 @@ Aprendizados:
 | 7 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
 | 8 | Automação | Transformar o que foi validado em `scripts/` |
 
-### Fase 2: disco SATA extra
+### Fase 2: disco SATA extra (concluída)
 
-Etapas, cada uma com confirmação antes de executar:
+Decisões: manter o btrfs (o disco veio vazio, então nada foi apagado) e montar em `/mnt/ssd`.
 
-1. [ ] Montar a partição em **somente leitura** e listar o conteúdo.
-2. [ ] Decidir: manter o btrfs ou recriar o sistema de arquivos (**apaga tudo**).
-3. [ ] Escolher o ponto de montagem e criar a entrada no `/etc/fstab`, identificando o disco
-   por **UUID** (o nome `sda` pode mudar, por exemplo ao conectar um pendrive).
-4. [ ] Criar a estrutura de pastas com as permissões do usuário.
-5. [ ] Apontar para ele o que ocupa espaço, como a biblioteca de jogos.
-6. [ ] Incluí-lo no backup (fase 4). Um disco só não é backup.
+- [x] Conferir o conteúdo. O disco estava vazio.
+- [x] Conferir a saúde (SMART). Aprovado.
+- [x] Montar de forma permanente pelo `/etc/fstab`, identificando o disco por **UUID**.
+- [x] Criar a estrutura de pastas e ajustar dono e permissões.
+- [ ] Apontar para ele o que ocupa espaço, como a biblioteca de jogos (fase 6).
+- [ ] Incluí-lo no backup (fase 4). Um disco só não é backup.
 
-Pontos de atenção:
+```bash
+sudo apt install -y btrfs-progs smartmontools
+sudo smartctl -H -A /dev/sda
 
-- **btrfs ou ext4:** o btrfs oferece *snapshots* e compressão transparente (`compress=zstd`).
-  O ext4 é mais simples. Como o disco já vem em btrfs, manter é uma boa opção.
-- **Programas:** o APT instala em `/usr` e não permite escolher outro disco. Neste disco vão jogos,
-  arquivos, Flatpaks e ferramentas portáteis. Os pacotes do sistema ficam no NVMe.
-- **`nofail` no `fstab`:** se o disco falhar ou for removido, o sistema ainda deve iniciar.
+udisksctl unmount -b /dev/sda1
+sudo cp -a /etc/fstab /etc/fstab.bak-$(date +%F)
+sudo mkdir -p /mnt/ssd
+echo "UUID=$(lsblk -no UUID /dev/sda1) /mnt/ssd btrfs defaults,noatime,compress=zstd:1,nofail,x-systemd.device-timeout=5s,x-gvfs-show 0 0" | sudo tee -a /etc/fstab > /dev/null
+
+sudo systemctl daemon-reload && sudo mount -a
+sudo chown "$USER:$USER" /mnt/ssd && chmod 755 /mnt/ssd
+mkdir -p /mnt/ssd/{Jogos,Programas,Arquivos}
+```
+
+| Parte | O que faz |
+|---|---|
+| `smartctl -H -A` | Lê a saúde do SSD (`-H`) e os contadores (`-A`). Só leitura. |
+| `udisksctl unmount` | Desmonta a montagem temporária que o GNOME fez sozinho. |
+| `cp -a /etc/fstab ...` | Faz backup do `fstab` antes de editar. |
+| `UUID=$(lsblk -no UUID ...)` | Identifica o disco pelo UUID, que não muda. O nome `sda` pode mudar. |
+| `noatime` | Não grava o horário de cada leitura. Poupa escrita no SSD. |
+| `compress=zstd:1` | Compressão transparente e rápida, que economiza espaço. |
+| `nofail` | Se o disco faltar, o sistema ainda inicia. |
+| `x-systemd.device-timeout=5s` | Espera no máximo 5 s pelo disco, em vez dos 90 s padrão. |
+| `x-gvfs-show` | Mostra o disco na barra lateral do gerenciador de arquivos. |
+| `0 0` | Sem `dump` e sem verificação na inicialização (o btrfs não usa esse recurso). |
+| `daemon-reload` e `mount -a` | O systemd relê o `fstab` e monta tudo. Testa a linha sem reiniciar. |
+| `chown` e `chmod 755` | O disco passa a ser do usuário, e os demais só leem. |
+
+Como conferir:
+
+```bash
+findmnt /mnt/ssd                   # montado, com noatime e compress=zstd:1
+grep /mnt/ssd /etc/fstab           # a linha existe
+ls -ld /mnt/ssd                    # dono: o usuário, permissão drwxr-xr-x
+df -h /mnt/ssd                     # tamanho e espaço livre
+sudo btrfs filesystem usage /mnt/ssd
+```
+
+Como desfazer:
+
+```bash
+sudo umount /mnt/ssd
+sudo cp -a /etc/fstab.bak-AAAA-MM-DD /etc/fstab
+```
+
+Aprendizados:
+
+- **Automontagem do GNOME:** monta o disco em `/media/USUARIO/UUID`, de forma temporária e com a raiz do disco
+  pertencendo ao `root`. Para uso contínuo, configure o `fstab`.
+- **UUID no `fstab`:** o nome `sda` pode mudar. O UUID não muda. Não publique o UUID no repositório.
+- **`nofail`:** sem ele, a falta do disco pode travar a inicialização.
+- **Saúde do SSD:** olhe o resultado geral (`PASSED`), as horas ligado, a vida útil restante e os contadores de
+  setores realocados e erros de CRC. Acompanhe também o contador de desligamentos abruptos.
+- **`findmnt --verify` sem `sudo`:** mostra avisos de permissão negada. Não são erros do `fstab`.
+- **Programas:** o APT instala em `/usr` e não permite escolher outro disco. Neste disco vão jogos, arquivos,
+  Flatpaks e ferramentas portáteis. Os pacotes do sistema ficam no NVMe.
 
 ---
 
