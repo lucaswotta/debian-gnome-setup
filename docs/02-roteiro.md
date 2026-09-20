@@ -16,7 +16,7 @@ Regras:
 | 0 | Base mínima | Concluída |
 | 1 | Git e GitHub | Concluída |
 | 2 | Base do sistema, com disco SATA extra | Concluída |
-| 3 | Atualizações | Concluída, com uma confirmação pendente |
+| 3 | Atualizações | Concluída |
 | 4 | Notebook | Concluída |
 | 5 | Aplicativos, com VPN | Em andamento |
 | 6 | GNOME | Planejada |
@@ -227,7 +227,7 @@ Objetivo: manter o sistema atualizado com pouco esforço.
 - [x] Ativar a execução diária
 - [x] Incluir o Google Chrome nas atualizações automáticas
 - [x] Validar com uma simulação
-- [ ] Confirmar a primeira execução automática, pelo log em `/var/log/unattended-upgrades/`
+- [x] Confirmar a execução automática pelo log em `/var/log/unattended-upgrades/`
 
 ```bash
 sudo apt install -y unattended-upgrades powermgmt-base
@@ -264,7 +264,7 @@ Como conferir:
 systemctl list-timers apt-daily.timer apt-daily-upgrade.timer   # próximas execuções
 apt-config dump | grep -E "APT::Periodic|Origins-Pattern"       # valores efetivos
 sudo unattended-upgrade --dry-run --debug                       # "origens permitidas"
-ls /var/log/unattended-upgrades/                                # histórico das execuções
+sudo tail /var/log/unattended-upgrades/unattended-upgrades.log   # histórico das execuções
 ```
 
 Como desfazer:
@@ -282,6 +282,9 @@ Observações:
 - **Kernel novo:** só passa a valer depois de reiniciar. Se o arquivo `/var/run/reboot-required` existir, há reinício pendente.
 - **Repositórios externos:** ficam de fora por padrão. Cada um precisa de uma origem na lista.
 - **Notebook:** sem o `powermgmt-base`, o `unattended-upgrades` não sabe se está na bateria e pode atualizar sem tomada.
+- **Log:** a pasta `/var/log/unattended-upgrades/` só é legível por `root` e pelo grupo `adm`. Sem estar no grupo, use `sudo tail`.
+  O `ls` sem `sudo` falha com "Permissão negada". No log, os repositórios que não estão na lista (como o do Docker) aparecem
+  como "Marking not allowed", e uma execução sem novidades registra `No packages found that can be upgraded unattended`.
 - **Hábito semanal:** o `sudo apt update && sudo apt full-upgrade` cobre o que o automático não pega.
 
 ---
