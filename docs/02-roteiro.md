@@ -299,6 +299,7 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Limite de carga da bateria:** opcional e desativado. O procedimento está documentado.
 - [x] **Teclas Fn:** funcionam.
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
+- [x] **Boot direto:** o menu do GRUB fica oculto, com 1 segundo de espera invisível (ver "Boot direto").
 
 ```bash
 # GPU: ferramentas de teste
@@ -442,6 +443,27 @@ Observações:
   O relatório tem cerca de 75 linhas de nível `err` por suspensão. Não há correção segura pelo lado do sistema. As atualizações do
   kernel do Debian trazem a correção.
 - **Firmware da GPU:** o erro do ACPI vem da BIOS. O `amdgpu` usa outro caminho e a placa funciona.
+
+#### Boot direto (sem o menu do GRUB)
+
+Com um único sistema instalado, o menu do GRUB só atrasa o boot. O GRUB passa a esperar 1 segundo sem mostrar nada, e a tecla `Esc` nessa janela abre o menu.
+
+```bash
+sudo cp -a /etc/default/grub /etc/default/grub.bak-antes-boot-direto
+sudo sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
+sudo sed -i '/^GRUB_TIMEOUT=/a GRUB_TIMEOUT_STYLE=hidden' /etc/default/grub
+sudo update-grub
+```
+
+Como conferir: `grep -E '^GRUB_TIMEOUT' /etc/default/grub` mostra `GRUB_TIMEOUT=1` e `GRUB_TIMEOUT_STYLE=hidden`. Depois de reiniciar, `systemd-analyze` informa o tempo do carregador (`loader`).
+
+Como desfazer: `sudo cp /etc/default/grub.bak-antes-boot-direto /etc/default/grub && sudo update-grub`.
+
+Observações:
+
+- **Falha de boot:** o `grub.cfg` gerado mostra o menu por 30 segundos depois de um boot que falhou (`recordfail`), então o menu reaparece quando é necessário.
+- **Tela de login:** continua a do GDM. O login automático não é usado, porque o desbloqueio do chaveiro e do agente SSH depende da senha no login.
+- **Menu do GRUB e `os-prober`:** o `update-grub` avisa que não procura outros sistemas. Com um só sistema, o aviso não tem efeito.
 
 ---
 
