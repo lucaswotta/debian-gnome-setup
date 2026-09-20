@@ -1,0 +1,72 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Prompt em duas linhas: info em cima (pasta, git, versoes, tempo, hora), simbolo embaixo.
+add_newline = true
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$golang\
+$python\
+$java\
+$cmd_duration\
+$fill\
+$time
+$character"""
+
+[character]
+success_symbol = '[\$](bold green)'
+error_symbol = '[\$](bold red)'
+
+[directory]
+style = 'bold blue'
+truncation_length = 3
+truncation_symbol = '…/'
+truncate_to_repo = false
+read_only = " \U000f033e"
+format = '[$path]($style)[$read_only]($read_only_style) '
+
+[git_branch]
+symbol = "\uf418 "
+style = 'purple'
+format = '[$symbol$branch(:$remote_branch)]($style) '
+
+[git_status]
+style = 'bright-red'
+format = '([$all_status$ahead_behind]($style) )'
+
+[nodejs]
+symbol = "\ue718 "
+style = 'green'
+format = '[$symbol($version)]($style) '
+
+[golang]
+symbol = "\ue627 "
+style = 'cyan'
+format = '[$symbol($version)]($style) '
+
+[python]
+symbol = "\ue235 "
+style = 'bright-yellow'
+format = '[$symbol($version)]($style) '
+
+[java]
+symbol = "\ue256 "
+style = 'bright-blue'
+format = '[$symbol($version)]($style) '
+
+[cmd_duration]
+min_time = 3000
+style = 'white'
+format = '[$duration]($style) '
+
+[fill]
+symbol = ' '
+
+[time]
+disabled = false
+time_format = '%H:%M'
+style = 'white'
+format = '[$time]($style)'

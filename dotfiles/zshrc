@@ -1,0 +1,99 @@
+# ~/.zshrc: shell interativo. O bash continua como shell do sistema (~/.bashrc intacto).
+
+# --- Historico: grande, compartilhado entre abas ---
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+setopt SHARE_HISTORY EXTENDED_HISTORY HIST_IGNORE_DUPS HIST_IGNORE_SPACE HIST_REDUCE_BLANKS
+setopt INTERACTIVE_COMMENTS NO_BEEP
+
+# --- PATH (mesma ordem do .bashrc) ---
+typeset -U path PATH
+path=("$HOME/.local/go/bin" "$HOME/go/bin" "$HOME/.local/share/fnm" "$HOME/.local/bin" $path)
+
+# --- Teclas: Home/End/Delete e Ctrl+setas ---
+bindkey -e
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+bindkey '^[OH' beginning-of-line
+bindkey '^[OF' end-of-line
+bindkey '^[[3~' delete-char
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
+
+# --- Completar: menu, sem diferenciar maiuscula/minuscula, com cores ---
+autoload -Uz compinit && compinit
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+(( $+commands[dircolors] )) && eval "$(dircolors -b)"
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# --- Ferramentas de desenvolvimento: fnm/Node, Go, uv, SDKMAN ---
+(( $+commands[fnm] )) && eval "$(fnm env --use-on-cd --shell zsh)"
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# --- fzf: Ctrl+R (historico), Ctrl+T (arquivos), Alt+C (pastas) ---
+export FZF_DEFAULT_OPTS="--height=40% --layout=reverse --border \
+--color=fg:-1,hl:2,fg+:15,bg+:8,hl+:2,info:6,prompt:2,pointer:1,marker:3,spinner:6,header:7,border:8"
+export FZF_CTRL_T_OPTS="--preview 'batcat --color=always --style=numbers --line-range=:200 {}'"
+source <(fzf --zsh)
+
+# --- bat (no Debian o binario se chama batcat) ---
+export BAT_THEME=ansi
+alias bat='batcat'
+
+# --- man/less com cores (titulos em azul, termos em verde, busca em destaque) ---
+export LESS_TERMCAP_md=$'\e[1;34m'
+export LESS_TERMCAP_us=$'\e[4;32m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[30;42m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_me=$'\e[0m'
+
+# --- Listagem com eza ---
+alias ls='eza --icons=auto --group-directories-first'
+alias ll='eza -l --icons=auto --group-directories-first --git'
+alias la='eza -la --icons=auto --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons=auto'
+
+# --- Navegacao ---
+alias ..='cd ..'
+alias ...='cd ../..'
+mkcd() { mkdir -p -- "$1" && cd -- "$1"; }
+
+# --- Git (gs esconde o Ghostscript so no terminal interativo; use \gs ou command gs) ---
+alias gs='git status -sb'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate'
+alias gd='git diff'
+
+# --- Docker ---
+alias d='docker'
+alias dps='docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
+alias dcu='docker compose up'
+alias dcd='docker compose down'
+alias dlogs='docker logs -f --tail 100'
+
+# --- Prompt ---
+eval "$(starship init zsh)"
+
+# --- Plugins (syntax-highlighting precisa ser o ultimo) ---
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#4A8F68'
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Realce de sintaxe: o tema so tem verde, azul e vermelho; separa por categoria
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=1,bold'
+ZSH_HIGHLIGHT_STYLES[command]='fg=2,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=10,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=10,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=10,bold'
+ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=5,bold'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=4'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=4'
+ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=6'
+ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=6'
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#4A8F68,italic'
