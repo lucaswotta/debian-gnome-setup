@@ -43,6 +43,7 @@ Termos usados na documentação, em ordem alfabética.
 | **OOXML** | Formato dos arquivos do Office (`.docx`, `.xlsx` e `.pptx`). O LibreOffice lê e grava esses formatos. |
 | **Pacote / `.deb`** | Programa empacotado para o Debian. O instalador do Chrome para Debian, por exemplo, é um `.deb`. |
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. O Claude Code fica em `~/.local/bin`, que foi adicionada ao `PATH`. |
+| **Paleta de cores (`.soc`)** | Arquivo com as cores oferecidas nos seletores do LibreOffice. Paletas próprias ficam em `~/.config/libreoffice/4/user/config/`. |
 | **Perfil do LibreOffice** | Pasta `~/.config/libreoffice/4/user` com as preferências do usuário. O `registrymodifications.xcu` guarda as mudanças em relação ao padrão. |
 | **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
@@ -52,6 +53,7 @@ Termos usados na documentação, em ordem alfabética.
 | **root** | Superusuário, com poder total sobre o sistema. |
 | **Sandbox (Flatpak)** | Isolamento que limita o que um aplicativo pode acessar (arquivos, dispositivos, rede). As permissões de cada Flatpak são visíveis e ajustáveis. |
 | **Secure Boot** | Recurso do UEFI que só permite iniciar sistemas assinados. |
+| **Slide mestre** | Slide-modelo do Impress que define posição, fonte e cor do título, do texto e do rodapé de todos os slides. |
 | **SMART** | Autodiagnóstico de discos. Mostra saúde, horas de uso, desgaste e erros. Lido com `smartctl`. |
 | **SSH** | Protocolo de acesso seguro. Aqui, usado com chaves para autenticar no GitHub sem senha. |
 | **Stable / testing / unstable** | Ramos do Debian. O *stable* (13 "trixie") é o que este guia usa: estável e conservador. |

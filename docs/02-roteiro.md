@@ -897,8 +897,31 @@ fc-cache -f && fc-match Aptos          # Liberation Sans
 O arquivo `.docx` continua gravando o nome `Aptos`, então o Word de quem receber usa a fonte original. A substituta só vale na tela e no PDF gerado aqui.
 É uma aproximação: sem a Aptos instalada, não dá para medir a diferença exata.
 
-**Modelos padrão.** Os modelos abaixo aproximam os padrões do Word e do Excel do Microsoft 365 novo. São criados por um script UNO e definidos como
-padrão pela API de configuração:
+**Idioma.** Interface, formatos e ortografia em português do Brasil. Pacotes: `libreoffice-l10n-pt-br`, `libreoffice-help-pt-br`,
+`hunspell-pt-br`, `hyphen-pt-br` e `mythes-pt-br`. Chaves gravadas pela API de configuração:
+
+| Ajuste | Caminho e propriedade | Valor |
+|---|---|---|
+| Idioma da interface | `/org.openoffice.Setup/L10N`, propriedade `ooLocale` | `pt-BR` |
+| Formatos de data, número e moeda | `/org.openoffice.Setup/L10N`, propriedade `ooSetupSystemLocale` | `pt-BR` |
+| Idioma padrão dos documentos (ortografia) | `/org.openoffice.Office.Linguistic/General`, propriedade `DefaultLocale` | `pt-BR` |
+
+Os modelos abaixo também gravam `pt-BR` no estilo padrão de cada aplicativo. Scripts UNO devem rodar com o idioma do usuário (`LANG=pt_BR.UTF-8`).
+Com `LC_ALL=C`, o LibreOffice trata a sessão como inglesa e os nomes de planilha, de estilo e da interface saem em inglês.
+
+**Grade do Calc e paleta de cores.** A grade fica em cinza claro (`#D4D4D4`), como no Excel, nas propriedades `Light` e `Dark` do nó `CalcGrid`
+do esquema de cores. A paleta *Office* (arquivo `~/.config/libreoffice/4/user/config/Office.soc`) traz as cores do tema do Office 2023 em diante, com as cinco
+variações de cada uma (mais claro 80%, 60% e 40%, mais escuro 25% e 50%), calculadas em HSL, e as dez cores padrão. Está selecionada em
+`/org.openoffice.Office.Common/UserColors`, propriedade `PaletteName` (`Office`):
+
+| Cor do tema | Valor |
+|---|---|
+| Texto 2 | `#0E2841` |
+| Destaque 1 a 6 | `#156082`, `#E97132`, `#196B24`, `#0F9ED5`, `#A02B93`, `#4EA72E` |
+| Hiperlink e hiperlink visitado | `#467886` e `#96607D` |
+
+**Modelos padrão.** Os modelos abaixo aproximam os padrões do Word, do Excel e do PowerPoint do Microsoft 365 novo. São criados por um script UNO num
+perfil temporário e definidos como padrão pela API de configuração:
 
 | Estilo | Valor |
 |---|---|
@@ -906,7 +929,29 @@ padrão pela API de configuração:
 | Título 1, 2 e 3 | Aptos Display 20 pt, Aptos Display 16 pt e Aptos 14 pt, cor `#0F4761`, sem negrito |
 | Título e Subtítulo | Aptos Display 28 pt, e Aptos 14 pt na cor `#595959` |
 | Página | A4, margens de 2,54 cm nos quatro lados (predefinição *Normal* do Word) |
-| Célula padrão (Excel) | Aptos Narrow 11 pt |
+
+Modelo do Excel (`Excel365.ots`):
+
+| Item | Valor |
+|---|---|
+| Célula padrão | Aptos Narrow 11 pt, `pt-BR` |
+| Planilha | uma, chamada `Planilha1` |
+| Coluna | 1,693 cm (8,43 caracteres, 64 px) |
+| Página | A4, margens de 1,91 cm em cima e embaixo e de 1,78 cm nas laterais (predefinição *Normal* do Excel), sem cabeçalho e sem rodapé |
+
+Modelo do PowerPoint (`Impress365.otp`):
+
+| Item | Valor |
+|---|---|
+| Slide | 33,867 x 19,05 cm (16:9, o tamanho padrão do PowerPoint) |
+| Título | Aptos Display 44 pt, preto, centralizado na vertical, em uma caixa de 29,21 x 3,68 cm a 2,33 cm da borda esquerda |
+| Texto | Aptos 28, 24, 20 e 18 pt (níveis 1 a 5 e seguintes), entrelinha 90%, 10 pt antes do parágrafo |
+| Marcadores | `•` em Arial, tamanho 100%, recuo de 0,635 cm e mais 1,27 cm por nível |
+| Data, rodapé e número | Aptos 12 pt, cinza `#898989` |
+| Slide 1 | *Slide de título*: título de 60 pt centralizado e ancorado embaixo, subtítulo de 24 pt centralizado |
+| Formas e caixas de texto | Aptos 18 pt |
+
+Os valores de posição do PowerPoint vêm do tema padrão do Office (`12192000 x 6858000` EMU, com 1 EMU = 1/360 de centésimo de milímetro).
 
 ```python
 # soffice --headless --accept="socket,host=127.0.0.1,port=2005;urp;" &   (com um perfil temporário, se preferir)
@@ -929,26 +974,32 @@ doc.storeToURL("file://" + os.path.expanduser("~/.config/libreoffice/4/user/temp
 doc.close(True)
 ```
 
-Definir o modelo como padrão, com o LibreOffice fechado ou por uma sessão UNO (o `Excel365.ots` segue o mesmo caminho, com a fábrica
-`com.sun.star.sheet.SpreadsheetDocument`):
+Definir os modelos como padrão, com o LibreOffice fechado ou por uma sessão UNO:
 
 ```python
 cp = ctx.ServiceManager.createInstanceWithContext("com.sun.star.configuration.ConfigurationProvider", ctx)
-no = cp.createInstanceWithArguments("com.sun.star.configuration.ConfigurationUpdateAccess",
-        (pv("nodepath", "/org.openoffice.Setup/Office/Factories/com.sun.star.text.TextDocument"),))
-no.setPropertyValue("ooSetupFactoryTemplateFile", "file://" + os.path.expanduser("~/.config/libreoffice/4/user/template/Word365.ott"))
-no.commitChanges()
+modelos = {"com.sun.star.text.TextDocument": "Word365.ott",
+           "com.sun.star.sheet.SpreadsheetDocument": "Excel365.ots",
+           "com.sun.star.presentation.PresentationDocument": "Impress365.otp"}
+for fabrica, arquivo in modelos.items():
+    no = cp.createInstanceWithArguments("com.sun.star.configuration.ConfigurationUpdateAccess",
+            (pv("nodepath", "/org.openoffice.Setup/Office/Factories/" + fabrica),))
+    no.setPropertyValue("ooSetupFactoryTemplateFile", "file://" + os.path.expanduser("~/.config/libreoffice/4/user/template/" + arquivo))
+    no.commitChanges()
 ```
 
-Como conferir:
+Como conferir, abrindo um documento novo de cada tipo:
 
 ```python
 d = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, (pv("Hidden", True),))
 e = d.StyleFamilies.getByName("ParagraphStyles").getByName("Standard")
 print(e.CharFontName, e.CharHeight)      # Aptos 11.0
+# Calc: "scalc", estilo de célula "Default", estilo de página "Default"
+# Impress: "simpress", d.StyleFamilies.getByName(d.MasterPages.getByIndex(0).Name).getByName("title")
 ```
 
-Como desfazer: apague a chave `ooSetupFactoryTemplateFile` pela mesma API (valor vazio) e remova os arquivos de `~/.config/libreoffice/4/user/template/`.
+Como desfazer: apague a chave `ooSetupFactoryTemplateFile` de cada fábrica pela mesma API (valor vazio), remova os arquivos de
+`~/.config/libreoffice/4/user/template/` e o `Office.soc`, e restaure o perfil com o backup `registrymodifications.xcu.bak`.
 
 Observações:
 
@@ -956,14 +1007,20 @@ Observações:
   `registrymodifications.xcu`. Pela API de atualização de configuração, o mesmo valor persistiu. Confirme sempre abrindo um documento novo.
 - **Validar pela API:** ler uma chave de volta não prova que o programa a usa. Abra um documento novo e leia os estilos.
 - **Estilos derivados:** os estilos que não foram ajustados (lista, legenda, índice) continuam em Liberation. Só os estilos da tabela acima seguem o Word.
-- **Margens e valores dos estilos:** as margens seguem a predefinição *Normal* documentada pela Microsoft (2,54 cm). Um documento em branco criado
+- **Margens e valores dos estilos:** as margens seguem a predefinição *Normal* documentada pela Microsoft (2,54 cm no Word). Um documento em branco criado
   no Word do trabalho é a referência exata: a tag `w:pgMar` do `document.xml` traz as margens, e dá para importar os estilos dele em vez de recriá-los.
+  O mesmo vale para `<sheetFormatPr>` e `<pageMargins>` do `.xlsx` e para `sldSz` do `.pptx`.
 - **Régua vertical:** o menu *Exibir > Régua* liga só a horizontal. A vertical fica em *Ferramentas > Opções > LibreOffice Writer > Exibir > Régua vertical*
   e vem desligada, então as margens de cima e de baixo só aparecem ao ligá-la.
 - **Linhas de margem:** os cantos que o Writer desenha na folha são os *limites do texto*. Ficam desligados pela chave `TextBoundaries`
   (*Exibir > Limites do texto* faz o mesmo pela interface).
-- **Aplicativos ainda não tratados:** o Impress mantém o modelo do LibreOffice. O tamanho de slide do PowerPoint (33,867 x 19,05 cm) e os estilos
-  de título e de texto exigem ajustar o slide mestre.
+- **Altura das linhas do Calc:** o LibreOffice a calcula pela fonte e resulta em 0,487 cm, contra 15 pt (0,529 cm) do Excel. Não foi fixada porque
+  uma altura fixa desliga o ajuste automático das linhas com quebra de texto.
+- **Impress, família de estilos:** os estilos de apresentação (`title`, `outline1` a `outline9`, `subtitle`) ficam numa família com o nome do slide mestre
+  (`Padrão` em português).
+- **Impress, marcadores:** `replaceByIndex` em `NumberingRules` só aceita a sequência com `uno.invoke(regras, "replaceByIndex", (i, uno.Any("[]com.sun.star.beans.PropertyValue", valores)))`
+  e os campos curtos (`NumberingType`, `Adjust`, `StartWith`, `BulletRelSize`, `SymbolTextDistance`) como `uno.Any("short", valor)`.
+- **Layouts do PowerPoint:** o Impress tem um só título e um só corpo por slide mestre. O *Slide de título* fica aplicado só ao primeiro slide do modelo.
 
 ### VPN Fortinet com interface gráfica
 
