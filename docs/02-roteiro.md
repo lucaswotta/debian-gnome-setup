@@ -383,7 +383,7 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **Perfil de uso:** desenvolvimento como foco, com uso geral.
 - [x] **Lote 1:** Flatpak, base de desenvolvimento, fontes, Wireshark, Meld e Docker.
 - [x] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS.
-- [ ] **Lote 3:** aplicativos (VS Code, DBeaver, Postman, SoapUI, Discord e AnyDesk).
+- [x] **Lote 3:** VS Code, DBeaver e AnyDesk (repositórios dos fabricantes), Postman, SoapUI e Discord (Flatpak).
 - [ ] **LibreOffice:** configurar para se parecer com o Office.
 - [ ] Multimídia e jogos, em fase posterior.
 
@@ -559,6 +559,102 @@ Observações:
 - **Java:** outras versões se instalam com `sdk install java <identificador>` e se alternam com `sdk use` ou `sdk default`.
   `sdk list java` mostra os identificadores. Maven e Gradle também vêm pelo SDKMAN (`sdk install maven`).
 
+### Lote 3: aplicativos
+
+Repositórios dos fabricantes (VS Code, AnyDesk e DBeaver) e Flatpak (Postman, SoapUI e Discord).
+
+```bash
+# 1. Baixar as chaves dos fabricantes e conferir o fingerprint
+mkdir ~/lote3 && cd ~/lote3
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -o microsoft.asc
+curl -fsSL https://keys.anydesk.com/repos/DEB-GPG-KEY -o anydesk.asc
+curl -fsSL https://dbeaver.io/debs/dbeaver.gpg.key -o dbeaver.asc
+gpg --show-keys --with-fingerprint microsoft.asc anydesk.asc dbeaver.asc
+
+# 2. Provar que cada chave assina o repositório do fabricante
+G=$(mktemp -d); chmod 700 $G
+gpg --homedir $G --import microsoft.asc
+curl -fsSL https://packages.microsoft.com/repos/code/dists/stable/InRelease -o $G/InRelease
+gpg --homedir $G --verify $G/InRelease        # "Good signature"; repita para AnyDesk e DBeaver
+
+# 3. Arquivos de repositório (formato .sources), por exemplo vscode.sources
+#    Types: deb
+#    URIs: https://packages.microsoft.com/repos/code
+#    Suites: stable
+#    Components: main
+#    Architectures: amd64
+#    Signed-By: /etc/apt/keyrings/microsoft.asc
+#    (AnyDesk: URIs https://deb.anydesk.com, Suites all, Components main)
+#    (DBeaver: URIs https://dbeaver.io/debs/dbeaver-ce, Suites /, sem Components)
+
+# 4. Instalar chaves e repositórios
+sudo install -d -m 755 /etc/apt/keyrings
+sudo install -m 644 microsoft.asc anydesk.asc dbeaver.asc /etc/apt/keyrings/
+sudo install -m 644 vscode.sources anydesk.sources dbeaver.sources /etc/apt/sources.list.d/
+sudo apt update
+
+# 5. Instalar (o debconf impede o pacote do VS Code de registrar o repositório por conta própria)
+echo "code code/add-microsoft-repo boolean false" | sudo debconf-set-selections
+sudo apt install -y code anydesk dbeaver-ce
+
+# 6. Postman, SoapUI e Discord
+sudo flatpak install -y flathub com.getpostman.Postman org.soapui.SoapUI com.discordapp.Discord
+
+# 7. Incluir os repositórios nas atualizações automáticas: o arquivo 52unattended-upgrades-local passa a ter as regras
+#    do Chrome (já existente) e estas três, uma por linha, no formato Unattended-Upgrade::Origins-Pattern:: "..."
+#    origin=code stable,codename=stable
+#    origin=philandro Software GmbH,codename=all
+#    site=dbeaver.io                     (o repositório do DBeaver não informa Origin nem Label)
+sudo install -m 644 52unattended-upgrades-local /etc/apt/apt.conf.d/52unattended-upgrades-local
+sudo unattended-upgrade --dry-run --debug
+```
+
+| Fabricante | Fingerprint da chave | Repositório |
+|---|---|---|
+| Microsoft (VS Code) | `BC52 8686 B50D 79E3 39D3 721C EB3E 94AD BE12 29CF` | `packages.microsoft.com/repos/code` |
+| AnyDesk | `06B5 EA2F AE20 8E7C DA97 61DC A2FB 21D5 A877 2835` | `deb.anydesk.com` |
+| DBeaver | `BDFB 19F6 8151 4B43 875D 16FA 132C 13A8 A330 F403` | `dbeaver.io/debs/dbeaver-ce` |
+
+Como conferir:
+
+```bash
+code --version && dbeaver --help >/dev/null && dpkg -s anydesk | grep Status
+flatpak list --app
+ls /etc/apt/sources.list.d/                      # sem vscode.list nem dbeaver.list duplicados
+sudo unattended-upgrade --dry-run --debug        # as origens novas aparecem em "origens permitidas"
+```
+
+Como desfazer:
+
+```bash
+sudo apt remove code anydesk dbeaver-ce
+sudo rm /etc/apt/sources.list.d/{vscode,anydesk,dbeaver}.sources /etc/apt/keyrings/{microsoft,anydesk,dbeaver}.asc
+sudo flatpak uninstall com.getpostman.Postman org.soapui.SoapUI com.discordapp.Discord
+```
+
+Observações:
+
+- **Conferência das chaves:** só a Microsoft publica o fingerprint de forma amplamente conhecida. Para os outros, a garantia vem do
+  download por HTTPS do domínio do fabricante e de a chave **assinar de fato** os metadados do repositório (`gpg --verify`).
+- **Teste em área isolada:** o `apt-get` aceita `-o Dir::State::Lists=... -o Dir::Etc::sourceparts=...` e roda sem `sudo`, o que permite
+  testar um repositório novo sem tocar em `/etc`.
+- **Duplicidade de repositório:** o pacote `code` registra o repositório da Microsoft sozinho, o que duplicaria o `vscode.sources`.
+  O `debconf-set-selections` acima impede isso. Confira com `apt update`, que avisa de destinos configurados duas vezes.
+- **Erro `Unit anydesk.service not loaded`:** aparece na instalação, porque o pacote tenta parar um serviço que ainda não existe.
+  É inofensivo.
+- **AnyDesk:** o pacote instala e habilita um serviço (`anydesk --service`, como `root`) que escuta em `0.0.0.0:7070` (TCP) e
+  `50001` (UDP), para conexões diretas de entrada. Se o uso for só de saída, desative com `sudo systemctl disable --now anydesk`.
+  Para conferir as portas em escuta, use `ss -ltn` e `ss -lun`. O `ss -p` sem `sudo` só mostra processos do seu usuário.
+- **DBeaver:** instala em `/usr/share/dbeaver-ce`, com um Java embutido (OpenJDK 25), e independe do SDKMAN.
+- **Flatpak:** cada aplicativo pede uma versão diferente da base (24.08, 25.08 e 26.08), e cada uma ocupa cerca de 700 MB, além do Mesa.
+  O total do Flatpak ficou em 5,2 GB. O Postman baixa o binário do fabricante na instalação (*extra-data*).
+- **Permissões dos Flatpak:** o SoapUI só acessa Documentos. O Postman acessa a pasta pessoal inteira. O Discord acessa Downloads e
+  **todos os dispositivos** (câmera e microfone). Dá para restringir com `flatpak override`.
+- **Docker fora das atualizações automáticas:** os quatro repositórios externos restantes (Chrome, VS Code, AnyDesk e DBeaver) entram;
+  o Docker não, porque atualizar o serviço reinicia os contêineres.
+- **VS Code e a Fira Code:** em `~/.config/Code/User/settings.json`, use `editor.fontFamily`, `editor.fontLigatures: true` e
+  `terminal.integrated.fontFamily`.
+
 ### VPN Fortinet com interface gráfica
 
 Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
@@ -602,7 +698,7 @@ Observações:
 |---|---|---|
 | Base de desenvolvimento | `build-essential` | Debian |
 | Editor de código | Visual Studio Code, com a extensão do Antigravity | Repositório da Microsoft |
-| Bancos de dados | DBeaver, para Oracle, MySQL e Postgres | A definir no lote 3 |
+| Bancos de dados | DBeaver, para Oracle, MySQL e Postgres | Repositório do fabricante |
 | Linguagens | Node 24 LTS, Java 25 LTS, Python 3.14, Go 1.27 e TypeScript 7 | Gerenciadores de versão na pasta pessoal |
 | Contêineres | Docker Engine | Repositório oficial do Docker |
 | APIs | Postman e SoapUI | Flatpak |

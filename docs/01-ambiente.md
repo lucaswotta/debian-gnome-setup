@@ -27,7 +27,7 @@ da versão, exceto correções de segurança. Os programas não são os mais nov
 compartilhamento de tela e acesso remoto, podem se comportar de forma diferente do X11.
 
 **Repositórios APT** (`/etc/apt/sources.list.d/`, formato `.sources`): `trixie`, `trixie-updates` e `trixie-security`,
-com os componentes `main contrib non-free-firmware`. O `non-free` está desativado. Também há os repositórios do Google Chrome e do Docker.
+com os componentes `main contrib non-free-firmware`. O `non-free` está desativado. Também há os repositórios do Google Chrome, do Docker e dos fabricantes do VS Code, do AnyDesk e do DBeaver.
 
 ## Notebook
 
@@ -81,8 +81,10 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | `build-essential`, `meld`, `wireshark` | instalados |
 | Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN |
 | Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS | instalados na pasta pessoal, com gerenciadores de versão (`fnm`, `uv` e SDKMAN) |
+| Visual Studio Code, DBeaver e AnyDesk | instalados pelos repositórios dos fabricantes, com atualização pelo `apt` |
+| Postman, SoapUI e Discord | instalados pelo Flatpak |
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
-| `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian e Google Chrome) |
+| `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian, Chrome, VS Code, AnyDesk e DBeaver) |
 | `timeshift` | ausente |
 | Extensões do GNOME | ausentes |
 

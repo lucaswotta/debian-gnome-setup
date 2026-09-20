@@ -16,6 +16,7 @@ Termos usados na documentação, em ordem alfabética.
 | **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
 | **ext4 / btrfs** | Sistemas de arquivos. O ext4 é o clássico e estável. O btrfs oferece *snapshots*, compressão e verificação de dados. |
 | **Extensão do GNOME** | Complemento que altera ou acrescenta funções ao GNOME. |
+| **Fingerprint (impressão digital da chave)** | Resumo curto e único de uma chave GPG. Serve para conferir que a chave baixada é a que o fabricante publicou. |
 | **Firmware** | Software embutido em um componente (Wi-Fi, vídeo, BIOS). Tem atualização própria. |
 | **Flatpak / Flathub** | Formato alternativo de aplicativos, isolados do sistema, e sua loja principal. |
 | **Fontes métricas compatíveis** | Fontes livres que ocupam o mesmo espaço que as da Microsoft (Liberation, Carlito e Caladea), mantendo o layout dos documentos. |
@@ -38,7 +39,9 @@ Termos usados na documentação, em ordem alfabética.
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
 | **Remoto (`origin`)** | Cópia do repositório em um servidor, como o GitHub. O `git push` envia os commits para ele. |
 | **Repositório (APT)** | Servidor com pacotes, definido em `/etc/apt/sources.list` e `/etc/apt/sources.list.d/`. Não confundir com o repositório Git. |
+| **Repositório do fabricante** | Repositório APT mantido pelo próprio autor do programa, fora do Debian. Exige adicionar a chave do fabricante com `Signed-By`. |
 | **root** | Superusuário, com poder total sobre o sistema. |
+| **Sandbox (Flatpak)** | Isolamento que limita o que um aplicativo pode acessar (arquivos, dispositivos, rede). As permissões de cada Flatpak são visíveis e ajustáveis. |
 | **Secure Boot** | Recurso do UEFI que só permite iniciar sistemas assinados. |
 | **SMART** | Autodiagnóstico de discos. Mostra saúde, horas de uso, desgaste e erros. Lido com `smartctl`. |
 | **SSH** | Protocolo de acesso seguro. Aqui, usado com chaves para autenticar no GitHub sem senha. |
