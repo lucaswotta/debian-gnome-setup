@@ -809,6 +809,7 @@ Itens acrescentados ao `registrymodifications.xcu` (uma linha `<item>` para cada
 | Formato do PowerPoint | `.../com.sun.star.presentation.PresentationDocument`, mesma propriedade | `Impress MS PowerPoint 2007 XML` |
 | Sem aviso de formato | `/org.openoffice.Office.Common/Save/Document`, propriedade `WarnAlienFormat` | `false` |
 | Sem linhas de margem na folha | `/org.openoffice.Office.Writer/Content/Display`, propriedade `TextBoundaries` | `false` |
+| Régua vertical | `/org.openoffice.Office.Writer/Layout/Window`, propriedade `VerticalRuler` | `true` |
 
 Os três formatos padrão de gravação só persistem quando gravados pela API de configuração (`ConfigurationUpdateAccess`, como no exemplo do
 modelo padrão mais abaixo). O mesmo valor escrito à mão no `registrymodifications.xcu` pode ser descartado e o *Salvar como* volta a sugerir ODF.
@@ -957,6 +958,8 @@ Observações:
 - **Estilos derivados:** os estilos que não foram ajustados (lista, legenda, índice) continuam em Liberation. Só os estilos da tabela acima seguem o Word.
 - **Margens e valores dos estilos:** as margens seguem a predefinição *Normal* documentada pela Microsoft (2,54 cm). Um documento em branco criado
   no Word do trabalho é a referência exata: a tag `w:pgMar` do `document.xml` traz as margens, e dá para importar os estilos dele em vez de recriá-los.
+- **Régua vertical:** o menu *Exibir > Régua* liga só a horizontal. A vertical fica em *Ferramentas > Opções > LibreOffice Writer > Exibir > Régua vertical*
+  e vem desligada, então as margens de cima e de baixo só aparecem ao ligá-la.
 - **Linhas de margem:** os cantos que o Writer desenha na folha são os *limites do texto*. Ficam desligados pela chave `TextBoundaries`
   (*Exibir > Limites do texto* faz o mesmo pela interface).
 - **Aplicativos ainda não tratados:** o Impress mantém o modelo do LibreOffice. O tamanho de slide do PowerPoint (33,867 x 19,05 cm) e os estilos
