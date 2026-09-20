@@ -26,8 +26,8 @@ da versão, exceto correções de segurança. Os programas não são os mais nov
 **Wayland:** sistema de exibição moderno, padrão no GNOME. Alguns programas antigos, como
 compartilhamento de tela e acesso remoto, podem se comportar de forma diferente do X11.
 
-**Repositórios APT** (`/etc/apt/sources.list`): `trixie`, `trixie-updates` e `trixie-security`,
-com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
+**Repositórios APT** (`/etc/apt/sources.list.d/`, formato `.sources`): `trixie`, `trixie-updates` e `trixie-security`,
+com os componentes `main contrib non-free-firmware`. O `non-free` está desativado. Também há os repositórios do Google Chrome e do Docker.
 
 ## Notebook
 
@@ -77,12 +77,16 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | `git`, `gh` | instalados |
 | `btrfs-progs`, `smartmontools` | instalados |
 | `mesa-utils`, `vulkan-tools` | instalados (testes de vídeo) |
+| `flatpak` | instalado, com o Flathub |
+| `build-essential`, `meld`, `wireshark` | instalados |
+| Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN |
+| Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian e Google Chrome) |
 | `timeshift` | ausente |
-| Flatpak, extensões do GNOME | ausentes |
+| Extensões do GNOME | ausentes |
 
 ## Pontos em aberto
 
 1. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
-2. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
+2. **Repositório `non-free`.** Desativado. Habilite só se um pacote exigir.
 3. **Secure Boot.** Desativado. O Debian suporta Secure Boot, então dá para ativar se necessário.

@@ -116,7 +116,7 @@ Observações:
 - [x] **Catálogo de firmware:** atualizado com `fwupd`. Nenhum componente tem atualização no LVFS.
 - [x] **BIOS:** é da época do lançamento (2020) e o notebook funciona muito bem com ela.
   A atualização é opcional e não é necessária agora.
-- [~] **`contrib` e `non-free`:** adiados. Só entram quando um pacote exigir (fontes da Microsoft, alguns codecs).
+- [x] **`contrib`:** habilitado na fase 5, para as fontes da Microsoft. O `non-free` segue desativado até um pacote exigir.
 - [x] **Disco SATA extra:** verificado, mantido em btrfs e montado em `/mnt/ssd` (ver abaixo).
 
 ```bash
@@ -377,10 +377,104 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **Navegador:** Google Chrome, instalado pelo pacote `.deb` oficial. O pacote configura o repositório do Google, e as atualizações chegam pelo `apt`.
 - [x] **VPN corporativa:** ver abaixo.
 - [x] **Perfil de uso:** desenvolvimento como foco, com uso geral.
-- [ ] Listar as ferramentas de trabalho e o equivalente de cada uma no Linux
-- [ ] Configurar o Flatpak e o Flathub
-- [ ] Instalar os aplicativos definidos
-- [ ] Apontar a biblioteca de jogos para o SSD extra, se for usada
+- [x] **Lote 1:** Flatpak, base de desenvolvimento, fontes, Wireshark, Meld e Docker.
+- [ ] **Lote 2:** linguagens (Node 24 LTS, Java 25 LTS, Python 3.14, Go 1.27 e TypeScript 7).
+- [ ] **Lote 3:** aplicativos (VS Code, DBeaver, Postman, SoapUI, Discord e AnyDesk).
+- [ ] **LibreOffice:** configurar para se parecer com o Office.
+- [ ] Multimídia e jogos, em fase posterior.
+
+### Lote 1: base de desenvolvimento, fontes e Docker
+
+```bash
+# Flatpak e Flathub
+sudo apt install -y flatpak gnome-software-plugin-flatpak
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+# Compilador, Meld, fontes e português do LibreOffice
+sudo apt install -y build-essential meld fonts-crosextra-carlito fonts-crosextra-caladea fonts-noto-core fonts-firacode \
+  libreoffice-help-pt-br hyphen-pt-br mythes-pt-br
+
+# Wireshark, com captura permitida ao grupo wireshark
+echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
+sudo apt install -y wireshark && sudo usermod -aG wireshark "$USER"
+
+# Habilitar o contrib no formato moderno de repositórios
+sudo cp -a /etc/apt/sources.list /etc/apt/sources.list.bak-$(date +%F)
+sudo apt modernize-sources -y
+sudo sed -i 's/^Components: main non-free-firmware$/Components: main contrib non-free-firmware/' /etc/apt/sources.list.d/debian.sources
+sudo sed -i 's/^Types: deb deb-src$/Types: deb/' /etc/apt/sources.list.d/debian.sources
+sudo apt update
+
+# Fontes da Microsoft (aceita o EULA delas)
+echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | sudo debconf-set-selections
+sudo apt install -y ttf-mscorefonts-installer && sudo fc-cache -f
+
+# Repositório oficial do Docker e instalação
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+printf 'Types: deb\nURIs: https://download.docker.com/linux/debian\nSuites: trixie\nComponents: stable\nArchitectures: amd64\nSigned-By: /etc/apt/keyrings/docker.asc\n' \
+  | sudo tee /etc/apt/sources.list.d/docker.sources > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Docker sem sudo e rede fora das faixas da VPN
+sudo usermod -aG docker "$USER"
+printf '{\n  "bip": "100.64.0.1/24",\n  "default-address-pools": [\n    {"base": "100.65.0.0/16", "size": 24}\n  ]\n}\n' \
+  | sudo tee /etc/docker/daemon.json > /dev/null
+sudo systemctl restart docker
+```
+
+| Parte | O que faz |
+|---|---|
+| `flatpak remote-add ... flathub` | Adiciona a loja Flathub. Os aplicativos Flatpak ficam no disco do sistema. |
+| `fonts-crosextra-carlito` e `-caladea` | Substituem o Calibri e o Cambria com as mesmas métricas, então o layout dos documentos se mantém. |
+| `install-setuid true` | Permite capturar pacotes sem ser administrador, para quem estiver no grupo `wireshark`. |
+| `apt modernize-sources` | Converte `/etc/apt/sources.list` para o formato `.sources`, recomendado no Debian 13. |
+| `Components: main contrib ...` | Habilita o `contrib`, que contém o `ttf-mscorefonts-installer`. |
+| `Types: deb` | Remove o código-fonte (`deb-src`), que o `apt update` baixaria sem necessidade. |
+| `ttf-mscorefonts-installer` | Baixa as fontes da Microsoft (Arial, Times New Roman, Verdana e outras) e as instala. |
+| `Signed-By: ...docker.asc` | Só aceita pacotes assinados pela chave do Docker. Confira o fingerprint antes de usar. |
+| `usermod -aG docker` | Permite usar o Docker sem `sudo`. Vale a partir do próximo login. |
+| `bip` e `default-address-pools` | Fixam as redes do Docker na faixa `100.64.0.0/10`, fora das faixas da VPN. |
+
+Como conferir:
+
+```bash
+fc-match Calibri; fc-match Cambria; fc-match Arial        # Carlito, Caladea e Arial
+gpg --show-keys --with-fingerprint /etc/apt/keyrings/docker.asc   # 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88
+docker --version && docker compose version
+docker run --rm hello-world                               # sem sudo, depois de um novo login
+ip -br addr show docker0                                  # 100.64.0.1/24
+ip route get 172.17.5.5                                   # com a VPN ativa: dev do túnel, não docker0
+```
+
+Como desfazer:
+
+```bash
+sudo apt remove docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo rm /etc/apt/sources.list.d/docker.sources /etc/apt/keyrings/docker.asc /etc/docker/daemon.json
+sudo apt remove ttf-mscorefonts-installer wireshark meld flatpak
+sudo rm /etc/apt/sources.list.d/debian.sources && sudo cp -a /etc/apt/sources.list.bak-AAAA-MM-DD /etc/apt/sources.list && sudo apt update
+```
+
+Observações:
+
+- **Fontes:** o Calibri e o Cambria originais não têm fonte gratuita legal. O Carlito e o Caladea são clones métricos e
+  mantêm o layout. Arial, Times New Roman e as demais fontes da Microsoft vêm do `ttf-mscorefonts-installer`,
+  que exige aceitar o EULA delas.
+- **Docker e VPN:** uma VPN corporativa costuma rotear as faixas privadas inteiras (`10.0.0.0/8`, `172.16.0.0/12` e
+  `192.168.0.0/16`), e o Docker usa `172.17.0.0/16` até `172.31.0.0/16` e `192.168.0.0/16`. Com a VPN ativa, um pacote para
+  `172.17.x.x` ia para o `docker0`, e não para a VPN. Confira com `ip route get 172.17.5.5`. A correção é fixar a rede do
+  Docker numa faixa livre (`bip` e `default-address-pools`). Escolha a faixa comparando com as rotas reais da VPN.
+- **Grupo `docker`:** equivale a ser administrador, porque quem controla o Docker pode montar o disco inteiro num contêiner.
+  O modo *rootless* é mais seguro, mas limita a rede dos contêineres.
+- **Grupos e sessão:** `docker` e `wireshark` só valem depois de sair da sessão gráfica e entrar de novo. Fechar o terminal não basta.
+  Um novo login também faz os aplicativos Flatpak aparecerem no menu.
+- **Docker e atualizações automáticas:** o Docker não entra no `unattended-upgrades`, porque atualizar o serviço o reinicia e para os contêineres.
+  Atualize com o `sudo apt full-upgrade` semanal.
+- **`deb-src`:** removido de `debian.sources` (`Types: deb`). Sem necessidade de código-fonte, o `apt update` baixa menos índices.
+- **Repositórios externos:** o `debian.sources` e o `docker.sources` usam `Signed-By`, que limita cada chave ao seu repositório.
 
 ### VPN Fortinet com interface gráfica
 
@@ -419,32 +513,30 @@ Observações:
   Se um nome interno não resolver, comece por esse arquivo.
 - **Certificado:** aceite o certificado do servidor só se reconhecer o servidor.
 
-### Organização
+### Organização dos aplicativos
 
-| Bloco | Conteúdo | Origem preferida |
+| Bloco | Escolha | Origem |
 |---|---|---|
-| Base de desenvolvimento | Compilador, utilitários de terminal, Python | Debian |
-| Editor de código ou IDE | A definir | Fora do Debian (Flatpak ou repositório do fabricante) |
-| Bancos de dados | Cliente gráfico e servidores de desenvolvimento | Cliente: Flatpak ou fabricante. Servidores: contêineres ou Debian |
-| Linguagens e runtimes | Conforme os projetos | Debian. Gerenciador de versões quando a versão do Debian não servir |
-| Contêineres e máquinas virtuais | Podman ou Docker. QEMU/KVM para sistemas legados | Debian |
-| Comunicação | Videoconferência e mensageria | Navegador ou Flatpak |
-| Escritório | LibreOffice (já instalado) e leitor de PDF | Debian |
+| Base de desenvolvimento | `build-essential` | Debian |
+| Editor de código | Visual Studio Code, com a extensão do Antigravity | Repositório da Microsoft |
+| Bancos de dados | DBeaver, para Oracle, MySQL e Postgres | A definir no lote 3 |
+| Linguagens | Node 24 LTS, Java 25 LTS, Python 3.14, Go 1.27 e TypeScript 7 | Gerenciadores de versão na pasta pessoal |
+| Contêineres | Docker Engine | Repositório oficial do Docker |
+| APIs | Postman e SoapUI | Flatpak |
+| Comunicação | WhatsApp Web, Teams, Meet e Zoom pelo Chrome. Discord | Navegador e Flatpak |
+| Rede e acesso remoto | Wireshark, Meld e AnyDesk | Debian e repositório do fabricante |
+| Escritório | LibreOffice, configurado para se parecer com o Office | Debian |
+| Captura de tela | Recurso nativo do GNOME | GNOME |
 
-O Flatpak e o Flathub entram porque alguns aplicativos não estão no repositório do Debian.
-O processador tem suporte a virtualização, o que permite máquinas virtuais se necessário.
-
-Fora do repositório oficial do Debian 13: Visual Studio Code, VSCodium, DBeaver e o SDK do .NET 8.
-Disponíveis no repositório: Python, Java (OpenJDK), Node.js, Go, Rust, PHP, Ruby, Maven, PostgreSQL, MariaDB,
-SQLite, Docker e Podman.
+O Debian 13 traz versões antigas de algumas linguagens (Node 20 e Go 1.24 já saíram de suporte), por isso o lote 2 usa
+gerenciadores de versão na pasta pessoal: `fnm` para Node, SDKMAN para Java, `uv` para Python e o pacote oficial do Go.
+O Python do sistema fica intocado.
 
 ### Pontos em aberto
 
-1. Quais ferramentas de trabalho são necessárias (bancos de dados, editor de código, modelagem, videoconferência, acesso remoto)? Alguma só existe para Windows?
-2. Há política de TI que exija antivírus ou software específico?
-3. Será preciso rodar Windows em máquina virtual para algum sistema legado?
-4. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
-5. Onde instalar os aplicativos Flatpak: no disco do sistema (padrão) ou no SSD extra?
+1. Há política de TI que exija antivírus ou software específico?
+2. Será preciso rodar Windows em máquina virtual para algum sistema legado?
+3. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
 
 ---
 

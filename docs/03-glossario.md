@@ -4,22 +4,27 @@ Termos usados na documentação, em ordem alfabética.
 
 | Termo | Explicação |
 |---|---|
+| **`.sources` (deb822)** | Formato moderno dos arquivos de repositório do APT, com um campo por linha e `Signed-By` para limitar cada chave ao seu repositório. |
 | **APT** | Gerenciador de pacotes do Debian. Instala, atualiza e remove programas a partir dos repositórios. |
 | **Branch `main`** | Ramo principal de um repositório Git. Neste projeto, todo o trabalho vai direto nele. |
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
 | **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |
 | **Componentes do APT (`main`, `contrib`, `non-free`, `non-free-firmware`)** | Categorias de pacotes. `main` é software livre; `non-free` tem licença restritiva; `non-free-firmware` traz firmwares de hardware. |
+| **Contêiner** | Ambiente isolado que executa um programa com tudo o que ele precisa. Comum para rodar bancos de dados e serviços de desenvolvimento. |
 | **Distribuição (distro)** | Um "sabor" de Linux: kernel, programas e gerenciador de pacotes. O Debian é uma das mais antigas e serve de base para outras. |
+| **Docker (Engine, Compose, Buildx)** | Motor de contêineres. O Compose descreve vários contêineres num arquivo, e o Buildx constrói imagens. |
 | **E-mail `noreply`** | Endereço fornecido pelo GitHub para assinar commits sem expor o e-mail pessoal. |
 | **ext4 / btrfs** | Sistemas de arquivos. O ext4 é o clássico e estável. O btrfs oferece *snapshots*, compressão e verificação de dados. |
 | **Extensão do GNOME** | Complemento que altera ou acrescenta funções ao GNOME. |
 | **Firmware** | Software embutido em um componente (Wi-Fi, vídeo, BIOS). Tem atualização própria. |
 | **Flatpak / Flathub** | Formato alternativo de aplicativos, isolados do sistema, e sua loja principal. |
+| **Fontes métricas compatíveis** | Fontes livres que ocupam o mesmo espaço que as da Microsoft (Liberation, Carlito e Caladea), mantendo o layout dos documentos. |
 | **`fstab`** | Arquivo `/etc/fstab`. Define quais discos são montados na inicialização e com quais opções. |
 | **`fwupd` / LVFS** | O `fwupd` atualiza firmwares pelo catálogo LVFS (Linux Vendor Firmware Service). Nem todo fabricante ou modelo está no catálogo. |
 | **Git / GitHub** | Git: controle de versão. GitHub: serviço online que hospeda repositórios Git. |
 | **GNOME** | Ambiente de área de trabalho: janelas, menus e painel. |
 | **GPU híbrida (PRIME)** | Notebook com duas placas de vídeo: uma integrada, econômica, e uma dedicada, mais potente, usada sob demanda. |
+| **Grupo (`docker`, `wireshark`)** | Conjunto de usuários com uma permissão. Entrar num grupo só vale a partir do próximo login. O grupo `docker` equivale a ser administrador. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
