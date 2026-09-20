@@ -9,6 +9,20 @@ Regras:
 - Só vira script (`scripts/`) o que já foi feito à mão e entendido.
 - Cada fase termina com uma verificação e um registro neste arquivo.
 
+## Visão geral
+
+| Fase | Tema | Status |
+|---|---|---|
+| 0 | Base mínima | Concluída |
+| 1 | Git e GitHub | Concluída |
+| 2 | Base do sistema, com disco SATA extra | Concluída |
+| 3 | Atualizações | Concluída, com uma confirmação pendente |
+| 4 | Notebook | Concluída, com uma confirmação pendente |
+| 5 | Aplicativos, com VPN | Em andamento |
+| 6 | GNOME | Planejada |
+| 7 | Backup | Planejada |
+| 8 | Automação | Planejada |
+
 ---
 
 ## Fase 0 - Base mínima (concluída)
@@ -33,7 +47,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 | `curl -fsSL URL` | Baixa o conteúdo de uma URL. `-f` falha em erro HTTP, `-s` fica em silêncio, `-S` mostra erros, `-L` segue redirecionamentos. |
 | `\| bash` | Entrega o conteúdo baixado ao `bash` para executar. |
 
-Aprendizados:
+Observações:
 
 - O `apt` precisa de administrador. Sem `sudo`, o `apt update` falha por permissão.
 - Se o `sudo` disser que o usuário não pode usá-lo, adicione-o ao grupo `sudo` como `root` (`su -`).
@@ -87,7 +101,7 @@ gh auth status             # logado, protocolo ssh
 git status -sb             # main acompanhando origin/main
 ```
 
-Aprendizados:
+Observações:
 
 - **Repositório público:** o e-mail de cada commit fica visível. Use o endereço `noreply` do GitHub
   (`ID+usuario@users.noreply.github.com`). O ID sai de `gh api user --jq .id`.
@@ -123,217 +137,14 @@ lsblk -D -o NAME,DISC-GRAN,DISC-MAX    # discos com suporte a TRIM
 cat /sys/class/dmi/id/bios_version     # versão da BIOS instalada
 ```
 
-Aprendizados:
+Observações:
 
 - **Firmware:** o LVFS não tem todos os modelos. "Sem atualização" no `fwupd` não garante que a BIOS seja a última.
 - **BIOS:** atualizar é opcional quando o equipamento funciona bem. Se decidir atualizar, siga o procedimento
   oficial do fabricante, com o notebook na tomada e sem interromper o processo.
-- **Escada:** um repositório novo só entra quando há um pacote que precise dele.
+- **Repositórios:** adicione `contrib` ou `non-free` somente quando um pacote exigir.
 
----
-
-## VPN Fortinet com interface gráfica (adiantada da fase 5)
-
-Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
-
-- [x] Instalar o plugin do NetworkManager para OpenConnect
-- [x] Cadastrar a conexão pela tela de Rede, com o protocolo Fortinet
-- [x] Conectar e validar
-
-```bash
-sudo apt install -y network-manager-openconnect-gnome
-```
-
-Cadastro, pela interface:
-
-1. *Configurações > Rede*, botão **+** ao lado de *VPN*, *Multiprotocol VPN Client (openconnect)*.
-2. **Protocolo:** Fortinet SSL VPN.
-3. **Gateway:** `ENDERECO:PORTA`.
-4. Salvar e conectar. Usuário e senha são pedidos na conexão.
-
-Como conferir:
-
-```bash
-nmcli connection show --active     # a VPN aparece com o tipo "vpn"
-ip route | grep vpn0               # rotas das redes internas pelo túnel
-ip route show default              # a internet segue pela rota normal
-```
-
-Aprendizados:
-
-- **Plugin:** o Debian 13 não tem plugin do NetworkManager para o `openfortivpn`. O OpenConnect fala o
-  protocolo Fortinet e resolve. O `openfortivpn` continua instalado como reserva.
-- **Onde ficam os dados:** endereço e credenciais ficam no NetworkManager, fora do repositório.
-- **Túnel dividido:** só as redes internas passam pela VPN. A internet segue pela rota normal.
-- **DNS:** sem `systemd-resolved`, o NetworkManager grava os DNS da VPN em `/etc/resolv.conf`.
-  Se um nome interno não resolver, comece por esse arquivo.
-- **Certificado:** aceite o certificado do servidor só se reconhecer o servidor.
-
----
-
-## Fase 3 - Atualizações (concluída)
-
-Objetivo: manter o sistema atualizado com pouco esforço.
-
-- [x] Instalar o `unattended-upgrades` (atualizações automáticas)
-- [x] Ativar a execução diária
-- [x] Incluir o Google Chrome nas atualizações automáticas
-- [x] Validar com uma simulação
-
-```bash
-sudo apt install -y unattended-upgrades powermgmt-base
-
-printf 'APT::Periodic::Update-Package-Lists "1";\nAPT::Periodic::Unattended-Upgrade "1";\n' \
-  | sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null
-
-printf '// Inclui as atualizações do Google Chrome (repositório do Google)\nUnattended-Upgrade::Origins-Pattern:: "origin=Google LLC,codename=stable";\n' \
-  | sudo tee /etc/apt/apt.conf.d/52unattended-upgrades-local > /dev/null
-
-sudo unattended-upgrade --dry-run --debug
-```
-
-| Parte | O que faz |
-|---|---|
-| `powermgmt-base` | Permite ao sistema saber se o notebook está na bateria. As atualizações automáticas esperam a tomada. |
-| `20auto-upgrades` | Liga a rotina diária: `Update-Package-Lists` atualiza a lista de pacotes e `Unattended-Upgrade` instala as atualizações permitidas. |
-| `52unattended-upgrades-local` | Arquivo próprio, que acrescenta uma origem à lista (o `::` adiciona sem apagar as do Debian). |
-| `origin=Google LLC,codename=stable` | Origem do repositório do Chrome. Sem ela, o Chrome não é atualizado automaticamente. |
-| `--dry-run --debug` | Simula e explica o que faria, sem instalar nada. |
-
-Atualização manual, para o que não é automático:
-
-| Comando | O que faz |
-|---|---|
-| `sudo apt update` | Só baixa a lista atualizada de pacotes. Não instala nada. |
-| `sudo apt upgrade` | Instala as atualizações, sem remover nem instalar pacotes novos. |
-| `sudo apt full-upgrade` | Igual ao anterior, mas também resolve dependências, instalando ou removendo o que for preciso. **Recomendado.** |
-| `sudo apt autoremove` | Remove dependências que ninguém mais usa. |
-
-Como conferir:
-
-```bash
-systemctl list-timers apt-daily.timer apt-daily-upgrade.timer   # próximas execuções
-apt-config dump | grep -E "APT::Periodic|Origins-Pattern"       # valores efetivos
-sudo unattended-upgrade --dry-run --debug                       # "origens permitidas"
-ls /var/log/unattended-upgrades/                                # histórico das execuções
-```
-
-Como desfazer:
-
-```bash
-sudo rm /etc/apt/apt.conf.d/20auto-upgrades              # desliga tudo
-sudo rm /etc/apt/apt.conf.d/52unattended-upgrades-local  # tira só o Chrome
-```
-
-Aprendizados:
-
-- **Instalar não ativa:** o pacote sozinho não cria o `20auto-upgrades`. Sem ele, nada roda.
-- **Arquivo separado:** o `50unattended-upgrades` pertence ao pacote e pode ser sobrescrito. Personalize num arquivo próprio.
-- **Padrão do Debian:** atualiza o arquivo principal da versão e as correções de segurança, sem reiniciar sozinho.
-- **Kernel novo:** só passa a valer depois de reiniciar. Se o arquivo `/var/run/reboot-required` existir, há reinício pendente.
-- **Repositórios externos:** ficam de fora por padrão. Cada um precisa de uma origem na lista.
-- **Notebook:** sem o `powermgmt-base`, o `unattended-upgrades` não sabe se está na bateria e pode atualizar sem tomada.
-- **Hábito semanal:** o `sudo apt update && sudo apt full-upgrade` cobre o que o automático não pega.
-
----
-
-## Fase 4 - Notebook (concluída)
-
-Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
-
-- [x] **Energia e temperatura:** o `power-profiles-daemon` (perfil `balanced`) basta. Temperaturas de 38 a 50 °C, ventoinha desligada.
-- [x] **GPU AMD sob demanda:** testada com OpenGL e Vulkan. Dorme sozinha depois do uso.
-- [x] **Suspensão:** tela apaga em 30 min, suspende em 60 min. Fechar a tampa suspende na hora.
-- [x] **Limite de carga da bateria:** ativado entre 75% e 80%.
-- [x] **Teclas Fn:** funcionam.
-- [x] **Leitor de digital:** sem suporte no Linux (ver aprendizados).
-- [ ] Confirmar o limite de carga na prática, observando onde a carga para.
-
-```bash
-# GPU: ferramentas de teste
-sudo apt install -y mesa-utils vulkan-tools
-glxinfo -B | grep "OpenGL renderer"                 # Intel (padrão)
-DRI_PRIME=1 glxinfo -B | grep "OpenGL renderer"     # AMD
-vulkaninfo --summary
-
-# Suspensão
-gsettings set org.gnome.desktop.session idle-delay 1800
-gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 3600
-gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 3600
-
-# Limite de carga da bateria
-BAT=$(upower -e | grep -i BAT | head -1)
-busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b true
-
-# Ler os logs do sistema sem sudo (vale a partir do próximo login)
-sudo usermod -aG systemd-journal "$USER"
-```
-
-| Parte | O que faz |
-|---|---|
-| `DRI_PRIME=1` | Executa o comando na GPU dedicada. Sem ela, a Intel é usada. |
-| `idle-delay` | Segundos de inatividade até a tela apagar (1800 = 30 min). |
-| `sleep-inactive-*-timeout` | Segundos de inatividade até suspender, na tomada e na bateria (3600 = 60 min). |
-| `EnableChargeThreshold` | Liga o limite de carga do UPower, que vale de 75% a 80%. |
-| `usermod -aG systemd-journal` | Permite ao usuário ler o log do sistema (`journalctl`) sem `sudo`. |
-
-Como conferir:
-
-```bash
-upower -i "$(upower -e | grep -i BAT)"           # charge-threshold-supported: yes
-cat /sys/class/drm/card1/device/power/runtime_status   # suspended = AMD dormindo
-gsettings get org.gnome.desktop.session idle-delay
-journalctl -k -b -p err                          # erros do kernel neste boot
-```
-
-Como desfazer:
-
-```bash
-gsettings reset org.gnome.desktop.session idle-delay
-gsettings reset org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout
-gsettings reset org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout
-busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b false
-sudo gpasswd -d "$USER" systemd-journal
-```
-
-Aprendizados:
-
-- **TLP:** conflita com o `power-profiles-daemon`, porque os dois querem gerenciar a energia. Use só um.
-- **`thermald`:** não roda em ThinkPads que têm controle térmico pelo firmware (DYTC). O log diz
-  `Thermald can't run on this platform`. Não é preciso instalar. Se já estiver instalado, remova com
-  `sudo apt remove thermald`. Não use `--ignore-cpuid-check`, que ignora o aviso e briga com o firmware.
-- **GPU híbrida:** o `switcheroo-control` mostra a opção de iniciar com a placa dedicada ao clicar com o botão direito
-  no ícone do aplicativo. No terminal e no Steam, use `DRI_PRIME=1`. A AMD é uma placa de entrada (2 GB) e não serve
-  para jogos recentes em qualidade alta.
-- **Limite de carga:** o firmware vem com início em 95% e fim em 100%. Depois de ligar o limite, o UPower informa 75% e 80%,
-  mas a leitura em `sysfs` mostra `start=80 end=75`, invertida. No boot, o kernel registra `start 75, stop 80`
-  (`journalctl -k -b | grep "battery 1 registered"`). Os valores gravados estão certos e persistem depois de reiniciar.
-  Não afeta o desempenho.
-  A autonomia por carga cai cerca de 20%.
-- **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
-  responde `No devices available`. Não há o que configurar.
-- **Chaveiro no login:** os avisos `gkr-pam: unable to locate daemon control file` e `Failed to start ...keyring...scope`
-  aparecem em todo login e são inofensivos. O serviço já sobe pelo systemd e o chaveiro funciona (o `gh` lê o token dele).
-- **Logs:** sem estar no grupo `systemd-journal`, o `journalctl` mostra "sem entradas". Isso **não** significa "sem erros".
-- **Avisos comuns no boot que não indicam problema:** erro ACPI da GPU (`ATRM`, o `amdgpu` funciona normalmente),
-  uma regra `udev` do ALSA sem rótulo, e o erro do `iwlwifi` em cada suspensão. O Wi-Fi recarrega o firmware ao retomar
-  e reconecta sozinho.
-
----
-
-## Fases seguintes (proposta)
-
-| Fase | Tema | Itens |
-|---|---|---|
-| 2 | Base do sistema | Concluída (ver acima) |
-| 3 | Atualizações | Concluída (ver acima) |
-| 4 | Notebook | Concluída (ver acima) |
-| 5 | Aplicativos | Flatpak e Flathub, comunicação, ferramentas de trabalho (navegador e VPN já feitos) |
-| 6 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
-| 7 | Backup | Snapshot do sistema (Timeshift), feito ao terminar a configuração base |
-| 8 | Automação | Transformar o que foi validado em `scripts/` |
-
-### Fase 2: disco SATA extra (concluída)
+### Disco SATA extra
 
 Decisões: manter o btrfs (o disco veio vazio, então nada foi apagado) e montar em `/mnt/ssd`.
 
@@ -391,7 +202,7 @@ sudo umount /mnt/ssd
 sudo cp -a /etc/fstab.bak-AAAA-MM-DD /etc/fstab
 ```
 
-Aprendizados:
+Observações:
 
 - **Automontagem do GNOME:** monta o disco em `/media/USUARIO/UUID`, de forma temporária e com a raiz do disco
   pertencendo ao `root`. Para uso contínuo, configure o `fstab`.
@@ -408,10 +219,219 @@ Aprendizados:
 
 ---
 
-## Decisões em aberto
+## Fase 3 - Atualizações (concluída)
 
-1. Há política de TI que exija antivírus, VPN ou software específico?
-2. Quais ferramentas de trabalho são necessárias (banco de dados, modelagem, Office, videoconferência, acesso remoto)?
-   Alguma só existe para Windows?
-3. Será preciso rodar Windows em máquina virtual para algum sistema legado?
-4. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
+Objetivo: manter o sistema atualizado com pouco esforço.
+
+- [x] Instalar o `unattended-upgrades` (atualizações automáticas)
+- [x] Ativar a execução diária
+- [x] Incluir o Google Chrome nas atualizações automáticas
+- [x] Validar com uma simulação
+- [ ] Confirmar a primeira execução automática, pelo log em `/var/log/unattended-upgrades/`
+
+```bash
+sudo apt install -y unattended-upgrades powermgmt-base
+
+printf 'APT::Periodic::Update-Package-Lists "1";\nAPT::Periodic::Unattended-Upgrade "1";\n' \
+  | sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null
+
+printf '// Inclui as atualizações do Google Chrome (repositório do Google)\nUnattended-Upgrade::Origins-Pattern:: "origin=Google LLC,codename=stable";\n' \
+  | sudo tee /etc/apt/apt.conf.d/52unattended-upgrades-local > /dev/null
+
+sudo unattended-upgrade --dry-run --debug
+```
+
+| Parte | O que faz |
+|---|---|
+| `powermgmt-base` | Permite ao sistema saber se o notebook está na bateria. As atualizações automáticas esperam a tomada. |
+| `20auto-upgrades` | Liga a rotina diária: `Update-Package-Lists` atualiza a lista de pacotes e `Unattended-Upgrade` instala as atualizações permitidas. |
+| `52unattended-upgrades-local` | Arquivo próprio, que acrescenta uma origem à lista (o `::` adiciona sem apagar as do Debian). |
+| `origin=Google LLC,codename=stable` | Origem do repositório do Chrome. Sem ela, o Chrome não é atualizado automaticamente. |
+| `--dry-run --debug` | Simula e explica o que faria, sem instalar nada. |
+
+Atualização manual, para o que não é automático:
+
+| Comando | O que faz |
+|---|---|
+| `sudo apt update` | Só baixa a lista atualizada de pacotes. Não instala nada. |
+| `sudo apt upgrade` | Instala as atualizações, sem remover nem instalar pacotes novos. |
+| `sudo apt full-upgrade` | Igual ao anterior, mas também resolve dependências, instalando ou removendo o que for preciso. **Recomendado.** |
+| `sudo apt autoremove` | Remove dependências que ninguém mais usa. |
+
+Como conferir:
+
+```bash
+systemctl list-timers apt-daily.timer apt-daily-upgrade.timer   # próximas execuções
+apt-config dump | grep -E "APT::Periodic|Origins-Pattern"       # valores efetivos
+sudo unattended-upgrade --dry-run --debug                       # "origens permitidas"
+ls /var/log/unattended-upgrades/                                # histórico das execuções
+```
+
+Como desfazer:
+
+```bash
+sudo rm /etc/apt/apt.conf.d/20auto-upgrades              # desliga tudo
+sudo rm /etc/apt/apt.conf.d/52unattended-upgrades-local  # tira só o Chrome
+```
+
+Observações:
+
+- **Instalar não ativa:** o pacote sozinho não cria o `20auto-upgrades`. Sem ele, nada roda.
+- **Arquivo separado:** o `50unattended-upgrades` pertence ao pacote e pode ser sobrescrito. Personalize num arquivo próprio.
+- **Padrão do Debian:** atualiza o arquivo principal da versão e as correções de segurança, sem reiniciar sozinho.
+- **Kernel novo:** só passa a valer depois de reiniciar. Se o arquivo `/var/run/reboot-required` existir, há reinício pendente.
+- **Repositórios externos:** ficam de fora por padrão. Cada um precisa de uma origem na lista.
+- **Notebook:** sem o `powermgmt-base`, o `unattended-upgrades` não sabe se está na bateria e pode atualizar sem tomada.
+- **Hábito semanal:** o `sudo apt update && sudo apt full-upgrade` cobre o que o automático não pega.
+
+---
+
+## Fase 4 - Notebook (concluída)
+
+Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
+
+- [x] **Energia e temperatura:** o `power-profiles-daemon` (perfil `balanced`) basta. Temperaturas de 38 a 50 °C, ventoinha desligada.
+- [x] **GPU AMD sob demanda:** testada com OpenGL e Vulkan. Dorme sozinha depois do uso.
+- [x] **Suspensão:** tela apaga em 30 min, suspende em 60 min. Fechar a tampa suspende na hora.
+- [x] **Limite de carga da bateria:** ativado entre 75% e 80%.
+- [x] **Teclas Fn:** funcionam.
+- [x] **Leitor de digital:** sem suporte no Linux (ver observações).
+- [ ] Confirmar o limite de carga na prática: descarregar abaixo de 75%, carregar e observar onde a carga para.
+
+```bash
+# GPU: ferramentas de teste
+sudo apt install -y mesa-utils vulkan-tools
+glxinfo -B | grep "OpenGL renderer"                 # Intel (padrão)
+DRI_PRIME=1 glxinfo -B | grep "OpenGL renderer"     # AMD
+vulkaninfo --summary
+
+# Suspensão
+gsettings set org.gnome.desktop.session idle-delay 1800
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 3600
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 3600
+
+# Limite de carga da bateria
+BAT=$(upower -e | grep -i BAT | head -1)
+busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b true
+
+# Ler os logs do sistema sem sudo (vale a partir do próximo login)
+sudo usermod -aG systemd-journal "$USER"
+```
+
+| Parte | O que faz |
+|---|---|
+| `DRI_PRIME=1` | Executa o comando na GPU dedicada. Sem ela, a Intel é usada. |
+| `idle-delay` | Segundos de inatividade até a tela apagar (1800 = 30 min). |
+| `sleep-inactive-*-timeout` | Segundos de inatividade até suspender, na tomada e na bateria (3600 = 60 min). |
+| `EnableChargeThreshold` | Liga o limite de carga do UPower, que vale de 75% a 80%. |
+| `usermod -aG systemd-journal` | Permite ao usuário ler o log do sistema (`journalctl`) sem `sudo`. |
+
+Como conferir:
+
+```bash
+upower -i "$(upower -e | grep -i BAT)"           # charge-threshold-supported: yes
+cat /sys/class/drm/card1/device/power/runtime_status   # suspended = AMD dormindo
+gsettings get org.gnome.desktop.session idle-delay
+journalctl -k -b -p err                          # erros do kernel neste boot
+```
+
+Como desfazer:
+
+```bash
+gsettings reset org.gnome.desktop.session idle-delay
+gsettings reset org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout
+gsettings reset org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout
+BAT=$(upower -e | grep -i BAT | head -1)
+busctl call org.freedesktop.UPower "$BAT" org.freedesktop.UPower.Device EnableChargeThreshold b false
+sudo gpasswd -d "$USER" systemd-journal
+```
+
+Observações:
+
+- **TLP:** conflita com o `power-profiles-daemon`, porque os dois querem gerenciar a energia. Use só um.
+- **`thermald`:** não roda em ThinkPads com controle térmico pelo firmware (DYTC). O log informa
+  `Thermald can't run on this platform`. Não instale. Se já estiver instalado, remova com `sudo apt remove thermald`.
+  Não use `--ignore-cpuid-check`, que ignora o aviso e conflita com o firmware.
+- **GPU híbrida:** o `switcheroo-control` mostra a opção de iniciar com a placa dedicada ao clicar com o botão direito
+  no ícone do aplicativo. No terminal e no Steam, use `DRI_PRIME=1`. A AMD é uma placa de entrada (2 GB) e não serve
+  para jogos recentes em qualidade alta.
+- **Limite de carga:** o firmware vem com início em 95% e fim em 100%. Depois de ligar o limite, o UPower informa
+  75% e 80%. A leitura em `sysfs` mostra `start=80 end=75`, invertida, mas no boot o kernel registra
+  `start 75, stop 80` (`journalctl -k -b | grep "battery 1 registered"`). Os valores gravados estão certos e
+  persistem depois de reiniciar. O limite não afeta o desempenho e reduz a autonomia por carga em cerca de 20%.
+- **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
+  responde `No devices available`. Não há o que configurar.
+- **Chaveiro no login:** os avisos `gkr-pam: unable to locate daemon control file` e `Failed to start ...keyring...scope`
+  aparecem em todo login e são inofensivos. O serviço já sobe pelo systemd e o chaveiro funciona (o `gh` lê o token dele).
+- **Logs:** sem estar no grupo `systemd-journal`, o `journalctl` mostra "sem entradas". Isso **não** significa "sem erros".
+- **Avisos comuns no boot que não indicam problema:** erro ACPI da GPU (`ATRM`, o `amdgpu` funciona normalmente),
+  uma regra `udev` do ALSA sem rótulo, e o erro do `iwlwifi` em cada suspensão. O Wi-Fi recarrega o firmware ao retomar
+  e reconecta sozinho.
+
+---
+
+## Fase 5 - Aplicativos (em andamento)
+
+Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote do Debian, recurso nativo do GNOME, Flatpak.
+
+- [x] **Navegador:** Google Chrome, instalado pelo pacote `.deb` oficial. O pacote configura o repositório do Google, e as atualizações chegam pelo `apt`.
+- [x] **VPN corporativa:** ver abaixo.
+- [ ] Definir o perfil de uso e as ferramentas de trabalho
+- [ ] Configurar o Flatpak e o Flathub
+- [ ] Instalar os aplicativos definidos
+- [ ] Apontar a biblioteca de jogos para o SSD extra, se for usada
+
+### VPN Fortinet com interface gráfica
+
+Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
+
+- [x] Instalar o plugin do NetworkManager para OpenConnect
+- [x] Cadastrar a conexão pela tela de Rede, com o protocolo Fortinet
+- [x] Conectar e validar
+
+```bash
+sudo apt install -y network-manager-openconnect-gnome
+```
+
+Cadastro, pela interface:
+
+1. *Configurações > Rede*, botão **+** ao lado de *VPN*, *Multiprotocol VPN Client (openconnect)*.
+2. **Protocolo:** Fortinet SSL VPN.
+3. **Gateway:** `ENDERECO:PORTA`.
+4. Salvar e conectar. Usuário e senha são pedidos na conexão.
+
+Como conferir:
+
+```bash
+nmcli connection show --active     # a VPN aparece com o tipo "vpn"
+ip route | grep vpn0               # rotas das redes internas pelo túnel
+ip route show default              # a internet segue pela rota normal
+```
+
+Observações:
+
+- **Plugin:** o Debian 13 não tem plugin do NetworkManager para o `openfortivpn`. O OpenConnect fala o
+  protocolo Fortinet e resolve. O `openfortivpn` continua instalado como reserva.
+- **Onde ficam os dados:** endereço e credenciais ficam no NetworkManager, fora do repositório.
+- **Túnel dividido:** só as redes internas passam pela VPN. A internet segue pela rota normal.
+- **DNS:** sem `systemd-resolved`, o NetworkManager grava os DNS da VPN em `/etc/resolv.conf`.
+  Se um nome interno não resolver, comece por esse arquivo.
+- **Certificado:** aceite o certificado do servidor só se reconhecer o servidor.
+
+### Perguntas em aberto
+
+1. Para que o notebook é mais usado: desenvolvimento, escritório, multimídia ou jogos?
+2. Há política de TI que exija antivírus ou software específico?
+3. Quais ferramentas de trabalho são necessárias (banco de dados, modelagem, Office, videoconferência, acesso remoto)? Alguma só existe para Windows?
+4. Será preciso rodar Windows em máquina virtual para algum sistema legado?
+5. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
+
+---
+
+## Fases 6 a 8 (planejadas)
+
+| Fase | Tema | Escopo |
+|---|---|---|
+| 6 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
+| 7 | Backup | Snapshot do sistema (Timeshift), feito ao terminar a configuração base |
+| 8 | Automação | Transformar o que foi validado em `scripts/` |

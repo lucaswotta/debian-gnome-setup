@@ -6,11 +6,16 @@ do sistema recém-instalado até o ambiente pronto para trabalho.
 Cada passo traz o comando, o que ele faz e como conferir o resultado. Pensado para quem usa
 Debian pela primeira vez.
 
+## Estado atual
+
+Fases 0 a 4 concluídas (base, git e GitHub, sistema, atualizações e notebook). Em andamento: fase 5, aplicativos.
+O detalhe de cada fase está em [docs/02-roteiro.md](docs/02-roteiro.md).
+
 ## Documentos
 
 | Documento | Conteúdo |
 |---|---|
-| [docs/01-ambiente.md](docs/01-ambiente.md) | A distro, o notebook e o estado inicial do sistema |
+| [docs/01-ambiente.md](docs/01-ambiente.md) | A distro, o notebook e o estado atual do sistema |
 | [docs/02-roteiro.md](docs/02-roteiro.md) | Passo a passo em fases, com o que está feito e o que falta |
 | [docs/03-glossario.md](docs/03-glossario.md) | Termos de Debian e Linux explicados de forma simples |
 

@@ -1,6 +1,6 @@
 # 01 - Ambiente
 
-Descrição do sistema e do notebook usados como referência neste guia.
+Descrição do sistema e do notebook usados como referência neste guia, no estado atual.
 
 ## Sistema
 
@@ -55,7 +55,10 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 
 ## Energia, firmware e drivers
 
-- **Energia:** `power-profiles-daemon` ativo (é o que o menu do GNOME usa). `TLP` e `thermald` não são usados (o `thermald` não roda em ThinkPads com controle térmico pelo firmware).
+- **Energia:** `power-profiles-daemon` (perfil `balanced`), usado pelo menu do GNOME. O `TLP` não é usado, porque conflita com ele. O `thermald` não roda em ThinkPads com controle térmico pelo firmware.
+- **Suspensão:** a tela apaga após 30 minutos de inatividade e o sistema suspende após 60 minutos. Fechar a tampa suspende na hora.
+- **Bateria:** limite de carga entre 75% e 80%, pelo UPower.
+- **GPU:** a Intel atende o uso comum. A AMD fica suspensa e é acionada sob demanda.
 - **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek`, `firmware-sof-signed`.
 - **Microcódigo:** `intel-microcode`.
 - **Atualização de firmware:** `fwupd` disponível.
@@ -78,7 +81,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | `timeshift` | ausente |
 | Flatpak, extensões do GNOME | ausentes |
 
-## Decisões a tomar
+## Pontos em aberto
 
 1. **BIOS.** É da época do lançamento (2020). O notebook funciona bem, então a atualização é opcional.
 2. **Repositórios `contrib` e `non-free`.** Necessários para alguns pacotes (fontes, drivers, codecs).
