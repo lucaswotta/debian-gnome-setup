@@ -80,6 +80,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | `flatpak` | instalado, com o Flathub |
 | `build-essential`, `meld`, `wireshark` | instalados |
 | Docker Engine, Compose e Buildx | instalados pelo repositório oficial do Docker, com a rede fora das faixas da VPN |
+| Go 1.27, Node 24 LTS, TypeScript 7, uv e Python 3.14 | instalados na pasta pessoal, sem `sudo`, com gerenciadores de versão |
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian e Google Chrome) |
 | `timeshift` | ausente |

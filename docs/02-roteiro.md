@@ -382,7 +382,7 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **VPN corporativa:** ver abaixo.
 - [x] **Perfil de uso:** desenvolvimento como foco, com uso geral.
 - [x] **Lote 1:** Flatpak, base de desenvolvimento, fontes, Wireshark, Meld e Docker.
-- [ ] **Lote 2:** linguagens (Node 24 LTS, Java 25 LTS, Python 3.14, Go 1.27 e TypeScript 7).
+- [~] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7 e Python 3.14 instalados. Falta o Java 25 (SDKMAN).
 - [ ] **Lote 3:** aplicativos (VS Code, DBeaver, Postman, SoapUI, Discord e AnyDesk).
 - [ ] **LibreOffice:** configurar para se parecer com o Office.
 - [ ] Multimídia e jogos, em fase posterior.
@@ -479,6 +479,72 @@ Observações:
   Atualize com o `sudo apt full-upgrade` semanal.
 - **`deb-src`:** removido de `debian.sources` (`Types: deb`). Sem necessidade de código-fonte, o `apt update` baixa menos índices.
 - **Repositórios externos:** o `debian.sources` e o `docker.sources` usam `Signed-By`, que limita cada chave ao seu repositório.
+
+### Lote 2: linguagens
+
+```bash
+# Go: arquivo oficial, com conferência do SHA-256 publicado em go.dev/dl
+curl -fsSL https://go.dev/dl/go1.27.1.linux-amd64.tar.gz -o go.tar.gz
+echo "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445  go.tar.gz" | sha256sum -c -
+mkdir -p ~/.local && tar -C ~/.local -xzf go.tar.gz
+
+# fnm, Node 24 LTS e TypeScript 7 (o instalador é lido antes de ser executado)
+curl -fsSL https://fnm.vercel.app/install -o fnm-install.sh
+bash fnm-install.sh --skip-shell
+export PATH="$HOME/.local/share/fnm:$PATH" && eval "$(fnm env --shell bash)"
+fnm install 24 && fnm default 24
+npm install -g typescript@7
+
+# uv e Python 3.14
+curl -LsSf https://astral.sh/uv/install.sh -o uv-install.sh
+UV_NO_MODIFY_PATH=1 sh uv-install.sh
+uv python install 3.14
+
+# PATH e integração do fnm no shell
+cp -a ~/.bashrc ~/.bashrc.bak-$(date +%F)
+cat >> ~/.bashrc <<'EOF'
+export PATH="$HOME/.local/go/bin:$HOME/go/bin:$HOME/.local/share/fnm:$PATH"
+eval "$(fnm env --use-on-cd --shell bash)"
+EOF
+```
+
+| Parte | O que faz |
+|---|---|
+| `sha256sum -c` | Confere que o arquivo baixado é o publicado pelo Go. |
+| `--skip-shell` | Impede que o instalador do fnm edite o `~/.bashrc`. A integração é feita à parte, de forma visível. |
+| `fnm default 24` | Define o Node 24 como padrão em todo terminal novo. |
+| `UV_NO_MODIFY_PATH=1` | Impede que o uv altere o `PATH`. O `~/.local/bin` já está nele. |
+| `uv python install 3.14` | Instala o Python 3.14 na pasta pessoal, sem tocar no Python do sistema. |
+| `fnm env --use-on-cd` | Troca a versão do Node ao entrar numa pasta com `.node-version` ou `.nvmrc`. |
+
+Como conferir:
+
+```bash
+go version && node --version && npm --version && tsc --version
+uv --version && python3.14 --version
+python3 --version        # continua sendo o Python do sistema
+```
+
+Como desfazer:
+
+```bash
+rm -rf ~/.local/go ~/go
+rm -rf ~/.local/share/fnm ~/.local/state/fnm
+rm -f ~/.local/bin/uv ~/.local/bin/uvx ~/.local/bin/python3.14 && rm -rf ~/.local/share/uv
+cp -a ~/.bashrc.bak-AAAA-MM-DD ~/.bashrc
+```
+
+Observações:
+
+- **Sem `sudo`:** tudo fica na pasta pessoal, e o Python do sistema não é tocado. O `python3.14` é um comando à parte.
+- **Ler antes de executar:** o instalador do fnm edita o `~/.bashrc` se não receber `--skip-shell`, o do uv altera o `PATH`
+  sem `UV_NO_MODIFY_PATH=1`, e o do SDKMAN sempre acrescenta um bloco ao `~/.bashrc`. O do fnm não confere checksum.
+- **TypeScript global:** fica dentro da versão do Node. Ao instalar outro Node, reinstale com `npm install -g typescript@7`,
+  ou use o TypeScript de cada projeto.
+- **Node 24 LTS:** o Node 26 passa a ser LTS em 28/10/2026. Depois disso, `fnm install 26` e `fnm default 26`.
+- **Go:** o `GOTOOLCHAIN=auto` baixa sozinho o toolchain que o `go.mod` de um projeto pedir.
+- **Python:** não use `pip install` no Python do sistema, que é protegido (PEP 668). Use `uv venv`, `uv run` ou `pipx`.
+- **Java 25:** depende do SDKMAN, que exige o pacote `zip`. Ver o item pendente da fase.
 
 ### VPN Fortinet com interface gráfica
 

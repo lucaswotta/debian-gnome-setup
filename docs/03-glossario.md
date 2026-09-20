@@ -21,12 +21,14 @@ Termos usados na documentação, em ordem alfabética.
 | **Fontes métricas compatíveis** | Fontes livres que ocupam o mesmo espaço que as da Microsoft (Liberation, Carlito e Caladea), mantendo o layout dos documentos. |
 | **`fstab`** | Arquivo `/etc/fstab`. Define quais discos são montados na inicialização e com quais opções. |
 | **`fwupd` / LVFS** | O `fwupd` atualiza firmwares pelo catálogo LVFS (Linux Vendor Firmware Service). Nem todo fabricante ou modelo está no catálogo. |
+| **Gerenciador de versões (fnm, uv, SDKMAN)** | Ferramenta que instala e alterna versões de uma linguagem na pasta pessoal, sem `sudo` e sem afetar o sistema. |
 | **Git / GitHub** | Git: controle de versão. GitHub: serviço online que hospeda repositórios Git. |
 | **GNOME** | Ambiente de área de trabalho: janelas, menus e painel. |
 | **GPU híbrida (PRIME)** | Notebook com duas placas de vídeo: uma integrada, econômica, e uma dedicada, mais potente, usada sob demanda. |
 | **Grupo (`docker`, `wireshark`)** | Conjunto de usuários com uma permissão. Entrar num grupo só vale a partir do próximo login. O grupo `docker` equivale a ser administrador. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
+| **LTS (*Long Term Support*)** | Versão com suporte de longo prazo. É a recomendada para uso em produção e no dia a dia. |
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
 | **Montagem (*mount*)** | Ligar um disco ou partição a uma pasta do sistema. Enquanto não é montado, o disco não é acessível. |
 | **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |
