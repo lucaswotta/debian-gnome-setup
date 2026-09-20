@@ -32,6 +32,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Grupo (`docker`, `wireshark`)** | Conjunto de usuários com uma permissão. Entrar num grupo só vale a partir do próximo login. O grupo `docker` equivale a ser administrador. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
+| **Limites do texto** | Linhas que o Writer desenha nos cantos da folha para mostrar a área das margens. Não são impressas. |
 | **LTS (*Long Term Support*)** | Versão com suporte de longo prazo. É a recomendada para uso em produção e no dia a dia. |
 | **Mascarar (unidade do systemd)** | Impedir que uma unidade inicie, mesmo por dependência, apontando-a para `/dev/null`. Desfaz-se com `unmask`. |
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
