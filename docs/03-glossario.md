@@ -10,6 +10,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
 | **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |
 | **Componentes do APT (`main`, `contrib`, `non-free`, `non-free-firmware`)** | Categorias de pacotes. `main` é software livre; `non-free` tem licença restritiva; `non-free-firmware` traz firmwares de hardware. |
+| **Condição de corrida (*race condition*)** | Falha que depende de qual de dois processos termina primeiro. Aparece de forma intermitente, e o que falha muda de uma vez para outra. |
 | **Contêiner** | Ambiente isolado que executa um programa com tudo o que ele precisa. Comum para rodar bancos de dados e serviços de desenvolvimento. |
 | **Distribuição (distro)** | Um "sabor" de Linux: kernel, programas e gerenciador de pacotes. O Debian é uma das mais antigas e serve de base para outras. |
 | **Docker (Engine, Compose, Buildx)** | Motor de contêineres. O Compose descreve vários contêineres num arquivo, e o Buildx constrói imagens. |
@@ -30,6 +31,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
 | **LTS (*Long Term Support*)** | Versão com suporte de longo prazo. É a recomendada para uso em produção e no dia a dia. |
+| **Mascarar (unidade do systemd)** | Impedir que uma unidade inicie, mesmo por dependência, apontando-a para `/dev/null`. Desfaz-se com `unmask`. |
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
 | **Montagem (*mount*)** | Ligar um disco ou partição a uma pasta do sistema. Enquanto não é montado, o disco não é acessível. |
 | **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |

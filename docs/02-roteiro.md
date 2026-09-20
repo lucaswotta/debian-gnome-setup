@@ -365,12 +365,80 @@ Observações:
   opcional e reversível. Depois de desligá-lo, a carga volta a passar de 80% e o firmware retoma os valores de fábrica.
 - **Leitor de digital:** o Goodix `27c6:55a4` está na seção "Known unsupported devices" da libfprint, e o `fprintd-list`
   responde `No devices available`. Não há o que configurar.
-- **Chaveiro no login:** os avisos `gkr-pam: unable to locate daemon control file` e `Failed to start ...keyring...scope`
-  aparecem em todo login e são inofensivos. O serviço já sobe pelo systemd e o chaveiro funciona (o `gh` lê o token dele).
 - **Logs:** sem estar no grupo `systemd-journal`, o `journalctl` mostra "sem entradas". Isso **não** significa "sem erros".
-- **Avisos comuns no boot que não indicam problema:** erro ACPI da GPU (`ATRM`, o `amdgpu` funciona normalmente),
-  uma regra `udev` do ALSA sem rótulo, e o erro do `iwlwifi` em cada suspensão. O Wi-Fi recarrega o firmware ao retomar
-  e reconecta sozinho.
+- **Erros do boot:** ver a subseção abaixo.
+
+### Erros do boot
+
+`journalctl -b -p err` lista os erros do boot atual. Neste notebook eram 11 linhas, de quatro causas, mais o relatório do Wi-Fi
+depois de cada suspensão.
+
+| Causa | Linhas | Situação |
+|---|---|---|
+| Regra `udev` do ALSA com rótulo ausente (bug do Debian #1093057 e #1104719) | 2 | Corrigido com uma cópia local da regra |
+| Comandos de inicialização que terminam antes de o systemd criar o escopo (`PID vanished`) | 4 a 5 | Corrigido escondendo essas inicializações |
+| Método ACPI da GPU com defeito no firmware (`AE_AML_BUFFER_LIMIT`) | 4 | Sem correção sem atualizar a BIOS. A GPU funciona |
+| Mensagem do PAM no login (`gkr-pam: unable to locate daemon control file`) | 1 | Esperada, por desenho |
+| Relatório de falha do `iwlwifi` ao acordar da suspensão | cerca de 75 por suspensão | Bug conhecido do kernel 6.12. O firmware recarrega e a rede volta sozinha |
+
+Depois das correções, o esperado são 5 linhas fixas (4 do firmware e 1 do PAM), mais o relatório do Wi-Fi a cada suspensão.
+
+```bash
+# 1. Inicializações que terminam antes de o systemd criar o escopo (só para o usuário)
+mkdir -p ~/.config/autostart
+for f in gnome-keyring-pkcs11 gnome-keyring-secrets gnome-keyring-ssh user-dirs-update-gtk xdg-user-dirs xdg-user-dirs-kde; do
+  NAME=$(grep -m1 '^Name=' /etc/xdg/autostart/$f.desktop | cut -d= -f2-)
+  printf '[Desktop Entry]\nType=Application\nName=%s\nHidden=true\nX-GNOME-Autostart-enabled=false\n' "$NAME" > ~/.config/autostart/$f.desktop
+done
+
+# 2. Agente SSH: só o do GNOME (gcr) define o SSH_AUTH_SOCK
+mkdir -p ~/.config/environment.d
+echo 'SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/gcr/ssh' > ~/.config/environment.d/50-ssh-agent.conf
+systemctl --user mask --now ssh-agent.socket ssh-agent.service
+systemctl --user set-environment SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/gcr/ssh
+
+# 3. Regra udev do ALSA com o rótulo corrigido, testada antes de instalar
+sed -e '26s/alsa_restore_go/alsa_restore_std/' \
+    -e '1i # Copia local de 90-alsa-restore.rules com o rotulo corrigido (Debian #1093057). Remover quando o alsa-utils corrigir.' \
+    /usr/lib/udev/rules.d/90-alsa-restore.rules > alsa-fix.rules
+udevadm verify alsa-fix.rules
+sudo install -m 644 alsa-fix.rules /etc/udev/rules.d/90-alsa-restore.rules && sudo udevadm control --reload
+```
+
+Como conferir:
+
+```bash
+journalctl -b -p err --no-pager -q | wc -l               # total de linhas de erro neste boot
+journalctl -b -p err --no-pager -q | grep -vc iwlwifi    # sem o relatório do Wi-Fi
+echo $SSH_AUTH_SOCK && ssh-add -l                        # .../gcr/ssh e a chave carregada
+udevadm verify /etc/udev/rules.d/90-alsa-restore.rules   # sem avisos
+```
+
+Como desfazer:
+
+```bash
+rm ~/.config/autostart/{gnome-keyring-pkcs11,gnome-keyring-secrets,gnome-keyring-ssh,user-dirs-update-gtk,xdg-user-dirs,xdg-user-dirs-kde}.desktop
+rm ~/.config/environment.d/50-ssh-agent.conf && systemctl --user unmask ssh-agent.socket ssh-agent.service
+sudo rm /etc/udev/rules.d/90-alsa-restore.rules
+```
+
+Observações:
+
+- **Corrida no systemd:** o `gnome-session` move cada aplicativo de inicialização para um escopo do systemd. Um comando que termina
+  antes disso gera `Failed to start ... scope` e `PID vanished`. Qual comando perde a corrida muda de um boot para outro. A saída é
+  esconder o que é redundante ou de execução instantânea.
+- **Chaveiro:** esconder as três inicializações dele é seguro, porque o serviço do chaveiro já sobe pelo systemd com os componentes
+  `pkcs11` e `secrets`, e o agente SSH vem do `gcr`.
+- **Três agentes SSH disputam o `SSH_AUTH_SOCK`:** o do GNOME (`gcr-ssh-agent`), o do OpenSSH (`ssh-agent.socket`) e o do GnuPG
+  (só se o `enable-ssh-support` estiver ativo). Cada um executa `systemctl --user set-environment SSH_AUTH_SOCK=...` no login, e vence o
+  último. Um arquivo em `environment.d` **não** vence essa disputa, porque é lido antes. Sem escolher um, o agente vira o do OpenSSH,
+  que não guarda chaves nem usa o chaveiro. A saída é mascarar os que não interessam.
+- **Regra do ALSA:** a cópia em `/etc/udev/rules.d/` tem prioridade sobre a do pacote. Apague-a quando o `alsa-utils` corrigir o bug,
+  para voltar a receber as atualizações.
+- **Wi-Fi na suspensão:** é uma regressão do kernel 6.12 no `iwlwifi`, uma corrida na retomada, com patch de reversão publicado.
+  O relatório tem cerca de 75 linhas de nível `err` por suspensão. Não há correção segura pelo lado do sistema. As atualizações do
+  kernel do Debian trazem a correção.
+- **Firmware da GPU:** o erro do ACPI vem da BIOS. O `amdgpu` usa outro caminho e a placa funciona.
 
 ---
 
