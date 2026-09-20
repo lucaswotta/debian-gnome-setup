@@ -804,7 +804,7 @@ Itens acrescentados ao `registrymodifications.xcu` (uma linha `<item>` para cada
 | Faixa em abas | `/org.openoffice.Office.UI.ToolbarMode/Applications/Writer`, `Calc`, `Impress` e `Draw`, propriedade `Active` | `notebookbar.ui` |
 | Layout da faixa | `/org.openoffice.Office.UI.ToolbarMode`, propriedades `ActiveWriter`, `ActiveCalc`, `ActiveImpress` e `ActiveDraw` | `notebookbar.ui` |
 | Ícones | `/org.openoffice.Office.Common/Misc`, propriedade `SymbolStyle` | `colibre_svg` |
-| Formato do Word | `/org.openoffice.Setup/Office/Factories/com.sun.star.text.TextDocument`, propriedade `ooSetupFactoryDefaultFilter` | `MS Word 2007 XML` |
+| Formato do Word | `/org.openoffice.Setup/Office/Factories/com.sun.star.text.TextDocument`, propriedade `ooSetupFactoryDefaultFilter` | `Office Open XML Text` |
 | Formato do Excel | `.../com.sun.star.sheet.SpreadsheetDocument`, mesma propriedade | `Calc MS Excel 2007 XML` |
 | Formato do PowerPoint | `.../com.sun.star.presentation.PresentationDocument`, mesma propriedade | `Impress MS PowerPoint 2007 XML` |
 | Sem aviso de formato | `/org.openoffice.Office.Common/Save/Document`, propriedade `WarnAlienFormat` | `false` |
@@ -839,11 +839,122 @@ Observações:
 - **Descobrir a chave certa:** faça a escolha pela interface e compare o `registrymodifications.xcu` antes e depois. O LibreOffice grava
   exatamente o que ele lê. Ler a chave de volta pela API (UNO) confirma que o valor existe, mas não que o programa o reconhece.
 - **Ícones:** o Colibre é o tema do LibreOffice no Windows e o mais próximo do Office. A variante escura é a `colibre_dark_svg`.
-- **Fonte padrão de documentos novos:** continua a do LibreOffice (Liberation). Para Calibri em 11 pt, salve um modelo (*Arquivo > Modelos >
-  Salvar como modelo*) e defina-o como padrão.
+- **Fonte e estilos de documentos novos:** ver "LibreOffice com os padrões do Microsoft 365" abaixo.
 - **Processo aberto:** `pgrep -f soffice.bin` casa com a própria linha de comando do `pgrep`. Use `pgrep -x soffice.bin`.
 - **Documentos complexos:** se a fidelidade em documentos muito formatados não bastar, o ONLYOFFICE (Flatpak) reproduz melhor o Office, com a
   interface em faixa de opções.
+
+#### LibreOffice com os padrões do Microsoft 365
+
+Objetivo: aproximar a aparência do que se produz no LibreOffice do que o Microsoft 365 novo produz, mantendo o layout dos documentos.
+
+**Formato padrão do Word.** O filtro `Word 2007–365` (`MS Word 2007 XML`) grava `compatibilityMode=12`, e o Word abre o arquivo em modo de
+compatibilidade. O filtro `Word 2010–365` (`Office Open XML Text`) grava `15` e abre normalmente. Por isso o padrão é o segundo:
+
+```bash
+soffice --headless --convert-to 'docx:MS Word 2007 XML'   --outdir a arquivo.fodt
+soffice --headless --convert-to 'docx:Office Open XML Text' --outdir b arquivo.fodt
+unzip -p a/arquivo.docx word/settings.xml | grep -o 'compatibilityMode"[^>]*'   # w:val="12"
+unzip -p b/arquivo.docx word/settings.xml | grep -o 'compatibilityMode"[^>]*'   # w:val="15"
+```
+
+**Fundo do documento em modo escuro.** Com o tema escuro, a folha também fica escura. Para manter a folha branca:
+*Ferramentas > Opções > LibreOffice > Cores do aplicativo > Fundo do documento*, em branco. A escolha vale para todos os aplicativos e é gravada em
+`/org.openoffice.Office.UI/ColorScheme/ColorSchemes/...['COLOR_SCHEME_LIBREOFFICE_AUTOMATIC']/DocColor`, na propriedade `Dark` (`16777215`).
+
+**Fonte Aptos.** A Aptos, padrão do Microsoft 365 novo, é proprietária e não existe para Linux. Sem ela, o sistema a troca por Noto Sans, bem mais
+larga, e os documentos recebidos mudam de paginação. A regra abaixo escolhe a fonte instalada de largura mais próxima.
+Largura do mesmo parágrafo, com a Calibri (Carlito) em 100%, lida dos arquivos de fonte:
+
+| Fonte | Largura |
+|---|---|
+| Liberation Sans Narrow | 90,3% |
+| Carlito (Calibri) | 100% |
+| Liberation Sans (Arial) | 110,1% |
+| Noto Sans | 115,5% |
+| DejaVu Sans | 124,7% |
+
+```bash
+mkdir -p ~/.config/fontconfig/conf.d
+cat > ~/.config/fontconfig/conf.d/60-aptos-substituta.conf <<'EOF'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <alias binding="same"><family>Aptos</family><prefer><family>Liberation Sans</family></prefer></alias>
+  <alias binding="same"><family>Aptos Display</family><prefer><family>Liberation Sans</family></prefer></alias>
+  <alias binding="same"><family>Aptos Narrow</family><prefer><family>Liberation Sans Narrow</family></prefer></alias>
+  <alias binding="same"><family>Aptos Mono</family><prefer><family>Liberation Mono</family></prefer></alias>
+</fontconfig>
+EOF
+fc-cache -f && fc-match Aptos          # Liberation Sans
+```
+
+O arquivo `.docx` continua gravando o nome `Aptos`, então o Word de quem receber usa a fonte original. A substituta só vale na tela e no PDF gerado aqui.
+É uma aproximação: sem a Aptos instalada, não dá para medir a diferença exata.
+
+**Modelos padrão.** Os modelos abaixo aproximam os padrões do Word e do Excel do Microsoft 365 novo. São criados por um script UNO e definidos como
+padrão pela API de configuração:
+
+| Estilo | Valor |
+|---|---|
+| Padrão (Word) | Aptos 11 pt, 8 pt depois do parágrafo, entrelinha 1,15 |
+| Título 1, 2 e 3 | Aptos Display 20 pt, Aptos Display 16 pt e Aptos 14 pt, cor `#0F4761`, sem negrito |
+| Título e Subtítulo | Aptos Display 28 pt, e Aptos 14 pt na cor `#595959` |
+| Página | A4, margens de 2,5 cm em cima e embaixo e de 3 cm nas laterais |
+| Célula padrão (Excel) | Aptos Narrow 11 pt |
+
+```python
+# soffice --headless --accept="socket,host=127.0.0.1,port=2005;urp;" &   (com um perfil temporário, se preferir)
+import uno, os
+from com.sun.star.beans import PropertyValue
+def pv(n, v): p = PropertyValue(); p.Name = n; p.Value = v; return p
+ctx = uno.getComponentContext().ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", uno.getComponentContext()) \
+        .resolve("uno:socket,host=127.0.0.1,port=2005;urp;StarOffice.ComponentContext")
+desktop = ctx.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", ctx)
+def espacamento(pct):
+    ls = uno.createUnoStruct("com.sun.star.style.LineSpacing"); ls.Mode = 0; ls.Height = pct; return ls
+doc = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, (pv("Hidden", True),))
+estilos = doc.StyleFamilies.getByName("ParagraphStyles")
+estilos.getByName("Standard").setPropertyValue("CharFontName", "Aptos")
+estilos.getByName("Standard").setPropertyValue("CharHeight", 11.0)
+estilos.getByName("Standard").setPropertyValue("ParaBottomMargin", 282)          # 8 pt, em centésimos de mm
+estilos.getByName("Standard").setPropertyValue("ParaLineSpacing", espacamento(115))
+# ... Título 1 a 3, Título, Subtítulo e página, como na tabela acima ...
+doc.storeToURL("file://" + os.path.expanduser("~/.config/libreoffice/4/user/template/Word365.ott"), (pv("FilterName", "writer8_template"),))
+doc.close(True)
+```
+
+Definir o modelo como padrão, com o LibreOffice fechado ou por uma sessão UNO (o `Excel365.ots` segue o mesmo caminho, com a fábrica
+`com.sun.star.sheet.SpreadsheetDocument`):
+
+```python
+cp = ctx.ServiceManager.createInstanceWithContext("com.sun.star.configuration.ConfigurationProvider", ctx)
+no = cp.createInstanceWithArguments("com.sun.star.configuration.ConfigurationUpdateAccess",
+        (pv("nodepath", "/org.openoffice.Setup/Office/Factories/com.sun.star.text.TextDocument"),))
+no.setPropertyValue("ooSetupFactoryTemplateFile", "file://" + os.path.expanduser("~/.config/libreoffice/4/user/template/Word365.ott"))
+no.commitChanges()
+```
+
+Como conferir:
+
+```python
+d = desktop.loadComponentFromURL("private:factory/swriter", "_blank", 0, (pv("Hidden", True),))
+e = d.StyleFamilies.getByName("ParagraphStyles").getByName("Standard")
+print(e.CharFontName, e.CharHeight)      # Aptos 11.0
+```
+
+Como desfazer: apague a chave `ooSetupFactoryTemplateFile` pela mesma API (valor vazio) e remova os arquivos de `~/.config/libreoffice/4/user/template/`.
+
+Observações:
+
+- **Editar o perfil à mão nem sempre funciona:** o LibreOffice descartou o valor de `ooSetupFactoryTemplateFile` escrito direto no
+  `registrymodifications.xcu`. Pela API de atualização de configuração, o mesmo valor persistiu. Confirme sempre abrindo um documento novo.
+- **Validar pela API:** ler uma chave de volta não prova que o programa a usa. Abra um documento novo e leia os estilos.
+- **Estilos derivados:** os estilos que não foram ajustados (lista, legenda, índice) continuam em Liberation. Só os estilos da tabela acima seguem o Word.
+- **Margens e valores dos estilos:** são os padrões conhecidos do Word em português do Brasil. Um documento em branco criado no Word do trabalho é a
+  referência exata: dá para importar os estilos dele em vez de recriá-los.
+- **Aplicativos ainda não tratados:** o Impress mantém o modelo do LibreOffice. O tamanho de slide do PowerPoint (33,867 x 19,05 cm) e os estilos
+  de título e de texto exigem ajustar o slide mestre.
 
 ### VPN Fortinet com interface gráfica
 

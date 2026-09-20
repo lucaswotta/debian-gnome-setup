@@ -21,6 +21,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Fingerprint (impressão digital da chave)** | Resumo curto e único de uma chave GPG. Serve para conferir que a chave baixada é a que o fabricante publicou. |
 | **Firmware** | Software embutido em um componente (Wi-Fi, vídeo, BIOS). Tem atualização própria. |
 | **Flatpak / Flathub** | Formato alternativo de aplicativos, isolados do sistema, e sua loja principal. |
+| **`fontconfig`** | Sistema que escolhe e substitui fontes no Linux. As regras do usuário ficam em `~/.config/fontconfig/conf.d/`. |
 | **Fontes métricas compatíveis** | Fontes livres que ocupam o mesmo espaço que as da Microsoft (Liberation, Carlito e Caladea), mantendo o layout dos documentos. |
 | **`fstab`** | Arquivo `/etc/fstab`. Define quais discos são montados na inicialização e com quais opções. |
 | **`fwupd` / LVFS** | O `fwupd` atualiza firmwares pelo catálogo LVFS (Linux Vendor Firmware Service). Nem todo fabricante ou modelo está no catálogo. |
@@ -34,6 +35,7 @@ Termos usados na documentação, em ordem alfabética.
 | **LTS (*Long Term Support*)** | Versão com suporte de longo prazo. É a recomendada para uso em produção e no dia a dia. |
 | **Mascarar (unidade do systemd)** | Impedir que uma unidade inicie, mesmo por dependência, apontando-a para `/dev/null`. Desfaz-se com `unmask`. |
 | **Menu rápido** | Painel do GNOME no canto superior direito, com Wi-Fi, VPN, volume e energia. |
+| **Modelo (*template*) padrão** | Documento-base que o LibreOffice usa em *Arquivo > Novo*. Define fonte, espaçamento e página dos documentos novos. |
 | **Montagem (*mount*)** | Ligar um disco ou partição a uma pasta do sistema. Enquanto não é montado, o disco não é acessível. |
 | **NetworkManager** | Serviço que gerencia Wi-Fi, cabo e VPN. As Configurações de Rede do GNOME são a interface dele. |
 | **Nome-código (trixie)** | Nome de cada versão do Debian. Aparece nos arquivos de repositório. |
@@ -59,6 +61,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Túnel dividido (*split tunnel*)** | Modo em que só o tráfego das redes internas passa pela VPN. O restante segue direto pela internet. |
 | **UEFI / BIOS** | Programa que liga o computador antes do sistema. O UEFI é a versão moderna. |
 | **`unattended-upgrades`** | Pacote que instala atualizações automaticamente, na frequência e nas origens configuradas. |
+| **UNO** | Interface de programação do LibreOffice, usada por scripts para criar documentos, ler estilos e alterar configurações. |
 | **UPower** | Serviço que informa o estado da bateria e controla o limite de carga. |
 | **UUID** | Identificador único de um disco ou partição. Não muda, ao contrário do nome `sda`. |
 | **VPN** | Rede privada virtual: um túnel criptografado até a rede da empresa, para acessar recursos internos. |

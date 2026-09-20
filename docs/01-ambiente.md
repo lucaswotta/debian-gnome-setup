@@ -68,7 +68,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | Item | Estado |
 |---|---|
 | GNOME (`gnome-core`), Ajustes (`gnome-tweaks`), NetworkManager | instalados |
-| Firefox ESR e LibreOffice (Writer, Calc, Impress e Draw) | instalados. O LibreOffice usa a faixa em abas, os ícones Colibre e grava em `.docx`, `.xlsx` e `.pptx` |
+| Firefox ESR e LibreOffice (Writer, Calc, Impress e Draw) | instalados. O LibreOffice usa a faixa em abas, os ícones Colibre, a folha branca no modo escuro, modelos no estilo do Microsoft 365 e grava em `.docx`, `.xlsx` e `.pptx` |
 | `curl`, `wget` | instalados |
 | Google Chrome | instalado, com o repositório oficial do Google (atualiza pelo `apt`) |
 | `openfortivpn` | instalado (cliente de VPN Fortinet por linha de comando, usado como reserva) |
@@ -86,6 +86,7 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | `openssh-server` | instalado e desativado, para ligar sob demanda |
 | Postman, SoapUI e Discord | instalados pelo Flatpak |
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
+| Fonte Aptos | indisponível para Linux. Uma regra do `fontconfig` a substitui pela Liberation Sans |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian, Chrome, VS Code, AnyDesk e DBeaver) |
 | `timeshift` | ausente |
 | Extensões do GNOME | ausentes |
