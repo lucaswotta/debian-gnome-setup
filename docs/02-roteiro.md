@@ -132,7 +132,7 @@ Aprendizados:
 
 ---
 
-## VPN Fortinet com interface gráfica (adiantada da fase 6)
+## VPN Fortinet com interface gráfica (adiantada da fase 5)
 
 Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
 
@@ -181,7 +181,7 @@ Objetivo: manter o sistema atualizado com pouco esforço.
 - [x] Validar com uma simulação
 
 ```bash
-sudo apt install -y unattended-upgrades
+sudo apt install -y unattended-upgrades powermgmt-base
 
 printf 'APT::Periodic::Update-Package-Lists "1";\nAPT::Periodic::Unattended-Upgrade "1";\n' \
   | sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null
@@ -194,6 +194,7 @@ sudo unattended-upgrade --dry-run --debug
 
 | Parte | O que faz |
 |---|---|
+| `powermgmt-base` | Permite ao sistema saber se o notebook está na bateria. As atualizações automáticas esperam a tomada. |
 | `20auto-upgrades` | Liga a rotina diária: `Update-Package-Lists` atualiza a lista de pacotes e `Unattended-Upgrade` instala as atualizações permitidas. |
 | `52unattended-upgrades-local` | Arquivo próprio, que acrescenta uma origem à lista (o `::` adiciona sem apagar as do Debian). |
 | `origin=Google LLC,codename=stable` | Origem do repositório do Chrome. Sem ela, o Chrome não é atualizado automaticamente. |
@@ -231,6 +232,7 @@ Aprendizados:
 - **Padrão do Debian:** atualiza o arquivo principal da versão e as correções de segurança, sem reiniciar sozinho.
 - **Kernel novo:** só passa a valer depois de reiniciar. Se o arquivo `/var/run/reboot-required` existir, há reinício pendente.
 - **Repositórios externos:** ficam de fora por padrão. Cada um precisa de uma origem na lista.
+- **Notebook:** sem o `powermgmt-base`, o `unattended-upgrades` não sabe se está na bateria e pode atualizar sem tomada.
 - **Hábito semanal:** o `sudo apt update && sudo apt full-upgrade` cobre o que o automático não pega.
 
 ---
@@ -241,10 +243,10 @@ Aprendizados:
 |---|---|---|
 | 2 | Base do sistema | Concluída (ver acima) |
 | 3 | Atualizações | Concluída (ver acima) |
-| 4 | Backup | Snapshots do sistema (Timeshift) e backup dos dados |
-| 5 | Notebook | Bateria e temperatura, GPU AMD, leitor de digital, teclas Fn |
-| 6 | Aplicativos | Flatpak e Flathub, comunicação, ferramentas de trabalho (navegador e VPN já feitos) |
-| 7 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
+| 4 | Notebook | Bateria e temperatura, GPU AMD, leitor de digital, teclas Fn |
+| 5 | Aplicativos | Flatpak e Flathub, comunicação, ferramentas de trabalho (navegador e VPN já feitos) |
+| 6 | GNOME | Extensões, atalhos, gestos do touchpad, tema e fontes |
+| 7 | Backup | Snapshot do sistema (Timeshift), feito ao terminar a configuração base |
 | 8 | Automação | Transformar o que foi validado em `scripts/` |
 
 ### Fase 2: disco SATA extra (concluída)
@@ -256,8 +258,8 @@ Decisões: manter o btrfs (o disco veio vazio, então nada foi apagado) e montar
 - [x] Montar de forma permanente pelo `/etc/fstab`, identificando o disco por **UUID**.
 - [x] Criar a estrutura de pastas e ajustar dono e permissões.
 - [ ] Confirmar que o disco monta sozinho depois de reiniciar.
-- [ ] Apontar para ele o que ocupa espaço, como a biblioteca de jogos (fase 6).
-- [ ] Incluí-lo no backup (fase 4). Um disco só não é backup.
+- [ ] Apontar para ele o que ocupa espaço, como a biblioteca de jogos (fase 5).
+- [ ] Incluí-lo no backup (fase 7). Um disco só não é backup.
 
 ```bash
 sudo apt install -y btrfs-progs smartmontools

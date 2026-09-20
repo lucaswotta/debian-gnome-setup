@@ -64,4 +64,4 @@ O repositório é **público**.
 
 ## Pendências
 
-Marque o que ficou para depois, com o motivo: `# TODO(fase 5): ajustar quando testar a GPU`.
+Marque o que ficou para depois, com o motivo: `# TODO(fase 4): ajustar quando testar a GPU`.

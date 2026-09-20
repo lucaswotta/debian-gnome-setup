@@ -73,7 +73,7 @@ com os componentes `main non-free-firmware`. Ainda sem `contrib` e `non-free`.
 | Claude Code | instalado em `~/.local/bin` |
 | `git`, `gh` | instalados |
 | `btrfs-progs`, `smartmontools` | instalados |
-| `unattended-upgrades` | instalado e ativo (Debian e Google Chrome) |
+| `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian e Google Chrome) |
 | `timeshift` | ausente |
 | Flatpak, extensões do GNOME | ausentes |
 
