@@ -388,7 +388,7 @@ Com as correções, restam 5 linhas fixas (4 do firmware e 1 do PAM), mais o rel
 ```bash
 # 1. Inicializações que terminam antes de o systemd criar o escopo (só para o usuário)
 mkdir -p ~/.config/autostart
-for f in gnome-keyring-pkcs11 gnome-keyring-secrets gnome-keyring-ssh user-dirs-update-gtk xdg-user-dirs xdg-user-dirs-kde; do
+for f in gnome-keyring-pkcs11 gnome-keyring-secrets gnome-keyring-ssh user-dirs-update-gtk xdg-user-dirs xdg-user-dirs-kde im-launch; do
   NAME=$(grep -m1 '^Name=' /etc/xdg/autostart/$f.desktop | cut -d= -f2-)
   printf '[Desktop Entry]\nType=Application\nName=%s\nHidden=true\nX-GNOME-Autostart-enabled=false\n' "$NAME" > ~/.config/autostart/$f.desktop
 done
@@ -419,7 +419,7 @@ udevadm verify /etc/udev/rules.d/90-alsa-restore.rules   # sem avisos
 Como desfazer:
 
 ```bash
-rm ~/.config/autostart/{gnome-keyring-pkcs11,gnome-keyring-secrets,gnome-keyring-ssh,user-dirs-update-gtk,xdg-user-dirs,xdg-user-dirs-kde}.desktop
+rm ~/.config/autostart/{gnome-keyring-pkcs11,gnome-keyring-secrets,gnome-keyring-ssh,user-dirs-update-gtk,xdg-user-dirs,xdg-user-dirs-kde,im-launch}.desktop
 rm ~/.config/environment.d/50-ssh-agent.conf && systemctl --user unmask ssh-agent.socket ssh-agent.service
 sudo rm /etc/udev/rules.d/90-alsa-restore.rules
 ```
@@ -431,6 +431,7 @@ Observações:
   esconder o que é redundante ou de execução instantânea.
 - **Chaveiro:** esconder as três inicializações dele é seguro, porque o serviço do chaveiro já sobe pelo systemd com os componentes
   `pkcs11` e `secrets`, e o agente SSH vem do `gcr`.
+- **`im-launch`:** o comando `im-launch true` só confere o ambiente do método de entrada e termina de imediato. O teclado ABNT2 é configurado pelo `xkb`, então esconder a inicialização não muda a digitação.
 - **Três agentes SSH disputam o `SSH_AUTH_SOCK`:** o do GNOME (`gcr-ssh-agent`), o do OpenSSH (`ssh-agent.socket`) e o do GnuPG
   (só se o `enable-ssh-support` estiver ativo). Cada um executa `systemctl --user set-environment SSH_AUTH_SOCK=...` no login, e vence o
   último. Um arquivo em `environment.d` **não** vence essa disputa, porque é lido antes. Sem escolher um, o agente vira o do OpenSSH,
@@ -1242,6 +1243,7 @@ Observações:
 - **Dash to Dock:** os padrões já lembram a barra do Windows (embaixo, clique alterna as janelas do aplicativo, ícone da lixeira e dos discos).
   A barra se esconde quando uma janela a cobre (`intellihide`). Para deixá-la sempre visível: `gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true`.
 - **Terminal:** o `gnome-terminal` é o instalado. O `kgx` (Console) e o `ptyxis` não estão presentes.
+- **Visualização do Arquivos:** o Arquivos regrava `default-folder-viewer` ao ser usado. Se a lista voltar a ícones, repita o comando com o Arquivos fechado.
 - **Pastas primeiro:** o Nautilus 48 não tem chave para isso. A opção existe só nas janelas de abrir e salvar arquivos (GTK).
 - **Touchpad:** toque para clicar, rolagem natural e rolagem com dois dedos já vêm ligados, e o clique é por número de dedos.
 
