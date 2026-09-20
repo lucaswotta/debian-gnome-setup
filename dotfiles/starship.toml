@@ -1,12 +1,16 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Prompt em duas linhas: info em cima (pasta, git, versoes, tempo, hora), simbolo embaixo.
+# Prompt em duas linhas. Em cima: pasta e git em blocos Powerline (seta cheia);
+# versoes, tempo do comando e hora em texto. Embaixo: o simbolo.
 add_newline = true
+palette = 'powerline'
 
 format = """
 $directory\
+${custom.dir_end}\
 $git_branch\
 $git_status\
+${custom.git_end}\
 $nodejs\
 $golang\
 $python\
@@ -16,44 +20,74 @@ $fill\
 $time
 $character"""
 
+# Cores fixas dos blocos (degrade de verde, do mais escuro ao mais claro).
+# As demais cores do prompt seguem a paleta do terminal.
+[palettes.powerline]
+pasta = '#14532D'
+pasta_texto = '#D8FFE6'
+git = '#22C55E'
+git_texto = '#03120A'
+
 [character]
 success_symbol = '[\$](bold green)'
 error_symbol = '[\$](bold red)'
 
+# Bloco da pasta: casa no lugar do ~, setas finas entre as pastas e icones nas
+# pastas do sistema (nomes em portugues).
 [directory]
-style = 'bold blue'
-truncation_length = 3
-truncation_symbol = '…/'
+style = 'bold fg:pasta_texto bg:pasta'
+home_symbol = ""
+truncation_length = 4
+truncation_symbol = "…/"
 truncate_to_repo = false
 read_only = " \U000f033e"
-format = '[$path]($style)[$read_only]($read_only_style) '
+format = '[ $path$read_only ]($style)'
+
+[directory.substitutions]
+"/" = "  "
+"Documentos" = "\U000f0219 Documentos"
+"Downloads" = " Downloads"
+"Imagens" = " Imagens"
+"Música" = "\U000f075a Música"
+"Vídeos" = " Vídeos"
+"Área de trabalho" = "\U000f01c4 Área de trabalho"
+
+# Seta que fecha o bloco da pasta quando nao ha repositorio git.
+[custom.dir_end]
+when = "! git rev-parse --git-dir >/dev/null 2>&1"
+command = "echo x"
+format = "[](fg:pasta) "
 
 [git_branch]
-symbol = "\uf418 "
-style = 'purple'
-format = '[$symbol$branch(:$remote_branch)]($style) '
+symbol = " "
+format = "[](fg:pasta bg:git)[ $symbol$branch ](fg:git_texto bg:git)"
 
 [git_status]
-style = 'bright-red'
-format = '([$all_status$ahead_behind]($style) )'
+format = "([$all_status$ahead_behind ](fg:git_texto bg:git))"
+
+# Seta que fecha o bloco do git.
+[custom.git_end]
+when = "git rev-parse --git-dir >/dev/null 2>&1"
+command = "echo x"
+format = "[](fg:git) "
 
 [nodejs]
-symbol = "\ue718 "
+symbol = " "
 style = 'green'
 format = '[$symbol($version)]($style) '
 
 [golang]
-symbol = "\ue627 "
+symbol = " "
 style = 'cyan'
 format = '[$symbol($version)]($style) '
 
 [python]
-symbol = "\ue235 "
+symbol = " "
 style = 'bright-yellow'
 format = '[$symbol($version)]($style) '
 
 [java]
-symbol = "\ue256 "
+symbol = " "
 style = 'bright-blue'
 format = '[$symbol($version)]($style) '
 
@@ -68,5 +102,5 @@ symbol = ' '
 [time]
 disabled = false
 time_format = '%H:%M'
-style = 'white'
+style = 'bright-black'
 format = '[$time]($style)'
