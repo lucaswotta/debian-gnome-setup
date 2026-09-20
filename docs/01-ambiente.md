@@ -85,6 +85,8 @@ com os componentes `main contrib non-free-firmware`. O `non-free` está desativa
 | AnyDesk (uso) | sem serviço ativo, abre sob demanda pelo aplicativo |
 | `openssh-server` | instalado e desativado, para ligar sob demanda |
 | Postman, SoapUI e Discord | instalados pelo Flatpak |
+| VLC, `htop`, `ncdu`, `tree`, `dnsutils` e `nmap` | instalados pelo Debian |
+| Steam | instalada pelo Flatpak, com acesso à pasta `/mnt/ssd/Jogos` |
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) |
 | Fonte Aptos | indisponível para Linux. Uma regra do `fontconfig` a substitui pela Liberation Sans |
 | `unattended-upgrades`, `powermgmt-base` | instalados, com atualizações automáticas ativas (Debian, Chrome, VS Code, AnyDesk e DBeaver) |

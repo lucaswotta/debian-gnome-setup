@@ -455,7 +455,8 @@ Objetivo: instalar apenas o que será usado, nesta ordem de preferência: pacote
 - [x] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS.
 - [x] **Lote 3:** VS Code, DBeaver e AnyDesk (repositórios dos fabricantes), Postman, SoapUI e Discord (Flatpak).
 - [x] **LibreOffice:** configurado para se parecer com o Office.
-- [ ] Multimídia e jogos, em fase posterior.
+- [x] **Lote 4:** VLC, utilitários de diagnóstico e de rede (Debian) e Steam (Flatpak).
+- [ ] Outros aplicativos de multimídia (GIMP, OBS Studio, Inkscape), sob demanda.
 
 ### Lote 1: base de desenvolvimento, fontes e Docker
 
@@ -1022,6 +1023,47 @@ Observações:
   e os campos curtos (`NumberingType`, `Adjust`, `StartWith`, `BulletRelSize`, `SymbolTextDistance`) como `uno.Any("short", valor)`.
 - **Layouts do PowerPoint:** o Impress tem um só título e um só corpo por slide mestre. O *Slide de título* fica aplicado só ao primeiro slide do modelo.
 
+### Lote 4: multimídia, utilitários e Steam
+
+| Bloco | Programas | Origem |
+|---|---|---|
+| Multimídia | VLC | Debian |
+| Diagnóstico | `htop` (processos), `ncdu` (uso do disco), `tree` (árvore de pastas) e `dnsutils` (`dig` e `nslookup`) | Debian |
+| Rede | `nmap` | Debian |
+| Jogos | Steam | Flatpak |
+
+O VLC entra pelo Debian, sem repositório externo. O Steam usa o Flatpak porque a base do Flatpak já traz as bibliotecas de 32 bits que os jogos pedem,
+sem ativar a arquitetura `i386` no sistema.
+
+```bash
+apt-get -s install vlc htop ncdu tree dnsutils nmap        # simulação, sem root: só pacotes novos e nenhuma remoção
+sudo apt-get install -y vlc htop ncdu tree dnsutils nmap
+sudo flatpak install -y flathub com.valvesoftware.Steam
+flatpak override --user --filesystem=/mnt/ssd/Jogos com.valvesoftware.Steam      # a Steam passa a enxergar a pasta de jogos
+```
+
+Como conferir:
+
+```bash
+vlc --version | head -1
+dig -v && nmap --version | head -1
+flatpak list --app --columns=application | grep Steam
+flatpak override --user --show com.valvesoftware.Steam                           # filesystems=/mnt/ssd/Jogos;
+```
+
+Como desfazer: `sudo apt remove vlc htop ncdu tree dnsutils nmap` e `sudo flatpak uninstall com.valvesoftware.Steam`.
+O `flatpak override --user --reset com.valvesoftware.Steam` remove a permissão da pasta.
+
+Observações:
+
+- **Biblioteca no SSD extra:** na Steam, em *Configurações > Armazenamento*, adicione `/mnt/ssd/Jogos` como pasta de biblioteca. O disco é `btrfs`
+  e fica fora do NVMe do sistema.
+- **Vídeo:** a Intel atende o uso comum. Para acionar a AMD num jogo, a opção de inicialização `DRI_PRIME=1 %command%` *(proposta)* segue a mesma lógica
+  descrita em "GPU" da fase 4. A placa é de entrada e roda só jogos leves ou antigos.
+- **`dnsutils`:** é um pacote de transição. Quem instala o `dig` e o `nslookup` é o `bind9-dnsutils`.
+- **`nmap`:** escaneie só equipamentos próprios ou com autorização. Uma varredura na rede corporativa pode disparar alertas da TI.
+- **VLC como `root`:** o VLC se recusa a rodar com `sudo`. Confira a versão como usuário comum.
+
 ### VPN Fortinet com interface gráfica
 
 Objetivo: ligar e desligar a VPN pelo menu rápido do GNOME, sem usar o terminal.
@@ -1070,7 +1112,10 @@ Observações:
 | Contêineres | Docker Engine | Repositório oficial do Docker |
 | APIs | Postman e SoapUI | Flatpak |
 | Comunicação | WhatsApp Web, Teams, Meet e Zoom pelo Chrome. Discord | Navegador e Flatpak |
-| Rede e acesso remoto | Wireshark, Meld e AnyDesk | Debian e repositório do fabricante |
+| Rede e acesso remoto | Wireshark, Meld, AnyDesk, `nmap` e `dnsutils` | Debian e repositório do fabricante |
+| Diagnóstico | `htop`, `ncdu` e `tree` | Debian |
+| Multimídia | VLC | Debian |
+| Jogos | Steam, com a biblioteca em `/mnt/ssd/Jogos` | Flatpak |
 | Escritório | LibreOffice, configurado para se parecer com o Office | Debian |
 | Captura de tela | Recurso nativo do GNOME | GNOME |
 
