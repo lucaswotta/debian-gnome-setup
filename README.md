@@ -21,6 +21,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 | Rede | VPN pelo menu do GNOME e acesso a servidores pelo aplicativo Arquivos |
 | GNOME | Extensões, atalhos e barra de aplicativos no estilo do Windows |
 | Terminal | zsh com sugestões, prompt em blocos Powerline, fonte com ícones e paleta própria |
+| Máquinas virtuais | Windows 10 LTSC em uma VM com KVM, com rede própria, copiar e colar e disco no SSD extra |
 | Segurança dos dados | Snapshots do sistema com o Timeshift |
 
 ## Como usar
@@ -33,7 +34,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 
 ## Estado atual
 
-Fases 0 a 8 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME, backup e terminal.
+Fases 0 a 9 concluídas: base, git e GitHub, sistema, atualizações, notebook, aplicativos, GNOME, backup, terminal e Windows em máquina virtual.
 
 ## Documentos
 
