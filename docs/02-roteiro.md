@@ -24,6 +24,7 @@ Este roteiro leva um Debian 13 recém-instalado até um ambiente de trabalho com
 | 6 | [GNOME](fases/06-gnome.md) | Perfil de uso | Concluída |
 | 7 | [Backup](fases/07-backup.md) | Geral | Concluída |
 | 8 | [Terminal e shell](fases/08-terminal.md) | Perfil de uso | Concluída |
+| 9 | [Windows em máquina virtual](fases/09-windows-vm.md) | Perfil de uso | Concluída |
 
 ## Replicar em outra máquina
 
@@ -51,7 +52,7 @@ Cada arquivo traz, nesta ordem: status e escopo, objetivo, lista de tarefas, os 
 Estas perguntas não têm resposta única. Responda-as antes de aplicar o guia na sua máquina.
 
 1. Existe política de TI que exija antivírus ou um software específico? Em equipamento corporativo, consulte a TI antes de instalar acesso remoto, contêineres ou VPN.
-2. É preciso rodar Windows em máquina virtual para algum sistema legado?
+2. É preciso rodar Windows em máquina virtual para algum sistema legado? Se sim, veja a [fase 9](fases/09-windows-vm.md).
 3. Dados pessoais e de trabalho ficarão no mesmo perfil de usuário?
 4. O firmware (BIOS) será atualizado? O guia mantém a versão de fábrica quando o equipamento funciona bem.
 5. O Secure Boot será usado? O Debian o suporta. No modelo de referência ele fica desativado.
