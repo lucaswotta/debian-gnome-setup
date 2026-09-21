@@ -7,6 +7,7 @@ Termos usados na documentação, em ordem alfabética.
 | **`.sources` (deb822)** | Formato moderno dos arquivos de repositório do APT, com um campo por linha e `Signed-By` para limitar cada chave ao seu repositório. |
 | **Alias** | Apelido para um comando ou uma sequência de comandos, definido no arquivo de configuração do shell. Exemplo: `gs` para `git status -sb`. |
 | **APT** | Gerenciador de pacotes do Debian. Instala, atualiza e remove programas a partir dos repositórios. |
+| **Ativação por socket (*socket activation*)** | O `systemd` escuta um socket e só inicia o serviço quando chega a primeira conexão. Poupa memória de serviços pouco usados, como o Docker e o libvirt. |
 | **Branch `main`** | Ramo principal de um repositório Git. Neste projeto, todo o trabalho vai direto nele. |
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
 | **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |

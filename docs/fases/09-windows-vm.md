@@ -7,6 +7,7 @@
 Objetivo: rodar o Windows 10 LTSC em uma máquina virtual (VM) com aceleração por hardware. O disco da VM é um arquivo, e os discos e o boot do notebook não mudam.
 
 - [x] **Virtualização:** QEMU/KVM, libvirt e virt-manager, pelos pacotes do Debian e sem as recomendações.
+- [x] **Serviços:** o `libvirtd` e o `virtlogd` iniciam sob demanda, pelos sockets do `systemd`. O `libvirt-guests` fica habilitado.
 - [x] **Rede:** a rede `default` do libvirt na faixa `100.66.0.0/24`, fora das faixas da VPN e do Docker.
 - [x] **Armazenamento:** a pasta `/mnt/ssd/VMs`, no SSD extra, sem cópia na escrita (*nodatacow*), com o pool `vms` e um disco `qcow2` de 60 GB.
 - [x] **Windows:** Windows 10 Enterprise LTSC 2019, em português, a partir do ISO oficial da Microsoft.
@@ -36,6 +37,21 @@ sudo adduser "$USER" libvirt
 | `ovmf` | O firmware UEFI da VM. |
 | `dnsmasq-base` | O DHCP e o DNS da rede virtual. |
 | `adduser ... libvirt` | Permite gerenciar as VMs sem `sudo`. Vale a partir do próximo login. Até lá, use `sg libvirt -c '<comando>'`. |
+
+### Serviços sob demanda (com `sudo`)
+
+```bash
+sudo systemctl disable libvirtd.service virtlogd.service
+sudo systemctl enable libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket virtlogd.socket virtlogd-admin.socket
+sudo systemctl stop libvirtd.service virtlogd.service
+```
+
+| Parte | O que faz |
+|---|---|
+| `disable` dos dois serviços | Tira o `libvirtd` e o `virtlogd` do boot. |
+| `enable` dos sockets | O `disable` também desliga os sockets, porque cada serviço os lista em `Also=`. Religá-los mantém a ativação sob demanda: o primeiro `virsh` ou o virt-manager inicia o `libvirtd`, e o `virtlogd` sobe quando uma VM começa. |
+| `stop` | Encerra as instâncias que estão rodando, sem esperar o próximo boot. |
+| `libvirt-guests` | Continua habilitado. Não tem processo residente e, no desligamento do notebook, suspende a VM que estiver rodando, em vez de encerrá-la à força. |
 
 ## 2. Rede da VM
 
@@ -142,6 +158,8 @@ Como conferir:
 
 ```bash
 virsh list --all                                     # w10ltsc: running ou shut off
+systemctl is-enabled libvirtd.service virtlogd.service   # disabled
+systemctl is-enabled libvirtd.socket virtlogd.socket     # enabled
 virsh net-dhcp-leases default                        # com a VM ligada: um IP 100.66.0.x
 virsh dumpxml w10ltsc | grep -E "name='(com.redhat.spice.0|org.qemu.guest_agent.0)'"
                                                      # os dois com state='connected', com o Windows no ar
@@ -160,6 +178,7 @@ virsh pool-destroy vms && virsh pool-undefine vms
 virsh net-destroy default
 rm -r /mnt/ssd/VMs                                   # também apaga os ISOs
 sudo deluser "$USER" libvirt
+sudo systemctl enable libvirtd.service virtlogd.service   # só para voltar ao padrão, sem remover os pacotes
 sudo apt remove --autoremove qemu-system-x86 qemu-utils qemu-system-modules-spice \
   libvirt-daemon-system libvirt-clients virt-manager ovmf dnsmasq-base
 ```
@@ -170,7 +189,7 @@ Observações:
 
 - **Sem `sudo` no dia a dia:** depois do novo login, o grupo `libvirt` dá acesso ao `qemu:///system`. O virt-manager já usa essa conexão.
 - **Docker ativo:** com o Docker rodando, a VM tem rede e internet. As regras de firewall do Docker e as do libvirt convivem.
-- **Serviços:** o `libvirtd`, o `virtlogd` e o `libvirt-guests` ficam habilitados no boot. Diferente do Docker, o guia não os põe sob demanda.
+- **Serviços:** o `libvirtd` e o `virtlogd` só iniciam quando alguma coisa os usa. O `libvirtd` roda com `--timeout 120` e sai sozinho depois de 2 minutos ociosos, desde que não haja VM rodando nem a rede `default` ligada. Depois de usar a VM, `virsh net-destroy default` desliga a rede e deixa o `libvirtd` sair. O `virtlogd` não tem timeout e fica ativo até o próximo boot. O `libvirt-guests` é `oneshot`: com `ON_BOOT=ignore`, o padrão, não conecta ao libvirt no boot.
 - **Ativação:** a chave vem da assinatura ou do contrato de volume da organização. O guia não trata disso.
 - **Cópia de segurança:** o disco da VM é um único arquivo, `/mnt/ssd/VMs/w10ltsc.qcow2`. Para guardá-lo, copie o arquivo com a VM desligada *(proposta)*.
 - **Desempenho gráfico:** o QXL atende o uso de escritório e de sistemas legados. Não há aceleração 3D para jogos.

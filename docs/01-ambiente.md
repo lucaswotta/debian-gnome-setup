@@ -85,7 +85,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS | Na pasta pessoal, com `fnm`, `uv` e SDKMAN. O Python do sistema fica intocado | [5](fases/05-aplicativos.md) |
 | Visual Studio Code e DBeaver | Repositórios dos fabricantes, com atualização pelo `apt` | [5](fases/05-aplicativos.md) |
 | Postman e SoapUI | Flatpak | [5](fases/05-aplicativos.md) |
-| QEMU/KVM, libvirt e virt-manager | Pacotes do Debian, sem as recomendações. Rede `default` em `100.66.0.0/24`, fora das faixas da VPN. Discos em `/mnt/ssd/VMs` | [9](fases/09-windows-vm.md) |
+| QEMU/KVM, libvirt e virt-manager | Pacotes do Debian, sem as recomendações. Serviços sob demanda, pelos sockets. Rede `default` em `100.66.0.0/24`, fora das faixas da VPN. Discos em `/mnt/ssd/VMs` | [9](fases/09-windows-vm.md) |
 | Windows 10 Enterprise LTSC 2019 (VM) | Em português, com UEFI, 4 GB, 4 vCPUs, drivers `virtio`, agentes SPICE e QEMU e Edge | [9](fases/09-windows-vm.md) |
 | Claude Code | Em `~/.local/bin` | [0](fases/00-base-minima.md) |
 
