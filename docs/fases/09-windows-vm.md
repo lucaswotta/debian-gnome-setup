@@ -64,7 +64,40 @@ virsh net-define /tmp/rede.xml                 # a rede vem desligada depois da 
 virsh net-start default
 ```
 
-A rede `default` não inicia com o sistema. Ligue-a antes da VM. Para iniciar junto com o sistema: `virsh net-autostart default` *(proposta)*.
+A rede `default` não inicia com o sistema, para manter o `libvirtd` sob demanda. Sem ela, o virt-manager recusa iniciar a VM com o erro `network 'default' is not active`.
+
+### Ligar a rede ao abrir o virt-manager
+
+Um script liga a rede quando ela está desligada e abre o virt-manager. Um atalho local, que tem prioridade sobre o do pacote, chama o script.
+
+```bash
+mkdir -p ~/.local/bin ~/.local/share/applications
+cat > ~/.local/bin/virt-manager-rede <<'EOF'
+#!/bin/sh
+# Liga a rede 'default' do libvirt (se estiver desligada) e abre o virt-manager.
+uri=qemu:///system
+if ! virsh -c "$uri" net-info default 2>/dev/null | grep -q '^Active:.*yes'; then
+    virsh -c "$uri" net-start default >/dev/null 2>&1
+fi
+exec virt-manager "$@"
+EOF
+chmod +x ~/.local/bin/virt-manager-rede
+sed "s|^Exec=virt-manager$|Exec=$HOME/.local/bin/virt-manager-rede|" \
+  /usr/share/applications/virt-manager.desktop > ~/.local/share/applications/virt-manager.desktop
+desktop-file-validate ~/.local/share/applications/virt-manager.desktop && echo válido
+```
+
+| Parte | O que faz |
+|---|---|
+| `net-info ... grep` | Consulta o estado da rede. O `net-start` só roda se ela estiver inativa, porque ele falha em uma rede já ativa. |
+| `exec virt-manager "$@"` | Substitui o script pelo virt-manager e repassa os argumentos. |
+| `sed` | Copia o atalho do pacote e troca só a linha `Exec`, o que mantém nome, ícone e traduções. Uma atualização do pacote não altera a cópia. |
+
+Para conferir, com `LIBVIRT_DEFAULT_URI=qemu:///system` definido: `virsh net-destroy default` (com a VM desligada), abra o virt-manager pelo menu e rode `virsh net-list`. A rede aparece como `active`.
+
+O atalho cobre só a abertura pelo menu. Quem inicia a VM por outro caminho, como `virsh start`, liga a rede antes com `virsh net-start default`.
+
+Para desfazer: `rm ~/.local/bin/virt-manager-rede ~/.local/share/applications/virt-manager.desktop`. Alternativa ao script: `virsh net-autostart default` *(proposta)*, que liga a rede quando o `libvirtd` inicia.
 
 ## 3. Armazenamento
 
