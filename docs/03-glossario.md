@@ -36,6 +36,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Grupo (`docker`, `wireshark`)** | Conjunto de usuários com uma permissão. Entrar num grupo só vale a partir do próximo login. O grupo `docker` equivale a ser administrador. |
 | **`gsettings`** | Comando que lê e altera as configurações do GNOME, as mesmas dos aplicativos de Ajustes. `gsettings reset` volta ao padrão. |
 | **GTK (3 e 4) e libadwaita** | Bibliotecas de interface do GNOME. A cor de destaque escolhida nas Configurações só vale para aplicativos GTK 4 com libadwaita. Os GTK 3, como o `gnome-terminal` do Debian 13, usam um tema fixo. |
+| **`hwdb` (banco de hardware do udev)** | Arquivos em `/etc/udev/hwdb.d/` que ajustam propriedades de dispositivos, como o mapa de teclas de um teclado. `systemd-hwdb update` recompila o banco. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
 | **KVM e QEMU** | O KVM é o recurso do kernel que usa o processador para rodar máquinas virtuais quase na velocidade real. O QEMU é o programa que emula o resto do computador (disco, rede e vídeo) e usa o KVM. |
@@ -73,6 +74,7 @@ Termos usados na documentação, em ordem alfabética.
 | **root** | Superusuário, com poder total sobre o sistema. |
 | **`rsync`** | Programa que copia só o que mudou entre duas pastas. O Timeshift o usa para criar os snapshots. |
 | **Sandbox (Flatpak)** | Isolamento que limita o que um aplicativo pode acessar (arquivos, dispositivos, rede). As permissões de cada Flatpak são visíveis e ajustáveis. |
+| **Scancode** | Número que o teclado envia ao computador quando uma tecla é pressionada. O kernel converte cada scancode em um código de tecla (como `KEY_RO`). Um remapeamento por `hwdb` troca essa conversão. |
 | **Secure Boot** | Recurso do UEFI que só permite iniciar sistemas assinados. |
 | **SFTP** | Transferência de arquivos por SSH. O aplicativo Arquivos do GNOME abre servidores com `sftp://usuario@endereco/`. |
 | **SHA-256** | Resumo de 64 caracteres calculado a partir do conteúdo de um arquivo. Se o resumo do seu arquivo for igual ao publicado, o arquivo está íntegro (`sha256sum`). |

@@ -11,6 +11,7 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Suspensão:** tela apaga em 30 min, suspende em 60 min. Fechar a tampa suspende na hora.
 - [x] **Limite de carga da bateria:** opcional e desativado. O procedimento está documentado.
 - [x] **Teclas Fn:** funcionam.
+- [x] **Tecla da barra (`/ ?`):** remapeada por `hwdb` (ver [Tecla da barra](#tecla-da-barra--)).
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
 - [x] **Boot direto:** o menu do GRUB fica oculto, com 1 segundo de espera invisível (ver [Boot direto](#boot-direto-sem-o-menu-do-grub)).
 
@@ -80,6 +81,36 @@ Observações:
   responde `No devices available`. Não há o que configurar.
 - **Logs:** sem estar no grupo `systemd-journal`, o `journalctl` mostra "sem entradas". Isso **não** significa "sem erros".
 - **Erros do boot e boot direto:** ver as seções abaixo.
+
+## Tecla da barra (`/ ?`)
+
+Neste modelo, a tecla `/ ?` do ABNT2, ao lado do `PrtSc`, envia o scancode `0x9d`. O kernel o interpreta como `Ctrl` direito (`KEY_RIGHTCTRL`), então a tecla não digita a barra. O teclado não tem outro `Ctrl` direito, e o layout `br` está correto. A saída é remapear o scancode para `KEY_RO`, a tecla `/ ?` do ABNT2.
+
+```bash
+# Identificar o que a tecla envia (10 s; aperte a tecla)
+sudo timeout 10 python3 -c "import struct;f=open('/dev/input/by-path/platform-i8042-serio-0-event-kbd','rb');[print(struct.unpack('llHHi',f.read(24))[2:]) for _ in iter(int,1)]"
+# Saída com defeito: (4, 4, 157) e (1, 97, ...), ou seja, scancode 0x9d e KEY_RIGHTCTRL
+
+# Remapear (o modelo vem de /sys/class/dmi/id/modalias, campo pvr)
+printf 'evdev:atkbd:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*:pvrThinkPadE14*\n KEYBOARD_KEY_9d=ro\n' > 90-thinkpad-e14-slash.hwdb
+sudo install -m 644 90-thinkpad-e14-slash.hwdb /etc/udev/hwdb.d/
+sudo systemd-hwdb update && sudo udevadm trigger --subsystem-match=input --action=change
+```
+
+| Parte | O que faz |
+|---|---|
+| `evdev:atkbd:dmi:...` | Aplica a regra só ao teclado interno (`atkbd`) de ThinkPads E14 (`pvr`, versão do produto no DMI). |
+| `KEYBOARD_KEY_9d=ro` | Troca o scancode `0x9d` pelo código `KEY_RO`. |
+| `systemd-hwdb update` | Recompila o banco de hardware. |
+| `udevadm trigger` | Reaplica as regras ao teclado sem reiniciar. |
+
+Como conferir: a tecla digita `/`, e `?` com `Shift`. Se ainda enviar `Ctrl`, faça logout e login. Depois, `udevadm info /dev/input/by-path/platform-i8042-serio-0-event-kbd | grep KEYBOARD_KEY` deve listar `KEYBOARD_KEY_9d=ro`.
+
+Como desfazer: `sudo rm /etc/udev/hwdb.d/90-thinkpad-e14-slash.hwdb && sudo systemd-hwdb update && sudo udevadm trigger --subsystem-match=input --action=change`.
+
+Observações:
+
+- **Outros modelos:** o scancode e o padrão `pvr` valem para o modelo de referência. Em outro notebook, repita a identificação e ajuste os dois.
 
 ## Erros do boot
 

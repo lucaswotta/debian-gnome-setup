@@ -49,6 +49,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 
 - **Energia:** `power-profiles-daemon` (perfil `balanced`), usado pelo menu do GNOME. O `TLP` não é usado, porque conflita com ele. O `thermald` não roda em ThinkPads com controle térmico pelo firmware.
 - **Suspensão:** a tela apaga após 30 minutos de inatividade e o sistema suspende após 60 minutos. Fechar a tampa suspende na hora.
+- **Teclado:** layout `br` (ABNT2). A tecla `/ ?` ao lado do `PrtSc` é remapeada por `hwdb` ([fase 4](fases/04-notebook.md#tecla-da-barra--)).
 - **Bateria:** sem limite de carga. O recurso é opcional ([fase 4](fases/04-notebook.md)).
 - **GPU:** a Intel atende o uso comum. A AMD fica suspensa e é acionada sob demanda.
 - **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek` e `firmware-sof-signed`.
