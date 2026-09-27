@@ -6,25 +6,22 @@
 
 Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas extensões e sem trocar o visual padrão.
 
-- [x] **Extensões:** AppIndicator (ícones de bandeja), Dash to Dock (barra de aplicativos) e Caffeine (impede a suspensão), pelos pacotes do Debian.
+- [x] **Extensões:** pacotes do Debian instalados para AppIndicator (bandeja), Dash to Dock (barra de aplicativos), Caffeine (impede a suspensão), GPaste (histórico da área de transferência), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque). Só o **Blur my Shell** fica ativo; as demais ficam instaladas e desligadas, à disposição pra religar sob demanda.
 - [x] **Janelas:** botões de minimizar e maximizar ao lado do fechar.
 - [x] **Relógio:** bateria em porcentagem e dia da semana.
 - [x] **Atalhos:** `Super+E` abre o Arquivos, `Super+D` mostra a área de trabalho e `Ctrl+Alt+T` abre o terminal.
 - [x] **Arquivos:** visualização em lista. Nas janelas de abrir e salvar, pastas antes dos arquivos.
 - [x] **Visual:** tema escuro e destaque verde, com a fonte Inter na interface e nos títulos das janelas e o cursor Bibata.
 - [x] **Ícones:** Papirus, pelo Debian, na variante escura, com as pastas em verde.
-- [x] **Extensões extras:** GPaste (histórico da área de transferência), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque).
-- [x] **Atalho do histórico:** `Super+V` abre o GPaste. A lista de notificações fica no `Super+M`.
-- [x] **Extensões carregadas:** as três ficam com o estado `ACTIVE` em uma sessão nova.
-- [x] **Favoritos da barra de aplicativos:** Chrome, Arquivos, Terminal, VS Code, DBeaver, Postman e Discord.
+- [x] **Favoritos da barra de aplicativos:** Chrome, Arquivos e Terminal.
 
 ```bash
 # 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
-sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine
+sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine \
+  gnome-shell-extension-gpaste gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell
 
-# 2. Ligar as três (vale a partir da próxima sessão)
-gsettings set org.gnome.shell enabled-extensions \
-  "['ubuntu-appindicators@ubuntu.com', 'dash-to-dock@micxgx.gmail.com', 'caffeine@patapon.info']"
+# 2. Ligar só o Blur my Shell (vale a partir da próxima sessão; as outras ficam desligadas)
+gsettings set org.gnome.shell enabled-extensions "['blur-my-shell@aunetx']"
 
 # 3. Janelas e relógio
 gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
@@ -43,7 +40,7 @@ gsettings set $S binding '<Primary><Alt>t'
 
 # 5. Favoritos da barra de aplicativos
 gsettings set org.gnome.shell favorite-apps \
-  "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'code.desktop', 'dbeaver-ce.desktop', 'com.getpostman.Postman.desktop', 'com.discordapp.Discord.desktop']"
+  "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
 
 # 6. Fonte e cursor, pelo Debian
 sudo apt-get install -y fonts-inter bibata-cursor-theme
@@ -52,19 +49,12 @@ gsettings set org.gnome.desktop.interface document-font-name 'Inter 11'
 gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Inter Bold 11'
 gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
 
-# 7. Extensões extras e o atalho do histórico
-sudo apt-get install -y gnome-shell-extension-gpaste gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell
-gsettings set org.gnome.shell enabled-extensions \
-  "['ubuntu-appindicators@ubuntu.com', 'dash-to-dock@micxgx.gmail.com', 'caffeine@patapon.info', 'GPaste@gnome-shell-extensions.gnome.org', 'tiling-assistant@leleat-on-github', 'blur-my-shell@aunetx']"
-gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
-gsettings set org.gnome.GPaste show-history '<Super>v'
-
-# 8. Arquivos
+# 7. Arquivos
 gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
 gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
 
-# 9. Ícones, pelo Debian
+# 8. Ícones, pelo Debian
 sudo apt-get install -y papirus-icon-theme
 gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 ```
@@ -79,23 +69,31 @@ gsettings get org.gnome.desktop.wm.preferences button-layout
 gsettings list-recursively | grep -i '<Super>e'    # o atalho não pode aparecer em outra ação
 ```
 
-Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar as extensões e
-`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine` para removê-las.
+Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar todas as extensões e
+`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine gnome-shell-extension-gpaste gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell` para removê-las.
 
 Observações:
 
-- **Extensões no Wayland:** o GNOME só carrega extensões novas em uma sessão nova. Saia e entre de novo.
-- **Pacotes do Debian:** as três declaram suporte ao GNOME 48. No Debian, o AppIndicator se chama `ubuntu-appindicators@ubuntu.com`.
-- **Dash to Dock:** os padrões já lembram a barra do Windows (embaixo, clique alterna as janelas do aplicativo, ícone da lixeira e dos discos).
+- **Extensões no Wayland:** o GNOME só carrega extensões novas em uma sessão nova; para *desligar* uma já carregada não precisa. Saia e entre de novo para ativar uma extensão nova.
+- **Pacotes do Debian:** todas declaram suporte ao GNOME 48. No Debian, o AppIndicator se chama `ubuntu-appindicators@ubuntu.com`.
+- **Só o Blur my Shell fica ligado:** as outras cinco extensões instaladas ficam desativadas por escolha, para manter o GNOME o mais perto do padrão. Religar com `gnome-extensions enable <uuid>`: AppIndicator (`ubuntu-appindicators@ubuntu.com`), Dash to Dock (`dash-to-dock@micxgx.gmail.com`), Caffeine (`caffeine@patapon.info`), GPaste (`GPaste@gnome-shell-extensions.gnome.org`) e Tiling Assistant (`tiling-assistant@leleat-on-github`).
+- **Dash to Dock, se religada:** os padrões já lembram a barra do Windows (embaixo, clique alterna as janelas do aplicativo, ícone da lixeira e dos discos).
   A barra se esconde quando uma janela a cobre (`intellihide`). Para deixá-la sempre visível: `gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true`.
-- **Atalho do GPaste:** a chave `show-history` é do tipo texto (`'<Super>v'`), e não lista. O GNOME já usa `Super+V` na lista de notificações (`toggle-message-tray`),
-  então esse atalho é reduzido a `Super+M`. O `Super+N` fica de fora porque já foca a notificação ativa.
+- **Atalho do GPaste, se religada:** a chave `show-history` é do tipo texto (`'<Super>v'`), e não lista: `gsettings set org.gnome.GPaste show-history '<Super>v'`. O GNOME já usa `Super+V` na lista de notificações (`toggle-message-tray`), então esse atalho fica reduzido a `Super+M`. O `Super+N` fica de fora porque já foca a notificação ativa.
 - **Cursor nos Flatpaks:** aplicativos Flatpak não enxergam os cursores do sistema e mantêm o padrão, a menos que se libere a pasta de ícones para eles.
 - **Pastas verdes:** no Papirus as pastas são azuis por padrão. Uma variante de terceiros com pastas verdes (`papirus-icon-theme-green-folders-dark`, em `~/.local/share/icons/`) herda os ícones do pacote, então o `papirus-icon-theme` precisa continuar instalado.
 - **Terminal:** o `gnome-terminal` é o instalado. O `kgx` (Console) e o `ptyxis` não estão presentes.
 - **Visualização do Arquivos:** o Arquivos regrava `default-folder-viewer` ao ser usado. Se a lista voltar a ícones, repita o comando com o Arquivos fechado.
 - **Pastas primeiro:** o Nautilus 48 não tem chave para isso. A opção existe só nas janelas de abrir e salvar arquivos (GTK).
 - **Touchpad:** toque para clicar, rolagem natural e rolagem com dois dedos já vêm ligados, e o clique é por número de dedos.
+
+## Limitação conhecida: rótulos da grade de aplicativos
+
+Ao trocar de página na grade de aplicativos (rodinha do mouse ou gesto), o rótulo de alguns ícones pode ficar maior e em negrito, destoando dos vizinhos, e só volta ao normal numa sessão nova (logout/login). Reproduz com todas as extensões desativadas: não é causado por nenhuma delas.
+
+É uma regressão do GNOME Shell em telas com **escalas diferentes por monitor** com escalonamento fracionário ligado (aqui: notebook a 125%, monitor externo a 100%, `scale-monitor-framebuffer` em `org.gnome.mutter experimental-features`). Sem correção; outras pessoas relatam o mesmo em versões mais novas do GNOME, e os únicos contornos conhecidos exigem igualar a escala dos monitores.
+
+<!-- TODO: colar aqui o link da issue no GitLab do GNOME Shell quando for aberta -->
 
 ## Personalizar por conta própria
 
