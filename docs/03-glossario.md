@@ -76,6 +76,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Sandbox (Flatpak)** | Isolamento que limita o que um aplicativo pode acessar (arquivos, dispositivos, rede). As permissões de cada Flatpak são visíveis e ajustáveis. |
 | **Scancode** | Número que o teclado envia ao computador quando uma tecla é pressionada. O kernel converte cada scancode em um código de tecla (como `KEY_RO`). Um remapeamento por `hwdb` troca essa conversão. |
 | **Secure Boot** | Recurso do UEFI que só permite iniciar sistemas assinados. |
+| **Seleção primária** | Segunda área de transferência do Linux. Recebe o texto selecionado e cola com o botão do meio do mouse. O `Ctrl+C` e o `Ctrl+V` usam a área de transferência comum, separada dela. |
 | **SFTP** | Transferência de arquivos por SSH. O aplicativo Arquivos do GNOME abre servidores com `sftp://usuario@endereco/`. |
 | **SHA-256** | Resumo de 64 caracteres calculado a partir do conteúdo de um arquivo. Se o resumo do seu arquivo for igual ao publicado, o arquivo está íntegro (`sha256sum`). |
 | **Shell (bash e zsh)** | Programa que lê os comandos digitados no terminal. O bash é o padrão do Debian. O zsh oferece sugestões e um completar mais completo. |

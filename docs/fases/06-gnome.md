@@ -6,7 +6,8 @@
 
 Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas extensões e sem trocar o visual padrão.
 
-- [x] **Extensões:** pacotes do Debian instalados para AppIndicator (bandeja), Dash to Dock (barra de aplicativos), Caffeine (impede a suspensão), GPaste (histórico da área de transferência), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque). Só o **Blur my Shell** fica ativo; as demais ficam instaladas e desligadas, à disposição pra religar sob demanda.
+- [x] **Extensões:** pacotes do Debian instalados para AppIndicator (bandeja), Dash to Dock (barra de aplicativos), Caffeine (impede a suspensão), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque), mais a Copyous, do site de extensões. Só o **Blur my Shell** e a **Copyous** ficam ativos; as demais ficam instaladas e desligadas, à disposição pra religar sob demanda.
+- [x] **Área de transferência:** histórico no `Super+V`, como o `Win+V` do Windows, com a extensão Copyous. O que foi copiado continua disponível depois que o programa de origem fecha.
 - [x] **Janelas:** botões de minimizar e maximizar ao lado do fechar.
 - [x] **Relógio:** bateria em porcentagem e dia da semana.
 - [x] **Atalhos:** `Super+E` abre o Arquivos, `Super+D` mostra a área de trabalho e `Ctrl+Alt+T` abre o terminal.
@@ -18,17 +19,29 @@ Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas ex
 ```bash
 # 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
 sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine \
-  gnome-shell-extension-gpaste gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell
+  gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell
 
-# 2. Ligar só o Blur my Shell (vale a partir da próxima sessão; as outras ficam desligadas)
-gsettings set org.gnome.shell enabled-extensions "['blur-my-shell@aunetx']"
+# 2. Copyous (histórico da área de transferência), do site de extensões, na pasta do usuário
+sudo apt-get install -y gir1.2-gda-5.0 gir1.2-gsound-1.0
+curl -fLo copyous.zip 'https://extensions.gnome.org/download-extension/copyous@boerdereinar.dev.shell-extension.zip?shell_version=48'
+gnome-extensions install copyous.zip
 
-# 3. Janelas e relógio
+# 3. Ligar só o Blur my Shell e a Copyous (vale a partir da próxima sessão; as outras ficam desligadas)
+gsettings set org.gnome.shell enabled-extensions "['blur-my-shell@aunetx', 'copyous@boerdereinar.dev']"
+
+# 4. Histórico no Super+V, notificações só no Super+M e sem prévia de links
+gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
+C="gsettings --schemadir $HOME/.local/share/gnome-shell/extensions/copyous@boerdereinar.dev/schemas"
+$C set org.gnome.shell.extensions.copyous open-clipboard-dialog-shortcut "['<Super>v']"
+$C set org.gnome.shell.extensions.copyous.link-item show-link-preview false
+$C set org.gnome.shell.extensions.copyous.link-item show-link-preview-image false
+
+# 5. Janelas e relógio
 gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
 gsettings set org.gnome.desktop.interface clock-show-weekday true
 gsettings set org.gnome.desktop.interface show-battery-percentage true
 
-# 4. Atalhos (o GNOME 48 não traz atalho de terminal: é um atalho personalizado)
+# 6. Atalhos (o GNOME 48 não traz atalho de terminal: é um atalho personalizado)
 gsettings set org.gnome.settings-daemon.plugins.media-keys home "['<Super>e']"
 gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>d']"
 K=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/
@@ -38,23 +51,23 @@ gsettings set $S name 'Terminal'
 gsettings set $S command 'gnome-terminal'
 gsettings set $S binding '<Primary><Alt>t'
 
-# 5. Favoritos da barra de aplicativos
+# 7. Favoritos da barra de aplicativos
 gsettings set org.gnome.shell favorite-apps \
   "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
 
-# 6. Fonte e cursor, pelo Debian
+# 8. Fonte e cursor, pelo Debian
 sudo apt-get install -y fonts-inter bibata-cursor-theme
 gsettings set org.gnome.desktop.interface font-name 'Inter 11'
 gsettings set org.gnome.desktop.interface document-font-name 'Inter 11'
 gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Inter Bold 11'
 gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Classic'
 
-# 7. Arquivos
+# 9. Arquivos
 gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
 gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
 
-# 8. Ícones, pelo Debian
+# 10. Ícones, pelo Debian
 sudo apt-get install -y papirus-icon-theme
 gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 ```
@@ -69,17 +82,20 @@ gsettings get org.gnome.desktop.wm.preferences button-layout
 gsettings list-recursively | grep -i '<Super>e'    # o atalho não pode aparecer em outra ação
 ```
 
-Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar todas as extensões e
-`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine gnome-shell-extension-gpaste gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell` para removê-las.
+Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar todas as extensões,
+`gnome-extensions uninstall copyous@boerdereinar.dev` e `sudo apt remove gir1.2-gda-5.0 gir1.2-gsound-1.0` para remover a Copyous e
+`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell` para remover as do Debian.
 
 Observações:
 
 - **Extensões no Wayland:** o GNOME só carrega extensões novas em uma sessão nova; para *desligar* uma já carregada não precisa. Saia e entre de novo para ativar uma extensão nova.
 - **Pacotes do Debian:** todas declaram suporte ao GNOME 48. No Debian, o AppIndicator se chama `ubuntu-appindicators@ubuntu.com`.
-- **Só o Blur my Shell fica ligado:** as outras cinco extensões instaladas ficam desativadas por escolha, para manter o GNOME o mais perto do padrão. Religar com `gnome-extensions enable <uuid>`: AppIndicator (`ubuntu-appindicators@ubuntu.com`), Dash to Dock (`dash-to-dock@micxgx.gmail.com`), Caffeine (`caffeine@patapon.info`), GPaste (`GPaste@gnome-shell-extensions.gnome.org`) e Tiling Assistant (`tiling-assistant@leleat-on-github`).
+- **Só o Blur my Shell e a Copyous ficam ligados:** as outras quatro extensões instaladas ficam desativadas por escolha, para manter o GNOME o mais perto do padrão. Religar com `gnome-extensions enable <uuid>`: AppIndicator (`ubuntu-appindicators@ubuntu.com`), Dash to Dock (`dash-to-dock@micxgx.gmail.com`), Caffeine (`caffeine@patapon.info`) e Tiling Assistant (`tiling-assistant@leleat-on-github`).
 - **Dash to Dock, se religada:** os padrões já lembram a barra do Windows (embaixo, clique alterna as janelas do aplicativo, ícone da lixeira e dos discos).
   A barra se esconde quando uma janela a cobre (`intellihide`). Para deixá-la sempre visível: `gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true`.
-- **Atalho do GPaste, se religada:** a chave `show-history` é do tipo texto (`'<Super>v'`), e não lista: `gsettings set org.gnome.GPaste show-history '<Super>v'`. O GNOME já usa `Super+V` na lista de notificações (`toggle-message-tray`), então esse atalho fica reduzido a `Super+M`. O `Super+N` fica de fora porque já foca a notificação ativa.
+- **Copyous:** a janela abre no ponteiro do mouse, guarda texto, imagens e arquivos, e os itens fixados não saem do histórico. Preferências pelo ícone na barra superior ou por `gnome-extensions prefs copyous@boerdereinar.dev`. A prévia de links fica desligada porque, ligada, a extensão baixa cada endereço copiado.
+- **Atalho das notificações:** o GNOME usa `Super+V` e `Super+M` para a lista de notificações (`toggle-message-tray`). Com o `Super+V` na Copyous, ela fica só no `Super+M`. O `Super+N` fica de fora porque já foca a notificação ativa.
+- **Seleção e `Ctrl+V`:** selecionar um texto o coloca na seleção primária, colada com o botão do meio, sem mudar o que o `Ctrl+V` cola. O GPaste fica de fora: o serviço dele (`gpaste-daemon`) continua rodando com a extensão desligada e, com `synchronize-clipboards` ligado, faz cada seleção substituir o conteúdo do `Ctrl+V`.
 - **Cursor nos Flatpaks:** aplicativos Flatpak não enxergam os cursores do sistema e mantêm o padrão, a menos que se libere a pasta de ícones para eles.
 - **Pastas verdes:** no Papirus as pastas são azuis por padrão. Uma variante de terceiros com pastas verdes (`papirus-icon-theme-green-folders-dark`, em `~/.local/share/icons/`) herda os ícones do pacote, então o `papirus-icon-theme` precisa continuar instalado.
 - **Terminal:** o `gnome-terminal` é o instalado. O `kgx` (Console) e o `ptyxis` não estão presentes.
