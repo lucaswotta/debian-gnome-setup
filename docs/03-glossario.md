@@ -10,6 +10,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Ativação por socket (*socket activation*)** | O `systemd` escuta um socket e só inicia o serviço quando chega a primeira conexão. Poupa memória de serviços pouco usados, como o Docker e o libvirt. |
 | **BGRT** | Tabela do ACPI pela qual o firmware entrega ao sistema o logo que mostrou no boot. O tema `bgrt` do Plymouth usa esse logo. |
 | **Branch `main`** | Ramo principal de um repositório Git. Neste projeto, todo o trabalho vai direto nele. |
+| **Canto ativo (*hot corner*)** | Canto da tela que dispara uma ação quando o ponteiro chega nele. O GNOME só tem o superior esquerdo, que abre a visão geral; outros cantos dependem de extensão. |
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
 | **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |
 | **Componentes do APT (`main`, `contrib`, `non-free`, `non-free-firmware`)** | Categorias de pacotes. `main` é software livre; `non-free` tem licença restritiva; `non-free-firmware` traz firmwares de hardware. |
