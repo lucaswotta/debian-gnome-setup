@@ -11,7 +11,8 @@ O repositório é **público**.
 - `docs/02-roteiro.md`: índice das fases, com status e escopo.
 - `docs/fases/`: um arquivo por fase (`NN-nome.md`), com os comandos e as verificações.
 - `docs/03-glossario.md`: termos em ordem alfabética.
-- `dotfiles/`: cópias dos arquivos de configuração do terminal (`zshrc` e `starship.toml`). Sem dado pessoal, e iguais aos que estão em uso.
+- `dotfiles/`: cópias dos arquivos de configuração do terminal (`zshrc`, `starship.toml` e `fastfetch.jsonc`). Sem dado pessoal, e iguais aos que estão em uso.
+- `docs/imagens/`: captura de tela do README, sem metadados (data e programa removidos do PNG).
 - `LICENSE` (MIT, para os comandos) e `LICENSE-DOCS.txt` (CC BY 4.0, para os textos).
 
 ## Princípios
@@ -48,6 +49,7 @@ O repositório é **público**.
 
 - Nunca versione: senhas, tokens, chaves, números de série, UUIDs, MACs, e-mails pessoais,
   nome de empresa ou cargo, nome de usuário local, nome da máquina e endereços de servidores.
+  Exceção: a captura de tela do README mostra o primeiro nome do autor, o mesmo da `LICENSE`.
 - Antes de cada commit, revise `git diff --staged`.
 - Commits usam o e-mail `noreply` do GitHub, já configurado.
 

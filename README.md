@@ -4,6 +4,10 @@ Guia prático para instalar e configurar o **Debian 13 (GNOME)** como estação 
 
 Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfazer. Todo comando foi executado e verificado num **Lenovo ThinkPad E14 Gen 1 (20RB)**, o modelo de referência do guia.
 
+![Área de trabalho: GNOME escuro em tons de verde, com o gnome-terminal mostrando o fastfetch com o logo do Debian](docs/imagens/area-de-trabalho.png)
+
+<sub>Papel de parede: [wallhaven.cc/w/k82v5q](https://wallhaven.cc/w/k82v5q).</sub>
+
 ## Para quem é
 
 - Quem usa o Debian pela primeira vez e quer entender cada passo, e não só copiar comandos.
@@ -20,7 +24,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 | Escritório | LibreOffice com a aparência e os padrões do Microsoft Office |
 | Rede | VPN pelo menu do GNOME e acesso a servidores pelo aplicativo Arquivos |
 | GNOME | Extensões, atalhos e histórico da área de transferência no estilo do Windows |
-| Terminal | zsh com sugestões, prompt em blocos Powerline, fonte com ícones e paleta própria |
+| Terminal | zsh com sugestões, prompt em blocos Powerline, fonte com ícones, paleta própria e resumo do sistema com `fastfetch` |
 | Máquinas virtuais | Windows 10 LTSC em uma VM com KVM, com rede própria, copiar e colar e disco no SSD extra |
 | Segurança dos dados | Snapshots do sistema com o Timeshift |
 
@@ -43,7 +47,7 @@ Fases 0 a 9 concluídas: base, git e GitHub, sistema, atualizações, notebook, 
 | [docs/01-ambiente.md](docs/01-ambiente.md) | A distribuição, o notebook de referência e o que está instalado |
 | [docs/02-roteiro.md](docs/02-roteiro.md) | O passo a passo em fases, com o status e o escopo de cada uma |
 | [docs/03-glossario.md](docs/03-glossario.md) | Termos de Debian e Linux explicados de forma simples |
-| [dotfiles/](dotfiles/) | Arquivos de configuração do zsh e do Starship |
+| [dotfiles/](dotfiles/) | Arquivos de configuração do zsh, do Starship e do fastfetch |
 
 ## Estrutura
 
@@ -53,12 +57,13 @@ debian-gnome-setup/
 ├── CLAUDE.md          instruções para o Claude Code ao trabalhar neste repositório
 ├── LICENSE            licença dos comandos e trechos de código (MIT)
 ├── LICENSE-DOCS.txt   licença dos textos (CC BY 4.0)
-├── dotfiles/          configuração do terminal: zshrc e starship.toml
+├── dotfiles/          configuração do terminal: zshrc, starship.toml e fastfetch.jsonc
 └── docs/
     ├── 01-ambiente.md
     ├── 02-roteiro.md
     ├── 03-glossario.md
-    └── fases/         um arquivo por fase
+    ├── fases/         um arquivo por fase
+    └── imagens/       captura de tela do README
 ```
 
 ## Como replicar em outra máquina
@@ -74,7 +79,7 @@ O repositório não traz scripts, de propósito: é o registro do que foi feito 
 
 ## Privacidade
 
-O repositório é público. Nunca entram nele senhas, tokens, chaves, números de série, UUIDs, endereços MAC, e-mails pessoais, nomes de empresa, endereços de servidores ou nomes de usuário. Nos exemplos, esses dados aparecem como `<usuario>`, `<ip-do-servidor>` e semelhantes.
+O repositório é público. Nunca entram nele senhas, tokens, chaves, números de série, UUIDs, endereços MAC, e-mails pessoais, nomes de empresa, endereços de servidores ou nomes de usuário. Nos exemplos, esses dados aparecem como `<usuario>`, `<ip-do-servidor>` e semelhantes. A exceção é a captura de tela do início, que mostra o primeiro nome do autor, o mesmo da licença.
 
 ## Licença
 
