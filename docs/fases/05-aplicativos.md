@@ -318,6 +318,13 @@ conexões diretas de entrada, e um autostart que abre o ícone da bandeja em tod
 aplicativo aberto:
 
 ```bash
+# Impede o serviço de rodar, mesmo depois que uma atualização o habilita de novo
+printf '%s\n' '# O instalador do AnyDesk reabilita e inicia o servico a cada atualizacao.' \
+  '# Esta condicao impede que ele rode. Para liberar o servico (acesso sem' \
+  '# supervisao, por exemplo): sudo touch /etc/anydesk/servico-liberado' \
+  '[Unit]' 'ConditionPathExists=/etc/anydesk/servico-liberado' > sob-demanda.conf
+sudo install -D -m 644 sob-demanda.conf /etc/systemd/system/anydesk.service.d/sob-demanda.conf
+sudo systemctl daemon-reload
 sudo systemctl disable --now anydesk       # desliga o serviço e impede que suba no boot
 mkdir -p ~/.config/autostart
 printf '[Desktop Entry]\nType=Application\nName=AnyDesk Tray\nHidden=true\nX-GNOME-Autostart-enabled=false\n' \
@@ -331,17 +338,19 @@ Como conferir:
 
 ```bash
 systemctl is-active anydesk               # inactive
+systemctl show anydesk -p DropInPaths     # .../anydesk.service.d/sob-demanda.conf
 pgrep -c -x anydesk                       # 0 com o aplicativo fechado
 ss -ltn | grep -c ':7070 '                # 0 com o aplicativo fechado
 ```
 
-Como desfazer: `sudo systemctl enable --now anydesk` e `rm ~/.config/autostart/anydesk_global_tray.desktop`.
+Como desfazer: `sudo rm -r /etc/systemd/system/anydesk.service.d && sudo systemctl daemon-reload && sudo systemctl enable --now anydesk` e `rm ~/.config/autostart/anydesk_global_tray.desktop`.
 
 Observações:
 
 - O registro do aplicativo mostra que ele se registra na rede do AnyDesk e se encerra sozinho ao fechar. A conexão de saída depende de uma
   máquina de destino e não foi validada neste guia.
-- Se algo exigir o serviço do sistema (acesso sem supervisão, por exemplo), reative-o com o `enable --now` acima.
+- **Atualizações do AnyDesk:** o instalador do pacote apaga o arquivo do serviço em `/etc/systemd/system/`, copia um novo, habilita e inicia o serviço a cada atualização. Isso desfaz o `disable` e também um `mask`, porque o `mask` é um link no mesmo caminho. A pasta `anydesk.service.d/` sobrevive, e a condição dela impede o serviço de rodar: o `start` do instalador termina sem erro e sem iniciar nada.
+- Se algo exigir o serviço do sistema (acesso sem supervisão, por exemplo), crie o arquivo liberador e reative o serviço: `sudo touch /etc/anydesk/servico-liberado && sudo systemctl enable --now anydesk`.
 
 ## Lote 4: multimídia, utilitários e Steam
 
