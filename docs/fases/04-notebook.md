@@ -15,6 +15,7 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
 - [x] **Boot direto:** o menu do GRUB fica oculto, com 1 segundo de espera invisível (ver [Boot direto](#boot-direto-sem-o-menu-do-grub)).
 - [x] **Boot mais rápido:** initramfs só com os módulos desta máquina e sem os drivers da Logitech (ver [Initramfs enxuto](#initramfs-enxuto)).
+- [x] **Animação de boot:** o logo da Lenovo continua na tela, com um indicador de carregamento, até a tela de login (ver [Animação de boot](#animação-de-boot-plymouth)).
 
 ```bash
 # GPU: ferramentas de teste
@@ -263,3 +264,36 @@ Observações:
 - **Troca de hardware:** com `dep`, o initramfs só tem os drivers do disco e da controladora atuais. Antes de levar o disco para outra máquina, desfaça o ajuste 2.
 - **Driver da AMD continua:** o hook do Plymouth inclui o driver de cada placa de vídeo ativa, então o `amdgpu` e o firmware dele continuam no initramfs. Apagar arquivos por hook não funciona: o `mkinitramfs` copia os módulos de novo depois dos hooks.
 - **Não use `-k all` à toa:** `sudo update-initramfs -u -k all` aplica o ajuste a todos os kernels instalados, e nenhum fica com o initramfs completo de reserva.
+
+### Animação de boot (Plymouth)
+
+O Plymouth desenha a tela entre o GRUB e a tela de login. Sem o parâmetro `splash`, ele não aparece e o boot passa por uma tela preta. O tema BGRT reaproveita o logo que o firmware já mostra e acrescenta um indicador de carregamento, então o logo da Lenovo segue na tela do ligar até o login.
+
+```bash
+cat /sys/firmware/acpi/bgrt/status              # 1: o firmware entrega o logo (tabela BGRT)
+sudo apt install plymouth-themes                # traz o tema bgrt
+sudo plymouth-set-default-theme bgrt
+sudo cp -a /etc/default/grub /etc/default/grub.bak-antes-splash
+sudo sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="quiet"$/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/' /etc/default/grub
+sudo update-grub
+sudo update-initramfs -u                        # o tema vai dentro do initramfs
+```
+
+Como conferir:
+
+```bash
+/usr/sbin/plymouth-set-default-theme            # bgrt
+grep '^GRUB_CMDLINE_LINUX_DEFAULT' /etc/default/grub
+cat /proc/cmdline                               # depois de reiniciar: contém "splash"
+lsinitramfs /boot/initrd.img-$(uname -r) | grep themes/bgrt
+systemd-analyze                                 # o tempo do boot não muda de forma perceptível
+```
+
+Como desfazer: `sudo cp /etc/default/grub.bak-antes-splash /etc/default/grub && sudo update-grub`. Sem o `splash`, o tema instalado não aparece. Para voltar ao tema do Debian: `sudo plymouth-set-default-theme ceratopsian && sudo update-initramfs -u`.
+
+Observações:
+
+- **Tema padrão do Debian:** ligar só o `splash` mostraria o tema do Debian 13 (`ceratopsian`). O BGRT fica mais sóbrio e emenda com o logo do firmware.
+- **Mensagens do boot:** a tecla `Esc` durante a animação mostra as mensagens que ela esconde.
+- **Trocar de tema:** o tema é copiado para o initramfs. Depois de `plymouth-set-default-theme`, rode `update-initramfs -u` (ou use a opção `-R`, que faz os dois).
+- **Firmware sem BGRT:** se `/sys/firmware/acpi/bgrt/status` não existir ou não for `1`, o tema mostra só o indicador de carregamento. Os temas `spinner` e `fade-in`, no mesmo pacote, são alternativas sóbrias.

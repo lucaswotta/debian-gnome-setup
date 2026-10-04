@@ -8,6 +8,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Alias** | Apelido para um comando ou uma sequência de comandos, definido no arquivo de configuração do shell. Exemplo: `gs` para `git status -sb`. |
 | **APT** | Gerenciador de pacotes do Debian. Instala, atualiza e remove programas a partir dos repositórios. |
 | **Ativação por socket (*socket activation*)** | O `systemd` escuta um socket e só inicia o serviço quando chega a primeira conexão. Poupa memória de serviços pouco usados, como o Docker e o libvirt. |
+| **BGRT** | Tabela do ACPI pela qual o firmware entrega ao sistema o logo que mostrou no boot. O tema `bgrt` do Plymouth usa esse logo. |
 | **Branch `main`** | Ramo principal de um repositório Git. Neste projeto, todo o trabalho vai direto nele. |
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
 | **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |
@@ -63,6 +64,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Paleta de cores (`.soc`)** | Arquivo com as cores oferecidas nos seletores do LibreOffice. Paletas próprias ficam em `~/.config/libreoffice/4/user/config/`. |
 | **`PATH`** | Lista de pastas onde o terminal procura comandos. Programas instalados só para o usuário costumam ficar em `~/.local/bin`, que precisa estar no `PATH`. |
 | **Perfil do LibreOffice** | Pasta `~/.config/libreoffice/4/user` com as preferências do usuário. O `registrymodifications.xcu` guarda as mudanças em relação ao padrão. |
+| **Plymouth** | Programa que desenha a tela entre o GRUB e a tela de login, com o logo e a animação de carregamento. Só aparece com o parâmetro `splash` na linha do kernel. |
 | **Porta em escuta** | Porta de rede em que um serviço aguarda conexões. `0.0.0.0` aceita de qualquer interface, e `127.0.0.1` só da própria máquina. |
 | **Powerline** | Estilo de prompt em blocos coloridos ligados por setas. Precisa de uma fonte com esses símbolos, como as Nerd Fonts. |
 | **`power-profiles-daemon`** | Serviço com os perfis de energia (economia, equilibrado e desempenho) usados pelo menu do GNOME. O TLP faz papel parecido, mas os dois não devem ser usados juntos. |
