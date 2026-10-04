@@ -457,3 +457,28 @@ Observações:
   ```
 
 - **Esconder em vez de remover:** para tirar um aplicativo da grade sem desinstalar, ver [fase 6](06-gnome.md#grade-de-aplicativos).
+
+### Processos em segundo plano
+
+Dois aplicativos do GNOME abrem em todo login e ficam residentes: o GNOME Software, que confere atualizações e é o maior processo do GNOME depois do próprio Shell, e o notificador de alarmes do Evolution, que só serve aos lembretes da Agenda do GNOME. Os dois saem do login sem ser desinstalados.
+
+```bash
+mkdir -p ~/.config/autostart
+for f in org.gnome.Software org.gnome.Evolution-alarm-notify; do
+  printf '[Desktop Entry]\nType=Application\nName=%s\nHidden=true\nX-GNOME-Autostart-enabled=false\n' \
+    "$(grep -m1 '^Name=' /etc/xdg/autostart/$f.desktop | cut -d= -f2-)" > ~/.config/autostart/$f.desktop
+done
+# A busca da visão geral também acorda o GNOME Software, que depois continua aberto
+gsettings set org.gnome.desktop.search-providers disabled "['org.gnome.Software.desktop']"
+```
+
+Como conferir: depois de um login novo, `pgrep -a -f 'gnome-software|alarm-notify'` não mostra nada.
+
+Como desfazer: `rm ~/.config/autostart/{org.gnome.Software,org.gnome.Evolution-alarm-notify}.desktop` e `gsettings reset org.gnome.desktop.search-providers disabled`.
+
+Observações:
+
+- **Atualizações dos Flatpaks:** sem o GNOME Software residente, elas passam para um timer do systemd (ver [fase 3](03-atualizacoes.md#flatpak)). Os pacotes do APT já são atualizados pelo `unattended-upgrades`.
+- **Busca na visão geral:** sem o provedor do GNOME Software, digitar o nome de um aplicativo não instalado deixa de sugerir a instalação. Os aplicativos instalados continuam aparecendo.
+- **Evolution:** o serviço de dados (`evolution-data-server`) continua, porque o menu do relógio mostra os eventos da agenda por ele. Ele é pequeno e sobe sob demanda.
+- **Onde está a memória:** a maior parte da memória em uso vem dos aplicativos abertos, como o navegador, e não do GNOME. Para medir por programa: `ps -eo rss,comm --sort=-rss | head`. No Chrome, *Configurações > Desempenho > Economia de memória* descarrega as abas inativas.

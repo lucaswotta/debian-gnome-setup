@@ -11,6 +11,7 @@ Objetivo: manter o sistema atualizado com pouco esforço.
 - [x] Incluir o Google Chrome nas atualizações automáticas
 - [x] Validar com uma simulação
 - [x] Confirmar a execução automática pelo log em `/var/log/unattended-upgrades/`
+- [x] Atualizar os aplicativos Flatpak todo dia, por um timer do systemd (ver [Flatpak](#flatpak))
 
 ```bash
 sudo apt install -y unattended-upgrades powermgmt-base
@@ -69,3 +70,43 @@ Observações:
   O `ls` sem `sudo` falha com "Permissão negada". No log, os repositórios que não estão na lista (como o do Docker) aparecem
   como "Marking not allowed", e uma execução sem novidades registra `No packages found that can be upgraded unattended`.
 - **Hábito semanal:** o `sudo apt update && sudo apt full-upgrade` cobre o que o automático não pega.
+
+## Flatpak
+
+O `unattended-upgrades` cuida só dos pacotes do APT. Os aplicativos Flatpak são atualizados pelo GNOME Software, que precisa ficar aberto em segundo plano. Sem ele no login (ver [fase 5](05-aplicativos.md#processos-em-segundo-plano)), um timer do systemd faz a atualização uma vez por dia.
+
+```bash
+printf '%s\n' '[Unit]' 'Description=Atualiza os aplicativos Flatpak do sistema' 'Wants=network-online.target' \
+  'After=network-online.target' '' '[Service]' 'Type=oneshot' \
+  'ExecStart=/usr/bin/flatpak update --system --noninteractive --assumeyes' 'Nice=10' 'IOSchedulingClass=idle' \
+  > flatpak-update.service
+printf '%s\n' '[Unit]' 'Description=Atualizacao diaria dos aplicativos Flatpak' '' '[Timer]' 'OnCalendar=daily' \
+  'RandomizedDelaySec=1h' 'Persistent=true' '' '[Install]' 'WantedBy=timers.target' > flatpak-update.timer
+systemd-analyze verify ./flatpak-update.service ./flatpak-update.timer
+sudo install -m 644 flatpak-update.service flatpak-update.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now flatpak-update.timer
+```
+
+| Parte | O que faz |
+|---|---|
+| `--system --noninteractive --assumeyes` | Atualiza a instalação do sistema, onde ficam os Flatpaks deste guia, sem perguntas. |
+| `Nice` e `IOSchedulingClass=idle` | A atualização cede processador e disco para o que estiver em uso. |
+| `RandomizedDelaySec=1h` | Sorteia um atraso de até 1 hora, para não pesar sempre no mesmo minuto. |
+| `Persistent=true` | Se o notebook estiver desligado no horário, a execução acontece no próximo boot. |
+
+Como conferir:
+
+```bash
+systemctl list-timers flatpak-update.timer          # próxima execução
+sudo systemctl start flatpak-update.service         # roda agora, para testar
+journalctl -u flatpak-update.service                # o que foi atualizado
+```
+
+Como desfazer: `sudo systemctl disable --now flatpak-update.timer && sudo rm /etc/systemd/system/flatpak-update.*`.
+
+Observações:
+
+- **GNOME Software continua funcionando:** aberto pela grade, ele mostra e instala atualizações normalmente.
+- **Instalação do usuário:** Flatpaks instalados com `--user` ficam de fora. Para eles, um timer do usuário com `flatpak update --user` *(proposta)*.
+

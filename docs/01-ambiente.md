@@ -73,7 +73,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | `mesa-utils` e `vulkan-tools` | Instalados, para testar o vídeo | [4](fases/04-notebook.md) |
 | `unattended-upgrades` e `powermgmt-base` | Atualizações automáticas ativas para o Debian, Chrome, VS Code, AnyDesk e DBeaver | [3](fases/03-atualizacoes.md) |
 | `timeshift` | Modo `rsync`, destino no SSD extra, agenda mensal | [7](fases/07-backup.md) |
-| `flatpak` | Instalado, com o Flathub | [5](fases/05-aplicativos.md) |
+| `flatpak` | Instalado, com o Flathub. Atualizado todo dia por um timer do systemd ([fase 3](fases/03-atualizacoes.md#flatpak)) | [5](fases/05-aplicativos.md) |
 | Fontes | Liberation, Carlito, Caladea, Noto, Fira Code e as fontes da Microsoft (`ttf-mscorefonts-installer`) | [5](fases/05-aplicativos.md) |
 | Fonte Aptos | Indisponível para Linux. Uma regra do `fontconfig` a substitui pela Liberation Sans | [5](fases/05a-libreoffice.md) |
 
