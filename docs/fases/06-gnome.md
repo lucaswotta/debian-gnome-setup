@@ -18,7 +18,7 @@ Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas ex
 - [x] **Ícones:** Papirus na variante escura, com as pastas em verde. Aplicativos sem ícone no Papirus recebem um equivalente do próprio Papirus.
 - [x] **Grade de aplicativos:** organizada em pastas, com os aplicativos sem uso escondidos (ver [Grade de aplicativos](#grade-de-aplicativos)).
 - [x] **Papel de parede e telas:** papel de parede do GNOME. A tela de bloqueio usa o mesmo, e a tela de login acompanha o papel de parede atual (ver [Tela de login](#tela-de-login)).
-- [x] **Favoritos da dash:** Chrome, Arquivos e Terminal, na dash da visão geral (`Super`). Não há barra de aplicativos fixa.
+- [x] **Favoritos da dash:** Chrome, Arquivos, Terminal e Obsidian, na dash da visão geral (`Super`). Não há barra de aplicativos fixa.
 
 ```bash
 # 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
@@ -100,7 +100,7 @@ gsettings set $S:$K/custom1/ binding '<Super>period'
 
 # 11. Favoritos da dash da visão geral
 gsettings set org.gnome.shell favorite-apps \
-  "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
+  "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'md.obsidian.Obsidian.desktop']"
 
 # 12. Fonte, pelo Debian (o cursor fica o padrão do GNOME)
 sudo apt-get install -y fonts-inter
@@ -230,7 +230,7 @@ Como desfazer: apagar o `.desktop` correspondente em `~/.local/share/application
 
 Observações:
 
-- **Favoritos fora da grade:** no GNOME, um aplicativo fixado na dash não aparece na grade. Chrome, Arquivos e Terminal ficam só na dash.
+- **Favoritos fora da grade:** no GNOME, um aplicativo fixado na dash não aparece na grade. Chrome, Arquivos, Terminal e Obsidian ficam só na dash.
 - **Ordem regravada:** o GNOME Shell regrava `app-picker-layout` quando as pastas mudam. Defina as pastas antes e a ordem por último; se a ordem sair embaralhada, aplique-a de novo.
 - **Pastas vazias do Debian:** `YaST` e `Pardus` vêm na lista padrão, sem aplicativos. Ficam de fora de `folder-children`.
 - **Ícones trocados:** o Papirus tem o ícone do DBeaver (`dbeaver`) e do VNC Viewer (`realvnc-vncviewer`). Para os outros, o ícone escolhido é o mais próximo da função: captura de tela no Gradia, área de trabalho remota no RustConn, temas no Wardrobe e o golfinho do MySQL (`mysql-workbench`) num cliente MySQL. O Claude mantém o ícone próprio. Um `.desktop` que aponta para um arquivo (`Icon=/caminho/icone.png`) também ganha o ícone do Papirus assim.
