@@ -13,10 +13,11 @@ Objetivo: trocar o terminal padrão por um mais confortável, com sugestões enq
 - [x] **Cores:** tema *Terminal Green 1999*, do catálogo Gogh, com texto verde-menta e cursor em sublinhado.
 - [x] **Destaque verde no GTK 3:** o `gnome-terminal` usa GTK 3, que ignora a cor de destaque do GNOME. Um arquivo de estilo do usuário troca o azul das abas e da seleção pelo verde de destaque.
 - [x] **Ferramentas:** `eza` (listagem), `bat` (leitura de arquivos), `fzf` (busca) e `fastfetch` (resumo do sistema).
+- [x] **Resumo do sistema:** `fastfetch` com o logo do Debian e dois grupos curtos, sistema e hardware, com ícones da Nerd Font e as cores da paleta do terminal. Roda sob demanda, e não na abertura do terminal.
 - [x] **Atalhos de linha de comando:** *aliases* de git, listagem, navegação e Docker.
 - [x] **Histórico:** 50 mil comandos, compartilhado entre as abas.
 
-Os arquivos de configuração ficam em [`dotfiles/`](../../dotfiles/): [`zshrc`](../../dotfiles/zshrc) e [`starship.toml`](../../dotfiles/starship.toml).
+Os arquivos de configuração ficam em [`dotfiles/`](../../dotfiles/): [`zshrc`](../../dotfiles/zshrc), [`starship.toml`](../../dotfiles/starship.toml) e [`fastfetch.jsonc`](../../dotfiles/fastfetch.jsonc).
 
 ```bash
 # 1. Pacotes do Debian
@@ -31,9 +32,10 @@ mkdir -p ~/.local/share/fonts/FiraCodeNerdFont
 tar -xJf FiraCode.tar.xz -C ~/.local/share/fonts/FiraCodeNerdFont --wildcards '*.ttf' LICENSE
 fc-cache -f ~/.local/share/fonts/FiraCodeNerdFont
 
-# 3. Configuração do zsh e do Starship (a partir da raiz deste repositório)
+# 3. Configuração do zsh, do Starship e do fastfetch (a partir da raiz deste repositório)
 cp dotfiles/zshrc ~/.zshrc
 mkdir -p ~/.config && cp dotfiles/starship.toml ~/.config/starship.toml
+mkdir -p ~/.config/fastfetch && cp dotfiles/fastfetch.jsonc ~/.config/fastfetch/config.jsonc
 
 # 4. Destaque verde nos aplicativos GTK 3 (a linha das abas e a seleção de texto)
 mkdir -p ~/.config/gtk-3.0
@@ -75,7 +77,7 @@ O que cada parte faz:
 | `fzf` | `Ctrl+R` busca no histórico, `Ctrl+T` acha arquivos e `Alt+C` entra em uma pasta. |
 | `eza` | Substitui o `ls`, com ícones, cores e coluna do git (`ll`, `la` e `lt` para árvore). |
 | `bat` | Mostra arquivos com cores e numeração. No Debian, o programa se chama `batcat`. |
-| `fastfetch` | Resumo do sistema, sob demanda. |
+| `fastfetch` | Resumo do sistema, sob demanda. A configuração está em `~/.config/fastfetch/config.jsonc`. |
 | `gtk.css` | Troca o azul do GTK 3 pelo verde de destaque nos aplicativos GTK 3, como as abas do `gnome-terminal`. |
 | `custom-command` | Faz o perfil abrir o zsh sem trocar o shell de login. |
 
@@ -86,6 +88,7 @@ zsh -n ~/.zshrc && echo 'sintaxe ok'
 TERM=xterm-256color script -qec 'zsh -ic "echo carregou"' /dev/null   # carrega o zsh num terminal de verdade
 fc-list | grep -c 'FiraCode Nerd Font Mono'                             # maior que zero
 gsettings get "$K" font
+fastfetch --pipe --logo none                                             # lista o resumo, sem linha de erro
 ```
 
 Feche todas as janelas do terminal e abra uma nova. Ela deve abrir em zsh, com a fonte nova. O prompt deve mostrar a pasta em um bloco verde e, dentro de um repositório git, o bloco da branch. A linha sob a aba selecionada deve ser verde.
@@ -94,7 +97,7 @@ Como desfazer:
 
 - **Destaque do GTK 3:** `rm ~/.config/gtk-3.0/gtk.css` e abrir os aplicativos de novo.
 - **Perfil do terminal:** `dconf reset -f /org/gnome/terminal/legacy/profiles:/` volta ao padrão de fábrica.
-- **Configuração:** `rm ~/.zshrc ~/.config/starship.toml`. O histórico fica em `~/.zsh_history`.
+- **Configuração:** `rm -r ~/.zshrc ~/.config/starship.toml ~/.config/fastfetch`. O histórico fica em `~/.zsh_history`.
 - **Fonte:** `rm -r ~/.local/share/fonts/FiraCodeNerdFont && fc-cache -f`.
 - **Pacotes:** `sudo apt remove --autoremove zsh zsh-autosuggestions zsh-syntax-highlighting starship eza bat fzf fastfetch`.
 
@@ -112,4 +115,5 @@ Observações:
 - **Transparência:** o `gnome-terminal` 3.56 não tem opção de fundo transparente. Para isso, é preciso outro terminal, como o Ptyxis ou o Kitty.
 - **Dependências do `zshrc`:** as linhas do `fnm`, do SDKMAN, do Go e do `uv` pressupõem as ferramentas da [fase 5](05-aplicativos.md). As do `fnm` e do SDKMAN só rodam se a ferramenta existir. As demais entradas do `PATH` são inofensivas sem elas.
 - **Histórico:** `~/.zsh_history` guarda os comandos digitados, com o que houver neles. Não o versione nem o compartilhe.
-- **Privacidade:** o `fastfetch` mostra o nome da máquina e o do usuário. Corte essas linhas antes de publicar uma captura de tela.
+- **`fastfetch`:** o título mostra o nome do usuário do sistema e o apelido fixo `thinkpad` no lugar do nome da máquina. A detecção de GPU lê o barramento PCI, e as temperaturas ficam desligadas, o que deixa a execução mais rápida. Dois módulos de GPU, um para a placa dedicada e outro para a integrada, evitam o fabricante repetido em `AMD AMD Radeon`. As cores são as da paleta do terminal: nos textos de `format`, use códigos numéricos, como `{#37}` ou `{#1;92}`, porque os nomes de cor ali dão erro. Os ícones do intervalo `U+E000` a `U+F8FF` estão escritos como `\uXXXX`, que o JSONC converte, porque alguns editores apagam esses caracteres.
+- **Privacidade:** o `fastfetch` padrão mostra o nome da máquina, o IP local e o nome do usuário. A configuração deste repositório omite os dois primeiros. Confira o título antes de publicar uma captura de tela.

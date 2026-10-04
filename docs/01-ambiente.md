@@ -67,7 +67,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | Extensões do GNOME | AppIndicator e Blur my Shell, pelo Debian. Copyous (área de transferência), Tiling Shell (encaixe de janelas), Just Perfection, Custom Hot Corners - Extended (cantos ativos), Vertical App Grid e a complementar do Smile, na pasta do usuário. Gerenciador de extensões para instalar outras | [6](fases/06-gnome.md) |
 | Fonte e cursor da interface | Inter, pelo Debian, e o cursor padrão do GNOME (Adwaita) | [6](fases/06-gnome.md) |
 | Ícones | Papirus, pelo Debian, com uma variante de pastas verdes na pasta do usuário | [6](fases/06-gnome.md) |
-| Terminal e shell | zsh (aberto pelo perfil do `gnome-terminal`), Starship com prompt em blocos Powerline, `eza`, `bat`, `fzf` e `fastfetch`, pelo Debian, e a FiraCode Nerd Font na pasta do usuário. Configuração em `dotfiles/` | [8](fases/08-terminal.md) |
+| Terminal e shell | zsh (aberto pelo perfil do `gnome-terminal`), Starship com prompt em blocos Powerline, `eza`, `bat`, `fzf` e `fastfetch` (com configuração própria), pelo Debian, e a FiraCode Nerd Font na pasta do usuário. Configuração em `dotfiles/` | [8](fases/08-terminal.md) |
 | `curl`, `wget`, `git` e `gh` | Instalados | [0](fases/00-base-minima.md) e [1](fases/01-git-e-github.md) |
 | `btrfs-progs` e `smartmontools` | Instalados | [2](fases/02-base-do-sistema.md) |
 | `mesa-utils` e `vulkan-tools` | Instalados, para testar o vídeo | [4](fases/04-notebook.md) |
