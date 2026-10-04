@@ -111,4 +111,4 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | VLC | Instalado pelo Debian | [5](fases/05-aplicativos.md) |
 | Discord | Flatpak | [5](fases/05-aplicativos.md) |
 | Steam | Flatpak, com acesso à pasta `/mnt/ssd/Jogos` | [5](fases/05-aplicativos.md) |
-| `htop`, `ncdu` e `tree` | Instalados | [5](fases/05-aplicativos.md) |
+| `ncdu` e `tree` | Instalados | [5](fases/05-aplicativos.md) |

@@ -15,6 +15,7 @@ O perfil de referência é o de desenvolvimento de software, com uso geral. Troq
 - [x] **Lote 3:** VS Code, DBeaver e AnyDesk (repositórios dos fabricantes), Postman, SoapUI e Discord (Flatpak).
 - [x] **LibreOffice:** configurado para se parecer com o Office. Ver [LibreOffice no estilo do Microsoft Office](05a-libreoffice.md).
 - [x] **Lote 4:** VLC, utilitários de diagnóstico e de rede (Debian) e Steam (Flatpak).
+- [x] **Limpeza:** sem o `xterm`, o `htop` e as sobras de pacotes removidos, e com o serviço de modem desligado (ver [Limpeza](#limpeza)).
 
 Aplicativos adicionais, como GIMP, OBS Studio e Inkscape, entram sob demanda, pelo Debian ou pelo Flatpak.
 
@@ -30,7 +31,7 @@ Aplicativos adicionais, como GIMP, OBS Studio e Inkscape, entram sob demanda, pe
 | APIs | Postman e SoapUI | Flatpak |
 | Comunicação | WhatsApp Web, Teams, Meet e Zoom pelo Chrome. Discord | Navegador e Flatpak |
 | Rede e acesso remoto | Wireshark, AnyDesk, `nmap` e `dnsutils` | Debian e repositório do fabricante |
-| Diagnóstico | `htop`, `ncdu` e `tree` | Debian |
+| Diagnóstico | `ncdu` e `tree`. Os processos ficam no Monitor do sistema, do GNOME | Debian |
 | Multimídia | VLC | Debian |
 | Jogos | Steam, com a biblioteca em `/mnt/ssd/Jogos` | Flatpak |
 | Escritório | LibreOffice, configurado para se parecer com o Office | Debian |
@@ -347,7 +348,7 @@ Observações:
 | Bloco | Programas | Origem |
 |---|---|---|
 | Multimídia | VLC | Debian |
-| Diagnóstico | `htop` (processos), `ncdu` (uso do disco), `tree` (árvore de pastas) e `dnsutils` (`dig` e `nslookup`) | Debian |
+| Diagnóstico | `ncdu` (uso do disco), `tree` (árvore de pastas) e `dnsutils` (`dig` e `nslookup`) | Debian |
 | Rede | `nmap` | Debian |
 | Jogos | Steam | Flatpak |
 
@@ -355,8 +356,8 @@ O VLC entra pelo Debian, sem repositório externo. O Steam usa o Flatpak porque 
 sem ativar a arquitetura `i386` no sistema.
 
 ```bash
-apt-get -s install vlc htop ncdu tree dnsutils nmap        # simulação, sem root: só pacotes novos e nenhuma remoção
-sudo apt-get install -y vlc htop ncdu tree dnsutils nmap
+apt-get -s install vlc ncdu tree dnsutils nmap        # simulação, sem root: só pacotes novos e nenhuma remoção
+sudo apt-get install -y vlc ncdu tree dnsutils nmap
 sudo flatpak install -y flathub com.valvesoftware.Steam
 flatpak override --user --filesystem=/mnt/ssd/Jogos com.valvesoftware.Steam      # a Steam passa a enxergar a pasta de jogos
 ```
@@ -370,7 +371,7 @@ flatpak list --app --columns=application | grep Steam
 flatpak override --user --show com.valvesoftware.Steam                           # filesystems=/mnt/ssd/Jogos;
 ```
 
-Como desfazer: `sudo apt remove vlc htop ncdu tree dnsutils nmap` e `sudo flatpak uninstall com.valvesoftware.Steam`.
+Como desfazer: `sudo apt remove vlc ncdu tree dnsutils nmap` e `sudo flatpak uninstall com.valvesoftware.Steam`.
 O `flatpak override --user --reset com.valvesoftware.Steam` remove a permissão da pasta.
 
 Observações:
@@ -404,3 +405,46 @@ sudo systemctl stop ssh                         # desliga ao terminar
 ```
 
 Com isso, a única porta em escuta fica sendo a do serviço de impressão, restrita à própria máquina.
+
+## Limpeza
+
+Pacotes e serviços sem uso saem, sem tocar no que o GNOME e o sistema precisam. Remover um aplicativo do GNOME quase não libera memória, porque ele só roda quando é aberto. Quem ocupa memória são os serviços em segundo plano.
+
+```bash
+# 1. Pacotes sem uso: simular antes e conferir a lista
+apt-get -s remove --autoremove xterm htop
+sudo apt remove --autoremove xterm htop
+
+# 2. Configurações deixadas por pacotes já removidos (estado "rc" no dpkg)
+apt-get -s purge '~c'
+sudo apt purge '~c'
+
+# 3. Serviço de modem (ModemManager), numa máquina sem modem
+mmcli -L                                        # "No modems were found"
+sudo systemctl disable --now ModemManager.service
+```
+
+Como conferir:
+
+```bash
+apt-get -s autoremove | grep -c '^Remv'         # 0: nada sobrando
+dpkg -l | grep -c '^rc'                         # 0: nenhuma configuração órfã
+systemctl is-enabled ModemManager.service       # disabled
+systemctl --failed                              # nenhuma unidade com falha
+```
+
+Como desfazer: `sudo apt install xterm htop` e `sudo systemctl enable --now ModemManager.service`. As configurações apagadas pelo `purge` voltam com os valores padrão se o pacote for reinstalado.
+
+Observações:
+
+- **`xterm` e `xorg`:** o pacote `xorg` exige "um terminal qualquer" (`xterm | x-terminal-emulator`). Com o `gnome-terminal` instalado, o `xterm` sai sem levar o `xorg`.
+- **`vi` fica:** o `vim-tiny` é o `vi` do sistema, útil numa recuperação. Só o atalho dele sai do menu (ver [fase 6](06-gnome.md#grade-de-aplicativos)). O editor padrão é o `nano`.
+- **ModemManager:** desligado, ele também deixa de subir quando outro programa o chama pelo D-Bus, porque o `disable` apaga o atalho `dbus-org.freedesktop.ModemManager1.service`.
+- **Impressão:** o CUPS fica, mesmo sem impressora configurada, para imprimir em rede quando preciso.
+- **Aplicativos do GNOME e o `gnome-core`:** quase todo aplicativo do GNOME é dependência do pacote `gnome-core`. Remover um deles leva junto o `gnome-core` e o `task-gnome-desktop`, que são só listas de pacotes. O risco vem depois: o resto do GNOME passa a contar como "não usado", e um `apt autoremove` o desinstala. Antes de remover um aplicativo do GNOME, marque como manuais as dependências dos dois *(proposta)*:
+
+  ```bash
+  LANG=C apt-cache depends gnome-core task-gnome-desktop | awk '$1 == "Depends:" && $2 !~ /^</ {print $2}' | sort -u | xargs sudo apt-mark manual
+  ```
+
+- **Esconder em vez de remover:** para tirar um aplicativo da grade sem desinstalar, ver [fase 6](06-gnome.md#grade-de-aplicativos).
