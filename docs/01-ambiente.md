@@ -55,7 +55,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 - **Firmware presente:** `firmware-amd-graphics`, `firmware-intel-graphics`, `firmware-iwlwifi`, `firmware-realtek` e `firmware-sof-signed`.
 - **Microcódigo:** `intel-microcode`.
 - **Atualização de firmware:** `fwupd` disponível.
-- **Boot:** o GRUB não mostra o menu e inicia o sistema direto.
+- **Boot:** o GRUB não mostra o menu e inicia o sistema direto. O initramfs leva só os módulos desta máquina e deixa os drivers da Logitech para depois de montar a raiz ([fase 4](fases/04-notebook.md#initramfs-enxuto)).
 
 ## Software instalado
 

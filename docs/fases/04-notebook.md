@@ -14,6 +14,7 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Tecla da barra (`/ ?`):** remapeada por `hwdb` (ver [Tecla da barra](#tecla-da-barra--)).
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
 - [x] **Boot direto:** o menu do GRUB fica oculto, com 1 segundo de espera invisível (ver [Boot direto](#boot-direto-sem-o-menu-do-grub)).
+- [x] **Boot mais rápido:** initramfs só com os módulos desta máquina e sem os drivers da Logitech (ver [Initramfs enxuto](#initramfs-enxuto)).
 
 ```bash
 # GPU: ferramentas de teste
@@ -205,3 +206,60 @@ Observações:
 - **Falha de boot:** o `grub.cfg` gerado mostra o menu por 30 segundos depois de um boot que falhou (`recordfail`), então o menu reaparece quando é necessário.
 - **Tela de login:** continua a do GDM. O login automático não é usado, porque o desbloqueio do chaveiro e do agente SSH depende da senha no login.
 - **Menu do GRUB e `os-prober`:** o `update-grub` avisa que não procura outros sistemas. Com um só sistema, o aviso não tem efeito.
+
+### Initramfs enxuto
+
+O initramfs (`/boot/initrd.img-*`) é o sistema mínimo que o kernel abre antes de montar a raiz. Dois ajustes o deixam menor e impedem que ele espere por dispositivos que não são necessários no boot:
+
+1. **Sem os drivers da Logitech no initramfs:** dentro dele, o boot espera todos os dispositivos ficarem prontos (`udevadm settle`). Com o mouse ou o teclado sem fio dormindo, o driver `hid-logitech-hidpp` espera cerca de 5 segundos por aparelho antes de desistir, e o boot fica parado. Um hook grava um `blacklist` desses módulos só dentro do initramfs. Até a raiz ser montada, o receptor funciona como teclado e mouse genéricos. Depois, o sistema carrega os drivers da Logitech normalmente, sem segurar o boot.
+2. **Só os módulos desta máquina (`MODULES=dep`):** o padrão do Debian (`most`) leva drivers para quase todo hardware e o microcódigo de todos os processadores Intel. Com `dep`, o initramfs leva só os drivers e o microcódigo desta máquina e cai para cerca de metade do tamanho. O GRUB lê o arquivo mais rápido, e o kernel o descompacta mais rápido.
+
+```bash
+# 1. Hook: drivers da Logitech fora do initramfs
+cat > logitech-fora-do-initramfs <<'EOF'
+#!/bin/sh
+# Impede que hid-logitech-dj/hidpp carreguem DENTRO do initramfs.
+# Com mouse/teclado sem fio dormindo, o probe espera ~5 s por aparelho e o
+# "udevadm settle" do initramfs segura o boot. Sem eles, o receptor funciona
+# como HID generico ate montar a raiz; depois o udev do sistema carrega os
+# drivers Logitech normalmente (o blacklist vale so dentro do initramfs).
+PREREQ=""
+prereqs() { echo "$PREREQ"; }
+case "$1" in prereqs) prereqs; exit 0 ;; esac
+mkdir -p "${DESTDIR}/etc/modprobe.d"
+printf 'blacklist hid_logitech_dj\nblacklist hid_logitech_hidpp\n' \
+	> "${DESTDIR}/etc/modprobe.d/logitech-fora-do-initramfs.conf"
+EOF
+sudo install -m 755 logitech-fora-do-initramfs /etc/initramfs-tools/hooks/
+
+# 2. Só os módulos desta máquina (o initramfs.conf original fica intacto)
+printf '# initrd so com os modulos desta maquina (padrao do Debian: most).\n# Reverter: apagar este arquivo e rodar update-initramfs -u.\nMODULES=dep\n' > modules-dep.conf
+sudo install -m 644 modules-dep.conf /etc/initramfs-tools/conf.d/
+
+# 3. Gerar de novo o initramfs do kernel atual
+sudo update-initramfs -u
+```
+
+Como conferir:
+
+```bash
+ls -lh /boot/initrd.img-*                                              # o do kernel atual fica menor que os outros
+lsinitramfs /boot/initrd.img-$(uname -r) | grep -E 'logitech-fora|modules-dep|/nvme\.ko|/ext4\.ko'
+systemd-analyze                                                        # depois de reiniciar: tempos do loader e do kernel
+lsmod | grep hid_logitech                                              # depois do boot, os drivers da Logitech estão carregados
+```
+
+Como desfazer:
+
+```bash
+sudo rm /etc/initramfs-tools/hooks/logitech-fora-do-initramfs /etc/initramfs-tools/conf.d/modules-dep.conf
+sudo update-initramfs -u
+```
+
+Observações:
+
+- **Teste sem risco:** o `mkinitramfs` gera um initramfs de teste sem `sudo`, a partir de uma cópia da configuração: `cp -r /etc/initramfs-tools cfg`, ajustar a cópia e rodar `/usr/sbin/mkinitramfs -d cfg -o teste.img $(uname -r)`. O `lsinitramfs teste.img` lista o conteúdo.
+- **Kernel de reserva:** o `update-initramfs -u` só gera de novo o initramfs do kernel mais novo. Os dos kernels anteriores continuam completos até serem regerados. Se o boot falhar, a tecla `Esc` abre o menu do GRUB, e em *Opções avançadas* dá para escolher outro kernel.
+- **Troca de hardware:** com `dep`, o initramfs só tem os drivers do disco e da controladora atuais. Antes de levar o disco para outra máquina, desfaça o ajuste 2.
+- **Driver da AMD continua:** o hook do Plymouth inclui o driver de cada placa de vídeo ativa, então o `amdgpu` e o firmware dele continuam no initramfs. Apagar arquivos por hook não funciona: o `mkinitramfs` copia os módulos de novo depois dos hooks.
+- **Não use `-k all` à toa:** `sudo update-initramfs -u -k all` aplica o ajuste a todos os kernels instalados, e nenhum fica com o initramfs completo de reserva.

@@ -37,6 +37,7 @@ Termos usados na documentação, em ordem alfabética.
 | **`gsettings`** | Comando que lê e altera as configurações do GNOME, as mesmas dos aplicativos de Ajustes. `gsettings reset` volta ao padrão. |
 | **GTK (3 e 4) e libadwaita** | Bibliotecas de interface do GNOME. A cor de destaque escolhida nas Configurações só vale para aplicativos GTK 4 com libadwaita. Os GTK 3, como o `gnome-terminal` do Debian 13, usam um tema fixo. |
 | **`hwdb` (banco de hardware do udev)** | Arquivos em `/etc/udev/hwdb.d/` que ajustam propriedades de dispositivos, como o mapa de teclas de um teclado. `systemd-hwdb update` recompila o banco. |
+| **Initramfs (initrd)** | Sistema mínimo, em `/boot/initrd.img-*`, que o kernel abre antes de montar a raiz, com os drivers para achar o disco. `update-initramfs -u` gera de novo o do kernel atual. A configuração fica em `/etc/initramfs-tools/`, e os *hooks* são scripts que acrescentam arquivos ao gerá-lo. |
 | **Journal / `journalctl`** | Log central do sistema. Para lê-lo sem `sudo`, o usuário precisa estar no grupo `systemd-journal`. |
 | **Kernel** | Núcleo do sistema, que se comunica com o hardware. O Debian 13 usa o Linux 6.12. |
 | **KVM e QEMU** | O KVM é o recurso do kernel que usa o processador para rodar máquinas virtuais quase na velocidade real. O QEMU é o programa que emula o resto do computador (disco, rede e vídeo) e usa o KVM. |
