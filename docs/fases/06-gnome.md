@@ -6,7 +6,7 @@
 
 Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas extensões e sem trocar o visual padrão.
 
-- [x] **Extensões:** pacotes do Debian instalados para AppIndicator (bandeja), Dash to Dock (barra de aplicativos), Caffeine (impede a suspensão), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque), mais a Copyous, do site de extensões. Só o **Blur my Shell** e a **Copyous** ficam ativos; as demais ficam instaladas e desligadas, à disposição pra religar sob demanda.
+- [x] **Extensões:** AppIndicator (bandeja), Tiling Assistant (encaixe de janelas) e Blur my Shell (desfoque), pelo Debian, mais Copyous (área de transferência), Impatience (animações mais rápidas) e Vertical App Grid (grade de aplicativos com rolagem vertical), do site de extensões. As seis ficam ativas.
 - [x] **Área de transferência:** histórico no `Super+V`, como o `Win+V` do Windows, com a extensão Copyous. O que foi copiado continua disponível depois que o programa de origem fecha.
 - [x] **Janelas:** botões de minimizar e maximizar ao lado do fechar.
 - [x] **Relógio:** bateria em porcentagem e dia da semana.
@@ -14,25 +14,29 @@ Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas ex
 - [x] **Arquivos:** visualização em lista. Nas janelas de abrir e salvar, pastas antes dos arquivos.
 - [x] **Visual:** tema escuro e destaque verde, com a fonte Inter na interface e nos títulos das janelas e o cursor Bibata.
 - [x] **Ícones:** Papirus, pelo Debian, na variante escura, com as pastas em verde.
-- [x] **Favoritos da barra de aplicativos:** Chrome, Arquivos e Terminal.
+- [x] **Favoritos da dash:** Chrome, Arquivos e Terminal, na dash da visão geral (`Super`). Não há barra de aplicativos fixa.
 
 ```bash
 # 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
-sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine \
-  gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell
+sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-tiling-assistant \
+  gnome-shell-extension-blur-my-shell
 
-# 2. Copyous (histórico da área de transferência), do site de extensões, na pasta do usuário
-sudo apt-get install -y gir1.2-gda-5.0 gir1.2-gsound-1.0
-curl -fLo copyous.zip 'https://extensions.gnome.org/download-extension/copyous@boerdereinar.dev.shell-extension.zip?shell_version=48'
-gnome-extensions install copyous.zip
+# 2. Copyous, Impatience e Vertical App Grid, do site de extensões, na pasta do usuário
+sudo apt-get install -y gir1.2-gda-5.0 gir1.2-gsound-1.0      # dependências da Copyous
+for u in copyous@boerdereinar.dev impatience@gfxmonk.net vertical-app-grid@lublst.github.io; do
+  curl -fLo "$u.zip" "https://extensions.gnome.org/download-extension/$u.shell-extension.zip?shell_version=48"
+  gnome-extensions install "$u.zip"
+done
 
-# 3. Ligar só o Blur my Shell e a Copyous (vale a partir da próxima sessão; as outras ficam desligadas)
-gsettings set org.gnome.shell enabled-extensions "['blur-my-shell@aunetx', 'copyous@boerdereinar.dev']"
+# 3. Ligar as seis (vale a partir da próxima sessão)
+gsettings set org.gnome.shell enabled-extensions "['ubuntu-appindicators@ubuntu.com', 'tiling-assistant@leleat-on-github', \
+  'blur-my-shell@aunetx', 'copyous@boerdereinar.dev', 'impatience@gfxmonk.net', 'vertical-app-grid@lublst.github.io']"
 
-# 4. Histórico no Super+V, notificações só no Super+M e sem prévia de links
+# 4. Histórico no Super+V, sem ícone no painel, notificações só no Super+M e sem prévia de links
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
 C="gsettings --schemadir $HOME/.local/share/gnome-shell/extensions/copyous@boerdereinar.dev/schemas"
 $C set org.gnome.shell.extensions.copyous open-clipboard-dialog-shortcut "['<Super>v']"
+$C set org.gnome.shell.extensions.copyous show-indicator false
 $C set org.gnome.shell.extensions.copyous.link-item show-link-preview false
 $C set org.gnome.shell.extensions.copyous.link-item show-link-preview-image false
 
@@ -51,7 +55,7 @@ gsettings set $S name 'Terminal'
 gsettings set $S command 'gnome-terminal'
 gsettings set $S binding '<Primary><Alt>t'
 
-# 7. Favoritos da barra de aplicativos
+# 7. Favoritos da dash da visão geral
 gsettings set org.gnome.shell favorite-apps \
   "['google-chrome.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop']"
 
@@ -83,17 +87,17 @@ gsettings list-recursively | grep -i '<Super>e'    # o atalho não pode aparecer
 ```
 
 Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar todas as extensões,
-`gnome-extensions uninstall copyous@boerdereinar.dev` e `sudo apt remove gir1.2-gda-5.0 gir1.2-gsound-1.0` para remover a Copyous e
-`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-dashtodock gnome-shell-extension-caffeine gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell` para remover as do Debian.
+`gnome-extensions uninstall <uuid>` para a Copyous, a Impatience e a Vertical App Grid (mais `sudo apt remove gir1.2-gda-5.0 gir1.2-gsound-1.0`, das dependências da Copyous) e
+`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-tiling-assistant gnome-shell-extension-blur-my-shell` para remover as do Debian.
 
 Observações:
 
 - **Extensões no Wayland:** o GNOME só carrega extensões novas em uma sessão nova; para *desligar* uma já carregada não precisa. Saia e entre de novo para ativar uma extensão nova.
 - **Pacotes do Debian:** todas declaram suporte ao GNOME 48. No Debian, o AppIndicator se chama `ubuntu-appindicators@ubuntu.com`.
-- **Só o Blur my Shell e a Copyous ficam ligados:** as outras quatro extensões instaladas ficam desativadas por escolha, para manter o GNOME o mais perto do padrão. Religar com `gnome-extensions enable <uuid>`: AppIndicator (`ubuntu-appindicators@ubuntu.com`), Dash to Dock (`dash-to-dock@micxgx.gmail.com`), Caffeine (`caffeine@patapon.info`) e Tiling Assistant (`tiling-assistant@leleat-on-github`).
-- **Dash to Dock, se religada:** os padrões já lembram a barra do Windows (embaixo, clique alterna as janelas do aplicativo, ícone da lixeira e dos discos).
-  A barra se esconde quando uma janela a cobre (`intellihide`). Para deixá-la sempre visível: `gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed true`.
-- **Copyous:** a janela abre no ponteiro do mouse, guarda texto, imagens e arquivos, e os itens fixados não saem do histórico. Preferências pelo ícone na barra superior ou por `gnome-extensions prefs copyous@boerdereinar.dev`. A prévia de links fica desligada porque, ligada, a extensão baixa cada endereço copiado.
+- **Sem barra de aplicativos fixa:** os favoritos e os aplicativos abertos ficam na dash da visão geral (`Super`). O Dash to Dock e o Caffeine ficam de fora.
+- **Impatience e Vertical App Grid:** usam os valores padrão. A Impatience acelera as animações do GNOME, e a Vertical App Grid troca as páginas da grade de aplicativos por uma lista com rolagem vertical.
+- **Listas de extensões:** `enabled-extensions` e `disabled-extensions` guardam também extensões já removidas. Ao remover uma, tire o UUID dela das duas listas.
+- **Copyous:** a janela abre no ponteiro do mouse, guarda texto, imagens e arquivos, e os itens fixados não saem do histórico. O ícone no painel superior fica desligado (`show-indicator`), e as preferências abrem por `gnome-extensions prefs copyous@boerdereinar.dev`. A prévia de links fica desligada porque, ligada, a extensão baixa cada endereço copiado.
 - **Atalho das notificações:** o GNOME usa `Super+V` e `Super+M` para a lista de notificações (`toggle-message-tray`). Com o `Super+V` na Copyous, ela fica só no `Super+M`. O `Super+N` fica de fora porque já foca a notificação ativa.
 - **Seleção e `Ctrl+V`:** selecionar um texto o coloca na seleção primária, colada com o botão do meio, sem mudar o que o `Ctrl+V` cola. O GPaste fica de fora: o serviço dele (`gpaste-daemon`) continua rodando com a extensão desligada e, com `synchronize-clipboards` ligado, faz cada seleção substituir o conteúdo do `Ctrl+V`.
 - **Cursor nos Flatpaks:** aplicativos Flatpak não enxergam os cursores do sistema e mantêm o padrão, a menos que se libere a pasta de ícones para eles.

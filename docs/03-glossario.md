@@ -15,6 +15,7 @@ Termos usados na documentação, em ordem alfabética.
 | **Condição de corrida (*race condition*)** | Falha que depende de qual de dois processos termina primeiro. Aparece de forma intermitente, e o que falha muda de uma vez para outra. |
 | **Contêiner** | Ambiente isolado que executa um programa com tudo o que ele precisa. Comum para rodar bancos de dados e serviços de desenvolvimento. |
 | **`cron`** | Agendador de tarefas do sistema. O Timeshift usa um trabalho do `cron` para conferir, de hora em hora, se um snapshot está na hora. |
+| **Dash (GNOME)** | Faixa de ícones da visão geral (`Super`) com os aplicativos favoritos e os abertos. Extensões como o Dash to Dock a transformam numa barra fixa, como a do Windows. |
 | **Distribuição (distro)** | Um "sabor" de Linux: kernel, programas e gerenciador de pacotes. O Debian é uma das mais antigas e serve de base para outras. |
 | **Docker (Engine, Compose, Buildx)** | Motor de contêineres. O Compose descreve vários contêineres num arquivo, e o Buildx constrói imagens. |
 | **Dotfiles** | Arquivos de configuração pessoais, geralmente com nome iniciado por ponto, como `~/.zshrc`. Neste projeto, ficam copiados em `dotfiles/`. |
@@ -100,7 +101,7 @@ Termos usados na documentação, em ordem alfabética.
 | **UNO** | Interface de programação do LibreOffice, usada por scripts para criar documentos, ler estilos e alterar configurações. |
 | **UPower** | Serviço que informa o estado da bateria e controla o limite de carga. |
 | **UUID** | Identificador único de um disco ou partição. Não muda, ao contrário do nome `sda`. |
-| **UUID de extensão** | Nome único de uma extensão do GNOME, como `caffeine@patapon.info`. Aparece em `gnome-extensions list`. |
+| **UUID de extensão** | Nome único de uma extensão do GNOME, como `blur-my-shell@aunetx`. Aparece em `gnome-extensions list`. |
 | **`virtio`** | Conjunto de dispositivos virtuais rápidos (disco, rede, vídeo e memória), feitos para máquinas virtuais. O sistema convidado precisa do driver `virtio`. |
 | **VPN** | Rede privada virtual: um túnel criptografado até a rede da empresa, para acessar recursos internos. |
 | **Wayland / X11** | Sistemas de exibição gráfica. O Wayland é o mais novo e é o padrão do GNOME atual. |

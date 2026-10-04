@@ -19,7 +19,7 @@ Cada passo traz o comando, o que ele faz, como conferir o resultado e como desfa
 | Desenvolvimento | Docker, Go, Node, Python, Java, VS Code, DBeaver e ferramentas de API |
 | Escritório | LibreOffice com a aparência e os padrões do Microsoft Office |
 | Rede | VPN pelo menu do GNOME e acesso a servidores pelo aplicativo Arquivos |
-| GNOME | Extensões, atalhos e barra de aplicativos no estilo do Windows |
+| GNOME | Extensões, atalhos e histórico da área de transferência no estilo do Windows |
 | Terminal | zsh com sugestões, prompt em blocos Powerline, fonte com ícones e paleta própria |
 | Máquinas virtuais | Windows 10 LTSC em uma VM com KVM, com rede própria, copiar e colar e disco no SSD extra |
 | Segurança dos dados | Snapshots do sistema com o Timeshift |

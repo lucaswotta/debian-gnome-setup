@@ -64,7 +64,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | Item | Estado | Fase |
 |---|---|---|
 | GNOME (`gnome-core`), Ajustes (`gnome-tweaks`) e NetworkManager | Instalados | 0 |
-| Extensões do GNOME | AppIndicator, Dash to Dock, Caffeine, Tiling Assistant e Blur my Shell, pelo Debian, a Copyous (área de transferência), na pasta do usuário, e o Gerenciador de extensões para instalar outras | [6](fases/06-gnome.md) |
+| Extensões do GNOME | AppIndicator, Tiling Assistant e Blur my Shell, pelo Debian, a Copyous (área de transferência), a Impatience e a Vertical App Grid, na pasta do usuário, e o Gerenciador de extensões para instalar outras | [6](fases/06-gnome.md) |
 | Fonte e cursor da interface | Inter e Bibata Modern Classic, pelo Debian | [6](fases/06-gnome.md) |
 | Ícones | Papirus, pelo Debian, com uma variante de pastas verdes na pasta do usuário | [6](fases/06-gnome.md) |
 | Terminal e shell | zsh (aberto pelo perfil do `gnome-terminal`), Starship com prompt em blocos Powerline, `eza`, `bat`, `fzf` e `fastfetch`, pelo Debian, e a FiraCode Nerd Font na pasta do usuário. Configuração em `dotfiles/` | [8](fases/08-terminal.md) |
