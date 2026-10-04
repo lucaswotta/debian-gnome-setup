@@ -111,5 +111,6 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | VLC | Instalado pelo Debian | [5](fases/05-aplicativos.md) |
 | Discord | Flatpak | [5](fases/05-aplicativos.md) |
 | Steam | Flatpak, com acesso à pasta `/mnt/ssd/Jogos` | [5](fases/05-aplicativos.md) |
+| Obsidian | Flatpak | [5](fases/05-aplicativos.md) |
 | Smile (seletor de emojis) | Flatpak, no `Super+.` | [6](fases/06-gnome.md) |
 | `ncdu` e `tree` | Instalados | [5](fases/05-aplicativos.md) |

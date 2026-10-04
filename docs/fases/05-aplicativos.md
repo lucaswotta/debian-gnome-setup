@@ -14,7 +14,7 @@ O perfil de referência é o de desenvolvimento de software, com uso geral. Troq
 - [x] **Lote 2:** Go 1.27, Node 24 LTS, TypeScript 7, Python 3.14 e Java 25 LTS.
 - [x] **Lote 3:** VS Code, DBeaver e AnyDesk (repositórios dos fabricantes), Postman, SoapUI e Discord (Flatpak).
 - [x] **LibreOffice:** configurado para se parecer com o Office. Ver [LibreOffice no estilo do Microsoft Office](05a-libreoffice.md).
-- [x] **Lote 4:** VLC, utilitários de diagnóstico e de rede (Debian) e Steam (Flatpak).
+- [x] **Lote 4:** VLC, utilitários de diagnóstico e de rede (Debian), Steam e Obsidian (Flatpak).
 - [x] **Limpeza:** sem o `xterm`, o `htop` e as sobras de pacotes removidos, e com o serviço de modem desligado (ver [Limpeza](#limpeza)).
 
 Aplicativos adicionais, como GIMP, OBS Studio e Inkscape, entram sob demanda, pelo Debian ou pelo Flatpak.
@@ -35,6 +35,7 @@ Aplicativos adicionais, como GIMP, OBS Studio e Inkscape, entram sob demanda, pe
 | Multimídia | VLC | Debian |
 | Jogos | Steam, com a biblioteca em `/mnt/ssd/Jogos` | Flatpak |
 | Escritório | LibreOffice, configurado para se parecer com o Office | Debian |
+| Notas | Obsidian, com as notas em arquivos Markdown | Flatpak |
 | Captura de tela | Recurso nativo do GNOME | GNOME |
 
 O Debian 13 traz versões antigas de algumas linguagens (o Node 20 e o Go 1.24, por exemplo, deixam de receber suporte do projeto de origem), por isso o lote 2 usa
@@ -352,7 +353,7 @@ Observações:
 - **Atualizações do AnyDesk:** o instalador do pacote apaga o arquivo do serviço em `/etc/systemd/system/`, copia um novo, habilita e inicia o serviço a cada atualização. Isso desfaz o `disable` e também um `mask`, porque o `mask` é um link no mesmo caminho. A pasta `anydesk.service.d/` sobrevive, e a condição dela impede o serviço de rodar: o `start` do instalador termina sem erro e sem iniciar nada.
 - Se algo exigir o serviço do sistema (acesso sem supervisão, por exemplo), crie o arquivo liberador e reative o serviço: `sudo touch /etc/anydesk/servico-liberado && sudo systemctl enable --now anydesk`.
 
-## Lote 4: multimídia, utilitários e Steam
+## Lote 4: multimídia, utilitários, Steam e Obsidian
 
 | Bloco | Programas | Origem |
 |---|---|---|
@@ -360,6 +361,7 @@ Observações:
 | Diagnóstico | `ncdu` (uso do disco), `tree` (árvore de pastas) e `dnsutils` (`dig` e `nslookup`) | Debian |
 | Rede | `nmap` | Debian |
 | Jogos | Steam | Flatpak |
+| Notas | Obsidian | Flatpak |
 
 O VLC entra pelo Debian, sem repositório externo. O Steam usa o Flatpak porque a base do Flatpak já traz as bibliotecas de 32 bits que os jogos pedem,
 sem ativar a arquitetura `i386` no sistema.
@@ -369,6 +371,7 @@ apt-get -s install vlc ncdu tree dnsutils nmap        # simulação, sem root: s
 sudo apt-get install -y vlc ncdu tree dnsutils nmap
 sudo flatpak install -y flathub com.valvesoftware.Steam
 flatpak override --user --filesystem=/mnt/ssd/Jogos com.valvesoftware.Steam      # a Steam passa a enxergar a pasta de jogos
+sudo flatpak install -y flathub md.obsidian.Obsidian
 ```
 
 Como conferir:
@@ -376,11 +379,11 @@ Como conferir:
 ```bash
 vlc --version | head -1
 dig -v && nmap --version | head -1
-flatpak list --app --columns=application | grep Steam
+flatpak list --app --columns=application | grep -E 'Steam|Obsidian'
 flatpak override --user --show com.valvesoftware.Steam                           # filesystems=/mnt/ssd/Jogos;
 ```
 
-Como desfazer: `sudo apt remove vlc ncdu tree dnsutils nmap` e `sudo flatpak uninstall com.valvesoftware.Steam`.
+Como desfazer: `sudo apt remove vlc ncdu tree dnsutils nmap` e `sudo flatpak uninstall com.valvesoftware.Steam md.obsidian.Obsidian`.
 O `flatpak override --user --reset com.valvesoftware.Steam` remove a permissão da pasta.
 
 Observações:
@@ -392,6 +395,9 @@ Observações:
 - **`dnsutils`:** é um pacote de transição. Quem instala o `dig` e o `nslookup` é o `bind9-dnsutils`.
 - **`nmap`:** escaneie só equipamentos próprios ou com autorização. Uma varredura na rede corporativa pode disparar alertas da TI.
 - **VLC como `root`:** o VLC se recusa a rodar com `sudo`. Confira a versão como usuário comum.
+- **Obsidian:** é um aplicativo proprietário. O pacote do Flathub acessa a pasta pessoal e `/mnt`, então o cofre (a pasta das notas) pode ficar
+  em `/mnt/ssd/Arquivos` sem permissão extra. As notas são arquivos `.md` comuns. O snapshot da
+  [fase 7](07-backup.md) não copia o cofre: ele leva só o sistema e os arquivos ocultos da pasta pessoal.
 
 ## Serviços e portas em escuta
 
