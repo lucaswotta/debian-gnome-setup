@@ -11,6 +11,7 @@ Termos usados na documentação, em ordem alfabética.
 | **BGRT** | Tabela do ACPI pela qual o firmware entrega ao sistema o logo que mostrou no boot. O tema `bgrt` do Plymouth usa esse logo. |
 | **Branch `main`** | Ramo principal de um repositório Git. Neste projeto, todo o trabalho vai direto nele. |
 | **Canto ativo (*hot corner*)** | Canto da tela que dispara uma ação quando o ponteiro chega nele. O GNOME só tem o superior esquerdo, que abre a visão geral; outros cantos dependem de extensão. |
+| **CDCLK** | Clock do controlador de vídeo da Intel. A BIOS o deixa num valor, e o driver `i915` o ajusta ao que as telas precisam. Nesta geração, mudá-lo exige reconfigurar as telas ativas. |
 | **Chaveiro (GNOME Keyring)** | Cofre do GNOME, protegido por senha, para credenciais como senhas de Wi-Fi e de VPN e tokens. É destravado no login. |
 | **Commit** | Registro de um conjunto de mudanças no histórico do Git, com uma mensagem que explica o motivo. |
 | **Componentes do APT (`main`, `contrib`, `non-free`, `non-free-firmware`)** | Categorias de pacotes. `main` é software livre; `non-free` tem licença restritiva; `non-free-firmware` traz firmwares de hardware. |
@@ -105,6 +106,7 @@ Termos usados na documentação, em ordem alfabética.
 | **UPower** | Serviço que informa o estado da bateria e controla o limite de carga. |
 | **UUID** | Identificador único de um disco ou partição. Não muda, ao contrário do nome `sda`. |
 | **UUID de extensão** | Nome único de uma extensão do GNOME, como `blur-my-shell@aunetx`. Aparece em `gnome-extensions list`. |
+| **VBT** | Tabela de vídeo que a BIOS entrega ao driver `i915`, com os dados do painel, como os tempos de ligar e desligar a tela. |
 | **`virtio`** | Conjunto de dispositivos virtuais rápidos (disco, rede, vídeo e memória), feitos para máquinas virtuais. O sistema convidado precisa do driver `virtio`. |
 | **VPN** | Rede privada virtual: um túnel criptografado até a rede da empresa, para acessar recursos internos. |
 | **Wayland / X11** | Sistemas de exibição gráfica. O Wayland é o mais novo e é o padrão do GNOME atual. |

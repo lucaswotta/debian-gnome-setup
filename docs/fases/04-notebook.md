@@ -13,8 +13,8 @@ Objetivo: ajustar energia, vídeo, suspensão e bateria do ThinkPad E14 Gen 1.
 - [x] **Teclas Fn:** funcionam.
 - [x] **Tecla da barra (`/ ?`):** remapeada por `hwdb` (ver [Tecla da barra](#tecla-da-barra--)).
 - [x] **Leitor de digital:** sem suporte no Linux (ver observações).
-- [x] **Boot direto:** o menu do GRUB fica oculto, com 1 segundo de espera invisível (ver [Boot direto](#boot-direto-sem-o-menu-do-grub)).
-- [x] **Boot mais rápido:** initramfs só com os módulos desta máquina e sem os drivers da Logitech (ver [Initramfs enxuto](#initramfs-enxuto)).
+- [x] **Boot direto:** o GRUB inicia o sistema sem menu e sem espera (ver [Boot direto](#boot-direto-sem-o-menu-do-grub)).
+- [x] **Boot mais rápido:** initramfs só com o necessário para montar a raiz (ver [Initramfs enxuto](#initramfs-enxuto)), e o boot não espera a rede (ver [Boot sem esperar a rede](#boot-sem-esperar-a-rede)).
 - [x] **Animação de boot:** o logo da Lenovo continua na tela, com um indicador de carregamento, até a tela de login (ver [Animação de boot](#animação-de-boot-plymouth)).
 
 ```bash
@@ -189,31 +189,32 @@ Observações:
 
 ### Boot direto (sem o menu do GRUB)
 
-Com um único sistema instalado, o menu do GRUB só atrasa o boot. O GRUB passa a esperar 1 segundo sem mostrar nada, e a tecla `Esc` nessa janela abre o menu.
+Com um único sistema instalado, o menu do GRUB só atrasa o boot. O GRUB inicia o sistema sem espera e em modo texto (`GRUB_TERMINAL=console`), sem carregar fonte, imagem de fundo e modo gráfico que o menu oculto não usaria.
 
 ```bash
 sudo cp -a /etc/default/grub /etc/default/grub.bak-antes-boot-direto
-sudo sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /etc/default/grub
+sudo sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=0/' /etc/default/grub
 sudo sed -i '/^GRUB_TIMEOUT=/a GRUB_TIMEOUT_STYLE=hidden' /etc/default/grub
+echo 'GRUB_TERMINAL=console' | sudo tee -a /etc/default/grub
 sudo update-grub
 ```
 
-Como conferir: `grep -E '^GRUB_TIMEOUT' /etc/default/grub` mostra `GRUB_TIMEOUT=1` e `GRUB_TIMEOUT_STYLE=hidden`. Depois de reiniciar, `systemd-analyze` informa o tempo do carregador (`loader`).
+Como conferir: `grep -E '^GRUB_(TIMEOUT|TERMINAL)' /etc/default/grub` mostra `GRUB_TIMEOUT=0`, `GRUB_TIMEOUT_STYLE=hidden` e `GRUB_TERMINAL=console`. Depois de reiniciar, `systemd-analyze` informa o tempo do carregador (`loader`).
 
 Como desfazer: `sudo cp /etc/default/grub.bak-antes-boot-direto /etc/default/grub && sudo update-grub`.
 
 Observações:
 
-- **Falha de boot:** o `grub.cfg` gerado mostra o menu por 30 segundos depois de um boot que falhou (`recordfail`), então o menu reaparece quando é necessário.
+- **Falha de boot:** o `grub.cfg` gerado mostra o menu por 30 segundos depois de um boot que falhou (`recordfail`). Se o sistema travar, desligar pelo botão e ligar de novo traz o menu, em modo texto.
 - **Tela de login:** continua a do GDM. O login automático não é usado, porque o desbloqueio do chaveiro e do agente SSH depende da senha no login.
 - **Menu do GRUB e `os-prober`:** o `update-grub` avisa que não procura outros sistemas. Com um só sistema, o aviso não tem efeito.
 
 ### Initramfs enxuto
 
-O initramfs (`/boot/initrd.img-*`) é o sistema mínimo que o kernel abre antes de montar a raiz. Dois ajustes o deixam menor e impedem que ele espere por dispositivos que não são necessários no boot:
+O initramfs (`/boot/initrd.img-*`) é o sistema mínimo que o kernel abre antes de montar a raiz. Dois ajustes o deixam pequeno e impedem que ele espere por dispositivos que não são necessários para montar a raiz:
 
 1. **Sem os drivers da Logitech no initramfs:** dentro dele, o boot espera todos os dispositivos ficarem prontos (`udevadm settle`). Com o mouse ou o teclado sem fio dormindo, o driver `hid-logitech-hidpp` espera cerca de 5 segundos por aparelho antes de desistir, e o boot fica parado. Um hook grava um `blacklist` desses módulos só dentro do initramfs. Até a raiz ser montada, o receptor funciona como teclado e mouse genéricos. Depois, o sistema carrega os drivers da Logitech normalmente, sem segurar o boot.
-2. **Só os módulos desta máquina (`MODULES=dep`):** o padrão do Debian (`most`) leva drivers para quase todo hardware e o microcódigo de todos os processadores Intel. Com `dep`, o initramfs leva só os drivers e o microcódigo desta máquina e cai para cerca de metade do tamanho. O GRUB lê o arquivo mais rápido, e o kernel o descompacta mais rápido.
+2. **Só o necessário para montar a raiz (`MODULES=list`):** o padrão do Debian (`most`) leva drivers para quase todo hardware, e mesmo o `dep` leva o USB e as duas placas de vídeo, com o firmware de todas as GPUs AMD. Com `list`, o initramfs leva só os módulos listados em `/etc/initramfs-tools/modules` (NVMe e ext4) e fica com menos de um quinto do tamanho padrão. O GRUB lê o arquivo mais rápido, e a raiz é montada sem esperar USB e placas de vídeo, que carregam depois, já no sistema.
 
 ```bash
 # 1. Hook: drivers da Logitech fora do initramfs
@@ -233,9 +234,14 @@ printf 'blacklist hid_logitech_dj\nblacklist hid_logitech_hidpp\n' \
 EOF
 sudo install -m 755 logitech-fora-do-initramfs /etc/initramfs-tools/hooks/
 
-# 2. Só os módulos desta máquina (o initramfs.conf original fica intacto)
-printf '# initrd so com os modulos desta maquina (padrao do Debian: most).\n# Reverter: apagar este arquivo e rodar update-initramfs -u.\nMODULES=dep\n' > modules-dep.conf
-sudo install -m 644 modules-dep.conf /etc/initramfs-tools/conf.d/
+# 2. Só o necessário para montar a raiz (o initramfs.conf original fica intacto)
+printf '%s\n' '# Initrd minimo: so os modulos listados em /etc/initramfs-tools/modules.' \
+  '# Reverter: apagar este arquivo, limpar a lista e rodar update-initramfs -u.' \
+  'MODULES=list' 'COMPRESSLEVEL=19' > initrd-minimo.conf
+sudo install -m 644 initrd-minimo.conf /etc/initramfs-tools/conf.d/
+sudo cp -a /etc/initramfs-tools/modules /etc/initramfs-tools/modules.bak
+printf '%s\n' '# initrd-minimo (MODULES=list): o necessario para montar a raiz' \
+  nvme ext4 crc32c-intel crc32c_generic vmd dm-mod | sudo tee -a /etc/initramfs-tools/modules
 
 # 3. Gerar de novo o initramfs do kernel atual
 sudo update-initramfs -u
@@ -245,7 +251,8 @@ Como conferir:
 
 ```bash
 ls -lh /boot/initrd.img-*                                              # o do kernel atual fica menor que os outros
-lsinitramfs /boot/initrd.img-$(uname -r) | grep -E 'logitech-fora|modules-dep|/nvme\.ko|/ext4\.ko'
+lsinitramfs /boot/initrd.img-$(uname -r) | grep -E 'logitech-fora|initrd-minimo|/nvme\.ko|/ext4\.ko'
+lsinitramfs /boot/initrd.img-$(uname -r) | grep -cE 'i915|amdgpu|usbhid'          # 0
 systemd-analyze                                                        # depois de reiniciar: tempos do loader e do kernel
 lsmod | grep hid_logitech                                              # depois do boot, os drivers da Logitech estão carregados
 ```
@@ -253,17 +260,34 @@ lsmod | grep hid_logitech                                              # depois 
 Como desfazer:
 
 ```bash
-sudo rm /etc/initramfs-tools/hooks/logitech-fora-do-initramfs /etc/initramfs-tools/conf.d/modules-dep.conf
+sudo rm /etc/initramfs-tools/hooks/logitech-fora-do-initramfs /etc/initramfs-tools/conf.d/initrd-minimo.conf
+sudo cp /etc/initramfs-tools/modules.bak /etc/initramfs-tools/modules
 sudo update-initramfs -u
 ```
 
 Observações:
 
 - **Teste sem risco:** o `mkinitramfs` gera um initramfs de teste sem `sudo`, a partir de uma cópia da configuração: `cp -r /etc/initramfs-tools cfg`, ajustar a cópia e rodar `/usr/sbin/mkinitramfs -d cfg -o teste.img $(uname -r)`. O `lsinitramfs teste.img` lista o conteúdo.
-- **Kernel de reserva:** o `update-initramfs -u` só gera de novo o initramfs do kernel mais novo. Os dos kernels anteriores continuam completos até serem regerados. Se o boot falhar, a tecla `Esc` abre o menu do GRUB, e em *Opções avançadas* dá para escolher outro kernel.
-- **Troca de hardware:** com `dep`, o initramfs só tem os drivers do disco e da controladora atuais. Antes de levar o disco para outra máquina, desfaça o ajuste 2.
-- **Driver da AMD continua:** o hook do Plymouth inclui o driver de cada placa de vídeo ativa, então o `amdgpu` e o firmware dele continuam no initramfs. Apagar arquivos por hook não funciona: o `mkinitramfs` copia os módulos de novo depois dos hooks.
+- **Kernel de reserva:** o `update-initramfs -u` só gera de novo o initramfs do kernel mais novo. Os dos kernels anteriores continuam completos até serem regerados. Se o boot falhar, o menu do GRUB aparece no boot seguinte (`recordfail`), e em *Opções avançadas* dá para escolher outro kernel.
+- **Troca de hardware:** com `list`, o initramfs só tem os drivers do disco NVMe e do ext4. Antes de levar o disco para outra máquina ou mudar o sistema de arquivos da raiz, desfaça o ajuste 2.
+- **Hook da Logitech:** com `list`, os drivers USB nem entram no initramfs. O hook fica como proteção caso o ajuste 2 seja desfeito.
+- **Plymouth sem driver de vídeo:** com `list`, o hook do Plymouth não inclui drivers de vídeo. A animação usa o framebuffer do firmware (`efifb`) até o driver da Intel assumir a tela, sem piscar.
+- **Driver da Intel no boot:** o `i915` leva cerca de 2 segundos para iniciar. A BIOS deixa o CDCLK no máximo, o driver o reduz, e a mudança exige reconfigurar a tela embutida, com a espera de ciclo de energia do painel definida no VBT (1,6 s). Não há parâmetro para manter o CDCLK da BIOS. Enquanto o driver inicia, o systemd não inicia serviços, e levar o `i915` para o initramfs só muda a espera de lugar.
 - **Não use `-k all` à toa:** `sudo update-initramfs -u -k all` aplica o ajuste a todos os kernels instalados, e nenhum fica com o initramfs completo de reserva.
+
+### Boot sem esperar a rede
+
+O `NetworkManager-wait-online` segura o fim do boot até a rede conectar, para os serviços que pedem `network-online.target`. Nesta máquina, só o `cups-browsed` pede, e ele procura impressoras sozinho quando a rede sobe. A tela de login não depende disso, e o Wi-Fi conecta do mesmo jeito.
+
+```bash
+sudo systemctl disable NetworkManager-wait-online.service
+```
+
+Como conferir: `systemctl is-enabled NetworkManager-wait-online.service` mostra `disabled`, e depois de reiniciar `systemd-analyze critical-chain` não mostra mais o serviço.
+
+Como desfazer: `sudo systemctl enable NetworkManager-wait-online.service`.
+
+Observação: montagens de rede no `fstab` e serviços que precisam de rede já no boot dependem dessa espera. Antes de adicionar algum, desfaça o ajuste.
 
 ### Animação de boot (Plymouth)
 
