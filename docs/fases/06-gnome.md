@@ -6,7 +6,7 @@
 
 Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas extensões e sem trocar o visual padrão.
 
-- [x] **Extensões:** AppIndicator (bandeja) e Blur my Shell (desfoque), pelo Debian, mais Copyous (área de transferência), Tiling Shell (encaixe de janelas), Just Perfection (ajustes do Shell), Custom Hot Corners - Extended (cantos ativos), Vertical App Grid (grade com rolagem vertical) e a extensão complementar do Smile (emojis), do site de extensões. As oito ficam ativas.
+- [x] **Extensões:** AppIndicator (bandeja), pelo Debian, mais Blur my Shell (desfoque), Copyous (área de transferência), Tiling Shell (encaixe de janelas), Just Perfection (ajustes do Shell), Custom Hot Corners - Extended (cantos ativos), Vertical App Grid (grade com rolagem vertical) e a extensão complementar do Smile (emojis), do site de extensões. As oito ficam ativas.
 - [x] **Área de transferência:** histórico no `Super+V`, como o `Win+V` do Windows, com a extensão Copyous. O que foi copiado continua disponível depois que o programa de origem fecha.
 - [x] **Emojis:** `Super+.` abre o Smile, que cola o emoji escolhido no campo em uso, como o `Win+.` do Windows.
 - [x] **Cantos ativos:** o canto superior esquerdo abre a visão geral, e o inferior esquerdo, a grade de aplicativos.
@@ -21,12 +21,12 @@ Objetivo: deixar o GNOME 48 confortável para quem vem do Windows, com poucas ex
 - [x] **Favoritos da dash:** Chrome, Arquivos, Terminal e Obsidian, na dash da visão geral (`Super`). Não há barra de aplicativos fixa.
 
 ```bash
-# 1. Extensões, pelo Debian (o pacote de preferências vem como dependência)
-sudo apt-get install -y gnome-shell-extension-appindicator gnome-shell-extension-blur-my-shell
+# 1. Extensão do Debian
+sudo apt-get install -y gnome-shell-extension-appindicator
 
 # 2. Extensões do site de extensões, na pasta do usuário (leia o código de cada uma antes de ligar)
 sudo apt-get install -y gir1.2-gda-5.0 gir1.2-gsound-1.0      # dependências da Copyous
-for u in copyous@boerdereinar.dev vertical-app-grid@lublst.github.io just-perfection-desktop@just-perfection \
+for u in blur-my-shell@aunetx copyous@boerdereinar.dev vertical-app-grid@lublst.github.io just-perfection-desktop@just-perfection \
          tilingshell@ferrarodomenico.com custom-hot-corners-extended@G-dH.github.com smile-extension@mijorus.it; do
   curl -fLo "$u.zip" "https://extensions.gnome.org/download-extension/$u.shell-extension.zip?shell_version=48"
   gnome-extensions install "$u.zip"
@@ -49,7 +49,7 @@ X copyous@boerdereinar.dev set org.gnome.shell.extensions.copyous.link-item show
 
 # 5. Just Perfection: animações rápidas, abrir na área de trabalho e menos avisos
 J="X just-perfection-desktop@just-perfection set org.gnome.shell.extensions.just-perfection"
-$J animation 5                         # "rápida" (fator 0,8)
+$J animation 4                         # "mais rápida" (fator 0,6)
 $J startup-status 0                    # depois do login, área de trabalho em vez da visão geral
 $J workspace-popup false               # sem popup ao trocar de área de trabalho
 $J window-demands-attention-focus true # janela que pede atenção ganha o foco, sem notificação "está pronto"
@@ -136,12 +136,14 @@ gsettings list-recursively | grep -i -E "'<Super>(e|period)'"        # cada atal
 
 Como desfazer: `gsettings reset <esquema> <chave>` para cada chave acima, `gsettings reset org.gnome.shell enabled-extensions` para desligar todas as extensões,
 `gnome-extensions uninstall <uuid>` para as do site (mais `sudo apt remove gir1.2-gda-5.0 gir1.2-gsound-1.0`, das dependências da Copyous),
-`sudo apt remove gnome-shell-extension-appindicator gnome-shell-extension-blur-my-shell` para as do Debian e `sudo flatpak uninstall it.mijorus.smile` para o Smile.
+`sudo apt remove gnome-shell-extension-appindicator` para a do Debian e `sudo flatpak uninstall it.mijorus.smile` para o Smile.
 
 Observações:
 
 - **Extensões no Wayland:** o GNOME só carrega extensões novas em uma sessão nova; para *desligar* uma já carregada não precisa. Saia e entre de novo para ativar uma extensão nova.
 - **Pacotes do Debian:** declaram suporte ao GNOME 48. No Debian, o AppIndicator se chama `ubuntu-appindicators@ubuntu.com`.
+- **Blur my Shell:** vem do site, que tem versão mais nova que a do Debian. As versões anteriores à 75 atrasam o login no GNOME 48: o Shell só termina de carregar na virada do minuto seguinte (issue [#1047](https://github.com/aunetx/blur-my-shell/issues/1047)).
+- **Login lento:** o tempo do Shell aparece no journal, entre a abertura da sessão e as linhas `GNOME Shell started at` e `Registering session with GDM`. Para medir o peso das extensões, `gsettings set org.gnome.shell disable-user-extensions true` desliga todas de uma vez (`false` religa).
 - **Uma extensão por função:** a Tiling Shell substitui o Tiling Assistant, e a Just Perfection cobre a velocidade das animações, papel da Impatience. Duas extensões de encaixe ao mesmo tempo disputam as bordas da tela e os atalhos `Super` + setas.
 - **Sem barra de aplicativos fixa:** os favoritos e os aplicativos abertos ficam na dash da visão geral (`Super`). O Dash to Dock e o Caffeine ficam de fora.
 - **Listas de extensões:** `enabled-extensions` e `disabled-extensions` guardam também extensões já removidas. Ao remover uma, tire o UUID dela das duas listas.

@@ -64,7 +64,7 @@ Sistema e notebook usados como referência neste guia. Se o seu hardware ou a su
 | Item | Estado | Fase |
 |---|---|---|
 | GNOME (`gnome-core`), Ajustes (`gnome-tweaks`) e NetworkManager | Instalados | 0 |
-| Extensões do GNOME | AppIndicator e Blur my Shell, pelo Debian. Copyous (área de transferência), Tiling Shell (encaixe de janelas), Just Perfection, Custom Hot Corners - Extended (cantos ativos), Vertical App Grid e a complementar do Smile, na pasta do usuário. Gerenciador de extensões para instalar outras | [6](fases/06-gnome.md) |
+| Extensões do GNOME | AppIndicator, pelo Debian. Blur my Shell (desfoque), Copyous (área de transferência), Tiling Shell (encaixe de janelas), Just Perfection, Custom Hot Corners - Extended (cantos ativos), Vertical App Grid e a complementar do Smile, na pasta do usuário. Gerenciador de extensões para instalar outras | [6](fases/06-gnome.md) |
 | Fonte e cursor da interface | Inter, pelo Debian, e o cursor padrão do GNOME (Adwaita) | [6](fases/06-gnome.md) |
 | Ícones | Papirus, pelo Debian, com uma variante de pastas verdes na pasta do usuário | [6](fases/06-gnome.md) |
 | Terminal e shell | zsh (aberto pelo perfil do `gnome-terminal`), Starship com prompt em blocos Powerline, `eza`, `bat`, `fzf` e `fastfetch` (com configuração própria), pelo Debian, e a FiraCode Nerd Font na pasta do usuário. Configuração em `dotfiles/` | [8](fases/08-terminal.md) |
